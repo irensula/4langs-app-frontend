@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "opetuspeli-app",
+    "slug": "opetuspeli-app",
+    "version": "1.0.0",
+    "scheme": "opetuspeli",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.irensula.opetuspeliapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.irensula.opetuspeliapp",
+      "permissions": [
+        "INTERNET"
+      ],
+     "blockedPermissions": [
+      "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {},
+    "plugins": [
+      "expo-font", "expo-audio", "expo-asset"
+    ]
+  }
+}
