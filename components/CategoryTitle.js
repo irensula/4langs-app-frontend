@@ -14,7 +14,11 @@ const CategoryTitle = ({
   setUnlocked,
 }) => {
   const API_BASE = Constants.expoConfig.extra.API_BASE;
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState({
+    totalProgress: 0,
+    progressPercent: 0,
+    unlockNext: false,
+  });
   const [progressMax, setProgressMax] = useState(0);
   const { token, user } = useContext(AuthContext);
 
@@ -36,7 +40,11 @@ const CategoryTitle = ({
         const progressData = await progressRes.json();
         const maxScoreData = await maxScoreRes.json();
 
-        setProgress(progressData);
+        setProgress(progressData || {
+          totalProgress: 0,
+          progressPercent: 0,
+          unlockNext: false,
+        });
         setProgressMax(maxScoreData.totalMaxScore);
         if (setUnlocked) {
           setUnlocked(progressData.unlockNext);
@@ -53,7 +61,7 @@ const CategoryTitle = ({
       <View style={styles.progressWrapper}>
         <AntDesign name="star" size={24} color={colors.yellow} />
         <Text style={styles.progressText}>
-          {progress.totalProgress} / {progressMax}
+          {(progress?.totalProgress ?? 0)} / {progressMax}
         </Text>
       </View>
       <Text style={textStyles.title}>{name}</Text>
