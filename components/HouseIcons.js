@@ -3,13 +3,14 @@ import Svg, { Rect, Polygon, Path, G } from "react-native-svg";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { layout, colors, textStyles, spacing } from "../constants/layout";
 
-const HouseIcons = ({ categories = [], onSelect, userCategory = 0 }) => {
+const HouseIcons = ({ categories = [], onSelect }) => {
   const safeCategories = Array.isArray(categories) ? categories : [];
+  
   return (
     <View style={{ width: "90%" }}>
       {safeCategories.map((category, index) => {
           if (!category) return null;
-          const isLocked = Number(category?.categoryID ?? 0) > Number(userCategory ?? 0);
+          const isLocked = !category.isOpen;
         return (
           <Pressable
             key={category?.categoryID ?? index}

@@ -6,54 +6,30 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Constants from "expo-constants";
 
 const CategoryTitle = ({
-  categoryID,
-  name,
-  subtitle,
-  isFocused,
-  refreshProgress,
-  setUnlocked,
-}) => {
-  const API_BASE = Constants.expoConfig.extra.API_BASE;
-  const [progress, setProgress] = useState({
-    totalProgress: 0,
-    progressPercent: 0,
-    unlockNext: false,
-  });
-  const [progressMax, setProgressMax] = useState(0);
-  const { token, user } = useContext(AuthContext);
+    categoryID,
+    name,
+    subtitle,
+    isFocused,
+    refreshProgress,
+    setUnlocked,
+  }) => {
+    const API_BASE = Constants.expoConfig.extra.API_BASE;
+    const [progress, setProgress] = useState({
+      totalProgress: 0,
+      progressPercent: 0,
+      unlockNext: false,
+    });
+    const { token, user } = useContext(AuthContext);    
 
-  useEffect(() => {
-    if (!isFocused) return;
-    const fetchProgress = async () => {
+    useEffect(() => {
       if (!token || !user || !categoryID) return;
 
-      try {
-        const [progressRes, maxScoreRes] = await Promise.all([
-          fetch(`${API_BASE}/progress/${user.id}/${categoryID}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_BASE}/max-score/${categoryID}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        const progressData = await progressRes.json();
-        const maxScoreData = await maxScoreRes.json();
-
-        setProgress(progressData || {
-          totalProgress: 0,
-          progressPercent: 0,
-          unlockNext: false,
-        });
-        setProgressMax(maxScoreData.totalMaxScore);
-        if (setUnlocked) {
-          setUnlocked(progressData.unlockNext);
-        }
-      } catch (err) {
-        console.error("Error fetching progress or max score:", err);
-      }
-    };
-    fetchProgress();
+      fetch(`${API_BASE}/progress/${user.id}/${categoryID}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then(data => setProgress(data))
+        .catch(err => console.error("Fetch error:", err));
   }, [token, user, categoryID, isFocused, refreshProgress]);
 
   return (
@@ -61,7 +37,7 @@ const CategoryTitle = ({
       <View style={styles.progressWrapper}>
         <AntDesign name="star" size={24} color={colors.yellow} />
         <Text style={styles.progressText}>
-          {(progress?.totalProgress ?? 0)} / {progressMax}
+          {(progress?.currentScoreAll ?? 0)} / {progress.maxScoreAll}
         </Text>
       </View>
       <Text style={textStyles.title}>{name}</Text>
