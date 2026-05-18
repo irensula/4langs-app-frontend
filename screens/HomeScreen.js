@@ -8,21 +8,46 @@ import HouseIcons from "../components/HouseIcons";
 
 const HomeScreen = ({ route, navigation }) => {
   const API_BASE = Constants.expoConfig.extra.API_BASE;
-  const { user, token, loading } = useContext(AuthContext);
+  const { user, token, loading, logout } = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
 
   useEffect(() => {
-  if (loading || !token || !user) return;
+  if (loading) return;
+  if (!token || !user) {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Start" }],
+    });
+    return;
+  }
+  
+  const fetchCategories = async () => { 
+    try {
+      const res = await fetch(`${API_BASE}/categories`, {
+        headers: { 
+          Authorization: `Bearer ${token}`, 
+      },
+    });
+    if (res.status === 401) {
+      setCategories([]);
+      await logout();
 
-  fetch(`${API_BASE}/categories`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((res) => res.json())
-    .then(data => setCategories(data))
-    .catch(err => console.error("Fetch error:", err));
-}, [loading, token, user]);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Start" }],
+      });
+      
+      return;
+    }
+    const data = await res.json();
+    setCategories(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setCategories([]);
+    }
+  };
+    fetchCategories();
+  }, [loading, token, user, logout, navigation]);
 
   const handleSelectCategory = (category) => {
     navigation.navigate("Category", {

@@ -129,8 +129,6 @@ const MemoScreen = ({ route, navigation }) => {
         categoryID
       });
 
-      console.log("Save result", result);
-
       setTimeout(() => {
         setModalMessage("");
         setModalVisible(false);

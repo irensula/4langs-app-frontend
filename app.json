@@ -6,7 +6,9 @@
     "scheme": "opetuspeli",
     "orientation": "default",
     "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
