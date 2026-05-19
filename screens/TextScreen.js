@@ -3,12 +3,12 @@ import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { AuthContext } from '../utils/AuthContext';
 import { layout, textStyles, colors, spacing } from '../constants/layout';
-import Constants from 'expo-constants';
 import TextCard from '../components/TextCard';
 import Navbar from '../components/Navbar';
 import NextArrow from '../components/NextArrow';
 import LanguageTabs from '../components/LanguageTabs';
 import CategoryTitle from '../components/CategoryTitle';
+import { api } from "../utils/apiClient";
 
 const TextScreen = ({ route, navigation }) => {
     const { user, token } = useContext(AuthContext);
@@ -16,24 +16,30 @@ const TextScreen = ({ route, navigation }) => {
     const [texts, setTexts] = useState([]);
     const [selectedLanguage, setSelectedLanguage] = useState('en');
     const [activeLanguage, setActiveLanguage] = useState(false);
-    const API_BASE = Constants.expoConfig?.extra?.API_BASE || 'fallback value';
     const isFocused = useIsFocused();
     
     useEffect(() => {
         const fetchTexts = async () => {
-        try {
+
             if (!token || !categoryID) return;
-            const res = await fetch(`${API_BASE}/categories/${categoryID}/texts`, {
-                headers: {Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            setTexts(data);
-        } catch (error) {
-            console.error('Error fetching texts:', error);
-        }
-    };
-    fetchTexts();
-}, [token, categoryID]);
+            
+            try {
+                const data = await api.get(
+                    `/categories/${categoryID}/texts`, 
+                    token 
+                );
+
+                if (!Array.isArray(data)) return;
+
+                setTexts(data);
+                
+            } catch (error) {
+                console.error('Error fetching texts:', error);
+                setTexts([]);
+            }
+        };
+        fetchTexts();
+    }, [token, categoryID]);
     
     return (
         <View style={layout.screen}>
@@ -58,7 +64,6 @@ const TextScreen = ({ route, navigation }) => {
                         <TextCard 
                             key={index}
                             texts={item} 
-                            API_BASE={API_BASE} 
                             selectedLanguage={selectedLanguage}
                         />)
                     )}

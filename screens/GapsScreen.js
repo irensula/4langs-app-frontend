@@ -1,5 +1,4 @@
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
-import Constants from "expo-constants";
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../utils/AuthContext";
 import shuffledArray from "../utils/shuffledArray";
@@ -13,9 +12,9 @@ import { layout, colors, spacing, textStyles } from "../constants/layout";
 import CategoryTitle from "../components/CategoryTitle";
 import { useIsFocused } from "@react-navigation/native";
 import { saveProgress } from "../utils/progressService";
+import { api } from "../utils/apiClient";
 
 const GapsScreen = ({ navigation, route }) => {
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE || "fallback value";
   const { user, token } = useContext(AuthContext);
   const { name, categoryID } = route.params;
   const [sentences, setSentences] = useState([]);
@@ -36,21 +35,27 @@ const GapsScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const fetchGapsTask = async () => {
+      
+      if (!token || !categoryID) return;
+
       try {
-        if (!token || !categoryID) return;
-        const res = await fetch(
-          `${API_BASE}/categories/${categoryID}/gaps_task`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+        const data = await api.get(
+          `/categories/${categoryID}/gaps_task`,
+          token
         );
-        const data = await res.json();
+
+        if (!Array.isArray(data)) return;
+
         setSentences(data);
         setWords(data);
+
         const shuffled = shuffledArray(data);
         setShuffledWords(shuffled);
+
       } catch (error) {
         console.error("Error fetching gaps task:", error);
+        setSentences([]);
+        setWords([]);
       }
     };
     fetchGapsTask();
@@ -75,7 +80,6 @@ const GapsScreen = ({ navigation, route }) => {
 
   try {
     const result = await saveProgress({
-        API_BASE,
         userId: user?.id,
         token,
         exerciseID: sentences[0]?.exerciseID,
@@ -181,7 +185,6 @@ const GapsScreen = ({ navigation, route }) => {
                 key={index}
                 sentence={sentence}
                 selectedLanguage={selectedLanguage}
-                API_BASE={API_BASE}
                 index={index}
                 value={answers[index] || ""}
                 onChange={(text) =>

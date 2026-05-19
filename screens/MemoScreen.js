@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { AuthContext } from "../utils/AuthContext";
-import Constants from "expo-constants";
 
 import shuffledArray from "../utils/shuffledArray";
 import LanguageTabs from "../components/LanguageTabs";
@@ -13,10 +12,10 @@ import NextArrow from "../components/NextArrow";
 import { layout, textStyles, colors, spacing } from "../constants/layout";
 import CategoryTitle from "../components/CategoryTitle";
 import { saveProgress } from "../utils/progressService";
+import { setApiHandlers } from "../utils/apiClient";
 
 const MemoScreen = ({ route, navigation }) => {
   const { name, categoryID } = route.params;
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE || "fallback value";
   const { user, token } = useContext(AuthContext);
   const [originalCards, setOriginalCards] = useState([]);
   const [memoCards, setMemoCards] = useState([]);
@@ -38,20 +37,25 @@ const MemoScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const fetchMemoGame = async () => {
+      
+      if (!token || !categoryID) return;
+
       try {
-        if (!token || !categoryID) return;
-        const res = await fetch(
-          `${API_BASE}/categories/${categoryID}/memogame`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = await res.json();
-        setOriginalCards(data);
-        const shuffled = doubleAndShuffle(data);
-        setMemoCards(shuffled);
-      } catch (error) {
-        console.error("Error fetching memogame:", error);
+          const data = await api.get(
+            `/categories/${categoryID}/memogame`,
+            token
+          );
+
+          if (!Array.isArray(data)) return;
+        
+          setOriginalCards(data);
+          
+          const shuffled = doubleAndShuffle(data);
+          setMemoCards(shuffled);
+      
+        } catch (error) {
+          console.error("Error fetching memogame:", error);
+          setOriginalCards([]);
       }
     };
     fetchMemoGame();

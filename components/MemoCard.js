@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { playSound } from '../utils/soundUtils';
 import { layout, colors, spacing, textStyles } from '../constants/layout';
+import { getImageUrl, getSoundUrl } from "../utils/apiClient";
 
-const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress, API_BASE, selectedLanguage }) => {
+const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress, selectedLanguage }) => {
 
     const wordMap = {
         en: memoCards.value_en,
@@ -23,7 +24,7 @@ const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress, API_BASE, se
 
     useEffect(() => {
         if (isOpened && !isMatched) {
-            playSound(soundFile, API_BASE);
+            playSound(getSoundUrl(soundFile));
         }
     }, [isOpened]);
 
@@ -32,7 +33,7 @@ const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress, API_BASE, se
             {isOpened || isMatched ? (
                 <View style={styles.container}>
                     <Image 
-                        source={{ uri: `${API_BASE}${memoCards.word_url}` }}
+                        source={{ uri: getImageUrl(memoCards.word_url) }}
                         style={styles.image}
                         resizeMode='cover'
                     />

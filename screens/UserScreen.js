@@ -11,7 +11,7 @@ import { AuthContext } from '../utils/AuthContext';
 const UserScreen = ({ route, navigation }) => {
     const { user: contextUser, token, logout, updateUser } = useContext(AuthContext);
     
-    const API_BASE = Constants.expoConfig?.extra?.API_BASE || 'fallback value';
+    const API_BASE = Constants.expoConfig?.extra?.API_BASE;
     
     const [user, setUser] = useState(contextUser);
     const [message, setMessage] = useState('');
@@ -64,7 +64,7 @@ const UserScreen = ({ route, navigation }) => {
 
     const editUserData = async() => {
         try {
-            if (!token) {
+            if (!token || !user) {
                 setMessage('Käyttäjän on oltava valtuutettu');
                 return;
             }

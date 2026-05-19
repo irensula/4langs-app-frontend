@@ -1,7 +1,8 @@
 import { View, Text, Image } from 'react-native';
 import { layout, textStyles, spacing, colors } from '../constants/layout';
+import { getImageUrl } from "../utils/apiClient";
 
-const TextCard = ({ texts, API_BASE, selectedLanguage  }) => {
+const TextCard = ({ texts, selectedLanguage  }) => {
     const textMap = {
         ru: texts.text_ru,
         fi: texts.text_fi,
@@ -11,7 +12,7 @@ const TextCard = ({ texts, API_BASE, selectedLanguage  }) => {
     return (
         <View>
             <Image 
-                source={{ uri: `${API_BASE}${texts.text_image}` }}
+                source={{ uri: getImageUrl(texts.text_image) }}
                 style={{ width: '100%', aspectRatio: 16/15, marginVertical: 15 }}
                 resizeMode='cover'
             />

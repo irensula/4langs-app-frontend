@@ -1,53 +1,37 @@
-import Constants from "expo-constants";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../utils/AuthContext";
 import { ScrollView, View } from "react-native";
 import { layout, colors, spacing, textStyles } from "../constants/layout";
 import Navbar from "../components/Navbar";
 import HouseIcons from "../components/HouseIcons";
+import { api } from "../utils/apiClient";
 
 const HomeScreen = ({ route, navigation }) => {
-  const API_BASE = Constants.expoConfig.extra.API_BASE;
-  const { user, token, loading, logout } = useContext(AuthContext);
+  const { user, token, loading } = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-  if (loading) return;
-  if (!token || !user) {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Start" }],
-    });
-    return;
-  }
-  
-  const fetchCategories = async () => { 
-    try {
-      const res = await fetch(`${API_BASE}/categories`, {
-        headers: { 
-          Authorization: `Bearer ${token}`, 
-      },
-    });
-    if (res.status === 401) {
-      setCategories([]);
-      await logout();
+    const fetchCategories = async () => { 
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Start" }],
-      });
+      if (!token || !user || loading) return;
       
-      return;
-    }
-    const data = await res.json();
-    setCategories(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setCategories([]);
-    }
-  };
+      try {
+        const data = await api.get(
+            `/categories`, 
+            token
+        );
+      
+        if (!Array.isArray(data)) return;
+
+        setCategories(data);
+
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setCategories([]);
+      }
+    };
     fetchCategories();
-  }, [loading, token, user, logout, navigation]);
+  }, [loading, token, user]);
 
   const handleSelectCategory = (category) => {
     navigation.navigate("Category", {

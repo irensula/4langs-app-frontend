@@ -1,5 +1,6 @@
+import { api } from "./apiClient";
+
 export const saveProgress = async ({
-  API_BASE,
   userId,
   token,
   exerciseID,
@@ -7,25 +8,17 @@ export const saveProgress = async ({
   maxScore,
   categoryID,
 }) => {
+  
   if (!exerciseID || !userId) return;
 
-  const body = {
-    exerciseID,
-    selectedLanguage,
-    maxScore,
-    categoryID,
-  };
-
-  const res = await fetch(`${API_BASE}/progress/${userId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  return await api.post(
+    `/progress/${userId}`,
+    {
+      exerciseID,
+      selectedLanguage,
+      maxScore,
+      categoryID,
     },
-    body: JSON.stringify(body),
-  });
-
-  const data = await res.json();
-  
-  return data;
+    token,
+  );
 };

@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
 import { AuthContext } from "../utils/AuthContext";
-import Constants from "expo-constants";
 
 import shuffledArray from "../utils/shuffledArray";
 import WordCard from "../components/WordCard";
@@ -14,10 +13,10 @@ import CategoryTitle from "../components/CategoryTitle";
 import { layout, textStyles } from "../constants/layout";
 import { useIsFocused } from "@react-navigation/native";
 import { saveProgress } from "../utils/progressService";
+import { api } from "../utils/apiClient";
 
 const ConnectScreen = ({ navigation, route }) => {
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE || "fallback value";
-  const { token, user } = useContext(AuthContext);
+  const { token, user, loading, logout } = useContext(AuthContext);
   const { name, categoryID } = route.params;
   const [pairs, setPairs] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -35,23 +34,27 @@ const ConnectScreen = ({ navigation, route }) => {
   const [refreshProgress, setRefreshProgress] = useState(0);
 
   useEffect(() => {
+
     const fetchConnectTask = async () => {
+      if (loading || !token || !user || !categoryID) return;
+
       try {
-        if (!token || !categoryID) return;
-        const res = await fetch(
-          `${API_BASE}/categories/${categoryID}/connect_task`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+        const data = await api.get(
+          `/categories/${categoryID}/connect_task`, 
+          token
         );
-        const data = await res.json();
+
+        if (!Array.isArray(data)) return;
+
         setPairs(data);
+      
       } catch (error) {
         console.error("Error fetching connect task:", error);
+        setPairs([])
       }
     };
     fetchConnectTask();
-  }, [token, categoryID]);
+  }, [token, categoryID ]);
 
   useEffect(() => {
     const words = pairs.map((pair) => ({

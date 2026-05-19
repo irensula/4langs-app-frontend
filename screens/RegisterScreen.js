@@ -19,7 +19,7 @@ const RegisterScreen = ({ navigation }) => {
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE || "fallback value";
+  const API_BASE = Constants.expoConfig?.extra?.API_BASE;
 
   useEffect(() => {
     fetch(`${API_BASE}/avatars`)

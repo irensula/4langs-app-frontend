@@ -17,6 +17,8 @@ import ConnectScreen from "./screens/ConnectScreen";
 import GapsScreen from "./screens/GapsScreen";
 import { colors } from "./constants/layout";
 import { AuthProvider, AuthContext } from './utils/AuthContext';
+import { navigationRef } from "./utils/navigationRef";
+import { setApiHandlers } from "./utils/apiClient";
 import { View, ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -39,26 +41,27 @@ function AppContent() {
     NunitoBold: require('./assets/fonts/Nunito-Bold.ttf'),
   });
 
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, logout } = useContext(AuthContext);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-  if (loading) {
+  useEffect(() => {
+    if (logout) setApiHandlers(logout);
+  }, [logout]);
+
+  if (!fontsLoaded || loading) {
     return <LoadingIndicator />;
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Start" component={StartScreen} />
-      {!user && (
+      
+      {!user ? (
         <>
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
         </>
-      )}
-      {user && (
+      ) : (
         <>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="UserScreen" component={UserScreen} />

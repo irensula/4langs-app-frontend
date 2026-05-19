@@ -6,7 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 const AvatarsList = ({ avatars, onSelect, selectedImageID: propSelectedImageID }) => {
     const [selectedImageID, setSelectedImageID] = useState(propSelectedImageID || null);
     const [showAllAvatars, setShowAllAvatars] = useState(false);
-    const API_BASE = Constants.expoConfig?.extra?.API_BASE || 'fallback value';
+    const API_BASE = Constants.expoConfig?.extra?.API_BASE;
 
     useEffect(() => {
         if (avatars.length > 0) {

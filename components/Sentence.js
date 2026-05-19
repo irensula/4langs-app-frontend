@@ -6,8 +6,7 @@ import { layout, colors, spacing, textStyles } from '../constants/layout';
 
 const Sentence = ({ 
         sentence, 
-        selectedLanguage, 
-        API_BASE, 
+        selectedLanguage,
         index, 
         value,
         onChange, 
@@ -23,7 +22,6 @@ const Sentence = ({
     return (
         <View style={{flexDirection: 'row', alignItems: 'center' }}>
             <ImageCard 
-                API_BASE={API_BASE}
                 image={{ word_url: sentence.word_url }} 
             />
         <View style={styles.sentence}>

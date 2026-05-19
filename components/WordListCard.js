@@ -3,13 +3,14 @@ import { playSound } from "../utils/soundUtils";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import LANG_KEYS from "../constants/langKeys";
 import { layout, colors } from "../constants/layout";
+import { getImageUrl, getSoundUrl } from "../utils/apiClient";
 
-const WordListCard = ({ word, API_BASE }) => {
+const WordListCard = ({ word }) => {
   return (
     <View style={styles.rowWrapper}>
       {word.word_url && (
         <Image
-          source={{ uri: `${API_BASE}${word.word_url}` }}
+          source={{ uri: getImageUrl(word.word_url) }}
           style={layout.image}
           resizeMode="cover"
         />
@@ -31,7 +32,7 @@ const WordListCard = ({ word, API_BASE }) => {
               <Text style={{ flex: 1, padding: 5 }}>{value}</Text>
               {soundFile && (
                 <Pressable
-                  onPress={() => playSound(soundFile, API_BASE)}
+                  onPress={() => playSound(getSoundUrl(soundFile))}
                   style={{ flex: 1, alignItems: "center" }}
                 >
                   <AntDesign

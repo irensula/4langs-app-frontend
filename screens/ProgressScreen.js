@@ -1,27 +1,33 @@
 import { useEffect, useState, useContext } from "react";
 import { ScrollView, View, Text, StyleSheet } from "react-native";
 import { AuthContext } from "../utils/AuthContext";
-import Constants from "expo-constants";
 import ProgressCard from "../components/ProgressCard";
 import Navbar from "../components/Navbar";
 import { layout, textStyles, spacing, colors } from "../constants/layout";
+import { api } from "../utils/apiClient";
 
 const ProgressScreen = ({ navigation }) => {
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE;
   const { user, token } = useContext(AuthContext);
   const [userProgress, setUserProgress] = useState([]);
 
   useEffect(() => {
     const fetchProgress = async () => {
+      
+      if (!token || !user?.id) return;
+
       try {
-        if (!token || !user?.id) return;
-        const res = await fetch(`${API_BASE}/progress/${user.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
+        const data = await api.get(
+          `/progress/${user.id}`, 
+          token
+        );
+
+        if (!Array.isArray(data)) return;
+        
         setUserProgress(data);
+
       } catch (error) {
         console.error("Error fetching user progress:", error);
+        setUserProgress([]);
       }
     };   
 

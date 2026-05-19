@@ -2,36 +2,43 @@ import { useState, useEffect, useContext } from 'react';
 import {View, ScrollView, StyleSheet} from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { AuthContext } from '../utils/AuthContext';
-import Constants from 'expo-constants';
 import WordListCard from '../components/WordListCard';
 import Navbar from '../components/Navbar';
 import NextArrow from '../components/NextArrow';
 import { layout, textStyles, colors, spacing } from '../constants/layout';
 import CategoryTitle from '../components/CategoryTitle';
+import { api } from "../utils/apiClient";
 
 const WordsListScreen = ({ route, navigation }) => {
     const [words, setWords] = useState([]);
     const { name, categoryID } = route.params;
-    const { user, token } = useContext(AuthContext);
-    const API_BASE = Constants.expoConfig?.extra?.API_BASE || 'fallback value';
+    const { user, token, loading } = useContext(AuthContext);
     const isFocused = useIsFocused();
     const [progress, setProgress] = useState([]);
 
     useEffect(() => {
+
         const fetchWords = async () => {
+            
+            if (loading || !token || !user || !categoryID) return;
+
             try {
-                if (!token || !categoryID) return;
-                const res = await fetch(`${API_BASE}/categories/${categoryID}/words`, { 
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                const data = await res.json();
+                const data = await api.get(
+                    `/categories/${categoryID}/words`, 
+                    token
+                );
+
+                if (!Array.isArray(data)) return;
+
                 setWords(data);
-            } catch (err) {
-                console.error('Error fetching words:', err);
+
+            } catch (error) {
+                console.error('Error fetching words:', error);
+                setWords([]);
             }
-    };
-    fetchWords();
-}, [token, categoryID]);
+        };
+        fetchWords();
+    }, [ loading, token, user, categoryID ]);
 
     return (
         <View style={layout.screen}>
@@ -46,7 +53,7 @@ const WordsListScreen = ({ route, navigation }) => {
                 
                 <View style={layout.wrapper}>
                     {words.map((word) => (
-                        <WordListCard key={word.wordID} word={word} API_BASE={API_BASE} />
+                        <WordListCard key={word.wordID} word={word} />
                     ))}
                 </View>
                 <NextArrow screen={'TextScreen'} name={name} categoryID={categoryID} />
