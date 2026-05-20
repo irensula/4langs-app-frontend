@@ -16,7 +16,7 @@ import { saveProgress } from "../utils/progressService";
 import { api } from "../utils/apiClient";
 
 const ConnectScreen = ({ navigation, route }) => {
-  const { token, user, loading, logout } = useContext(AuthContext);
+  const { token, user, authReady, logout } = useContext(AuthContext);
   const { name, categoryID } = route.params;
   const [pairs, setPairs] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -36,7 +36,7 @@ const ConnectScreen = ({ navigation, route }) => {
   useEffect(() => {
 
     const fetchConnectTask = async () => {
-      if (loading || !token || !user || !categoryID) return;
+      if (authReady || !token || !user || !categoryID) return;
 
       try {
         const data = await api.get(
@@ -119,7 +119,6 @@ const ConnectScreen = ({ navigation, route }) => {
     const maxScore = pairs[0]?.maxScore || 0;
 
     const result = await saveProgress({
-      API_BASE,
       userId: user?.id,
       token,
       exerciseID: pairs[0]?.exerciseID,
@@ -207,7 +206,6 @@ const ConnectScreen = ({ navigation, route }) => {
               <ImageCard
                 key={index}
                 image={image}
-                API_BASE={API_BASE}
                 selected={selectedImage?.image === image.image}
                 onPress={() => handleImagePress(image)}
                 matched={matchedPairs.includes(image.image)}
@@ -222,7 +220,6 @@ const ConnectScreen = ({ navigation, route }) => {
                 selected={selectedWord?.word === word.word}
                 onPress={() => handleWordPress(word)}
                 matched={matchedPairs.includes(word.word)}
-                API_BASE={API_BASE}
                 selectedLanguage={selectedLanguage}
               />
             ))}

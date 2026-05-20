@@ -50,7 +50,7 @@ export const textStyles = StyleSheet.create({
   title: {
     fontFamily: "LuckiestGuy",
     color: colors.white,
-    fontSize: 35,
+    fontSize: 32,
     marginBottom: 10,
     textAlign: "center",
   },

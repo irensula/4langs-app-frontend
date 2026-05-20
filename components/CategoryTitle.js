@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { textStyles, colors, layout, spacing } from "../constants/layout";
 import { AuthContext } from "../utils/AuthContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Constants from "expo-constants";
+import { api } from "../utils/apiClient";
 
 const CategoryTitle = ({
     categoryID,
@@ -13,7 +13,6 @@ const CategoryTitle = ({
     refreshProgress,
     setUnlocked,
   }) => {
-    const API_BASE = Constants.expoConfig.extra.API_BASE;
     const [progress, setProgress] = useState({
       totalProgress: 0,
       progressPercent: 0,
@@ -22,14 +21,33 @@ const CategoryTitle = ({
     const { token, user } = useContext(AuthContext);    
 
     useEffect(() => {
-      if (!token || !user || !categoryID) return;
+      const fetchProgress = async () => {
+        if (!token || !user || !categoryID) return;
 
-      fetch(`${API_BASE}/progress/${user.id}/${categoryID}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then(data => setProgress(data))
-        .catch(err => console.error("Fetch error:", err));
+        try {
+          const data = await api.get(
+            `/progress/${user.id}/${categoryID}`, 
+            token
+          );
+
+          if (!data) return;
+
+          setProgress(data);
+
+          if (setUnlocked) {
+            setUnlocked(data.unlockNext);
+          }
+
+        } catch(error) {
+          console.error("Fetch error:", error);
+          setProgress({
+            totalProgress: 0,
+            progressPercent: 0,
+            unlockNext: false,
+          });
+        }
+      };
+      fetchProgress();
   }, [token, user, categoryID, isFocused, refreshProgress]);
 
   return (

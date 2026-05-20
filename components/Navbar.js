@@ -1,13 +1,12 @@
-import Constants from "expo-constants";
 import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 // icons
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { layout, textStyles, spacing, colors } from "../constants/layout";
+import { getImageUrl } from "../utils/apiClient";
 
 const Navbar = ({ user, navigation }) => {
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE || "fallback value";
   return (
     <View style={styles.navbarContainer}>
       <View style={styles.iconsWrapper}>
@@ -31,7 +30,7 @@ const Navbar = ({ user, navigation }) => {
 
         <Pressable onPress={() => navigation.navigate("UserScreen", { user })}>
           <Image
-            source={{ uri: `${API_BASE}${user?.url}` }}
+            source={{ uri: getImageUrl(user?.url) }}
             style={layout.avatar}
           />
         </Pressable>

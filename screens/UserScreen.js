@@ -1,18 +1,15 @@
 import { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, Pressable, TextInput, StyleSheet } from "react-native";
-import Constants from 'expo-constants';
 import MessageBox from '../components/MessageBox';
 import AvatarList from '../components/AvatarsList';
 import Navbar from '../components/Navbar';
 import { layout, textStyles, spacing, colors } from '../constants/layout';
 import { ScrollView } from 'react-native';
 import { AuthContext } from '../utils/AuthContext';
+import { api, getImageUrl } from "../utils/apiClient";
 
 const UserScreen = ({ route, navigation }) => {
-    const { user: contextUser, token, logout, updateUser } = useContext(AuthContext);
-    
-    const API_BASE = Constants.expoConfig?.extra?.API_BASE;
-    
+    const { user: contextUser, token, logout, updateUser } = useContext(AuthContext);    
     const [user, setUser] = useState(contextUser);
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('success');
@@ -25,7 +22,7 @@ const UserScreen = ({ route, navigation }) => {
     });
     const [avatars, setAvatars] = useState([]);
     const [selectedImageID, setSelectedImageID] = useState(user?.imageID || null);
-    const userAvatar = avatars.find(a => a.imageID === user.imageID);
+    const userAvatar = avatars.find(a => a.imageID === user?.imageID);
     const userAvatarUrl = userAvatar ? userAvatar.url : null;
     
     useEffect(() => {
@@ -43,11 +40,18 @@ const UserScreen = ({ route, navigation }) => {
 
 
     useEffect(() => {
-        async function fetchAvatars() {
-            const res = await fetch(`${API_BASE}/avatars`);
-            const data = await res.json();
+        const fetchAvatars = async () => {
+        try {
+            const data = await api.get("/avatars");
+
+            if (!Array.isArray(data)) return;
+
             setAvatars(data);
+        } catch (error) {
+            console.error("Error fetching avatars: ", error);
+            setAvatars([]);
         }
+        }  
         fetchAvatars();
     }, []);
 
@@ -69,27 +73,23 @@ const UserScreen = ({ route, navigation }) => {
                 return;
             }
             
-            const response = await fetch(`${API_BASE}/users/${user.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
+            const response = await api.put(
+                `/users/${user.id}`, 
+                {
                     username: userdata.username,
                     email: userdata.email,
                     phonenumber: userdata.phonenumber,
                     password: userdata.password,
                     imageID: selectedImageID
-                })
-            });
+                },
+                token
+            );
 
-            if (response.ok) {
-                const updatedUser = await response.json();
+            if (response) {
                 setMessage('Käyttäjän tiedot on päivitetty');
                 setMessageType('success');
-                setUser(updatedUser);
-                updateUser(updatedUser);
+                setUser(response);
+                updateUser(response);
                 setEditMode(false);
 
                 setTimeout(() => {
@@ -97,8 +97,7 @@ const UserScreen = ({ route, navigation }) => {
                 }, 3000);
 
             } else {
-                const errorData = await response.json();
-                setMessage(errorData.error || 'Päivitys epäonnistui');
+                setMessage('Päivitys epäonnistui');
             }
         } catch (err) {
             console.error(err);
@@ -118,7 +117,7 @@ const UserScreen = ({ route, navigation }) => {
                     <View style={[styles.infoCard, layout.shadowStyle]}>
                         <View style={styles.info}>
                         {!editMode && <Image
-                            source={{ uri: userAvatarUrl ? `${API_BASE}${userAvatarUrl}` : `${API_BASE}${user?.url}` }}
+                            source={{ uri: getImageUrl(userAvatarUrl || user?.url) }}
                             style={styles.image}
                         />}
                         {editMode && 
@@ -171,7 +170,7 @@ const UserScreen = ({ route, navigation }) => {
                             </Pressable>
                         ) : (
                             <Pressable style={layout.buttonInner} onPress={() => setEditMode(true)}>
-                                <Text style={layout.buttonTextInner}>Muokkaa</Text>
+                                <Text style={textStyles.buttonTextInner}>Muokkaa</Text>
                             </Pressable>
                         )}
                         </View>

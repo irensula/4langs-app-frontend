@@ -1,20 +1,20 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { colors } from "../constants/layout";
 import { playSound } from "../utils/soundUtils";
+import { getSoundUrl } from "../utils/apiClient";
 
 const WordCard = ({
   word,
   selected,
   onPress,
   matched,
-  API_BASE,
   selectedLanguage,
 }) => {
   const soundFile = word[`sound_${selectedLanguage}`];
 
   const handlePress = () => {
     onPress(word);
-    playSound(soundFile, API_BASE);
+    playSound(getSoundUrl(soundFile));
   };
 
   return (

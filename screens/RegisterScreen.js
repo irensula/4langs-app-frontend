@@ -1,4 +1,3 @@
-import Constants from "expo-constants";
 import { useState, useEffect } from "react";
 import {
   ScrollView,
@@ -13,19 +12,28 @@ import AvatarsList from "../components/AvatarsList";
 import MessageBox from "../components/MessageBox";
 import BackButton from "../components/BackButton";
 import { layout, textStyles, spacing, colors } from "../constants/layout";
+import { api } from "../utils/apiClient";
 
 const RegisterScreen = ({ navigation }) => {
   const [avatars, setAvatars] = useState([]);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE;
 
   useEffect(() => {
-    fetch(`${API_BASE}/avatars`)
-      .then((res) => res.json())
-      .then((data) => setAvatars(data))
-      .catch(console.error);
+    const fetchAvatars = async () => {
+      try {
+        const data = await api.get("/avatars");
+
+        if (!Array.isArray(data)) return;
+
+        setAvatars(data);
+      } catch (error) {
+        console.error("Error fetching avatars: ", error);
+        setAvatars([]);
+      }
+    }  
+      fetchAvatars();
   }, []);
 
   const [userdata, setUserdata] = useState({
@@ -59,35 +67,31 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await api.post(
+        `/register`,
+        {
           username: userdata.username,
           email: userdata.email,
           phonenumber: userdata.phonenumber,
           password: userdata.password,
           imageID: parseInt(userdata.imageID) || 0,
-        }),
-      });
+        }
+      );
 
-      if (response.ok) {
+      if (response) {
         setMessage("Tervetuloa sovellukseen!");
         setMessageType("success");
+        
         setTimeout(() => {
           navigation.navigate("Login");
         }, 3000);
+
       } else {
-        const errorData = await response.json();
-        setMessage(
-          errorData.error || errorData.message || "Registration failed"
-        );
+        setMessage("Registration failed");
         setMessageType("error");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error registering new user: ", error);
       setMessage("Network error");
       setMessageType("error");
     }

@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from "react-native"; 
-import Constants from 'expo-constants';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getImageUrl } from "../utils/apiClient";
 
 const AvatarsList = ({ avatars, onSelect, selectedImageID: propSelectedImageID }) => {
     const [selectedImageID, setSelectedImageID] = useState(propSelectedImageID || null);
     const [showAllAvatars, setShowAllAvatars] = useState(false);
-    const API_BASE = Constants.expoConfig?.extra?.API_BASE;
 
     useEffect(() => {
         if (avatars.length > 0) {
@@ -33,7 +32,7 @@ const AvatarsList = ({ avatars, onSelect, selectedImageID: propSelectedImageID }
                         onSelect && onSelect(item.imageID);
                     }}>
                     <Image
-                        source={{ uri: `${API_BASE}${item.url}` }}
+                        source={{ uri: getImageUrl(item.url) }}
                         style={styles.image}
                     />
                     </TouchableOpacity>
@@ -47,8 +46,10 @@ const AvatarsList = ({ avatars, onSelect, selectedImageID: propSelectedImageID }
                             }}
                         >
                             <View style={{ position: 'relative' }}>
-                                <Image 
-                                    source={{ uri: `${API_BASE}${avatars[0].url}` }}
+                                <Image
+                                    source={{
+                                        uri: avatars?.length > 0 ? getImageUrl(avatars[0].url) : undefined
+                                    }}
                                     style={styles.imageEdit}
                                 />
                                 <View style={styles.editOverlay}>

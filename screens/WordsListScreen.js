@@ -12,7 +12,7 @@ import { api } from "../utils/apiClient";
 const WordsListScreen = ({ route, navigation }) => {
     const [words, setWords] = useState([]);
     const { name, categoryID } = route.params;
-    const { user, token, loading } = useContext(AuthContext);
+    const { user, token, authReady } = useContext(AuthContext);
     const isFocused = useIsFocused();
     const [progress, setProgress] = useState([]);
 
@@ -20,7 +20,7 @@ const WordsListScreen = ({ route, navigation }) => {
 
         const fetchWords = async () => {
             
-            if (loading || !token || !user || !categoryID) return;
+            if (!authReady || !token || !user || !categoryID) return;
 
             try {
                 const data = await api.get(
@@ -38,7 +38,7 @@ const WordsListScreen = ({ route, navigation }) => {
             }
         };
         fetchWords();
-    }, [ loading, token, user, categoryID ]);
+    }, [ authReady, token, user, categoryID ]);
 
     return (
         <View style={layout.screen}>

@@ -41,13 +41,13 @@ function AppContent() {
     NunitoBold: require('./assets/fonts/Nunito-Bold.ttf'),
   });
 
-  const { user, loading, logout } = useContext(AuthContext);
+  const { user, authReady, logout } = useContext(AuthContext);
 
   useEffect(() => {
     if (logout) setApiHandlers(logout);
   }, [logout]);
 
-  if (!fontsLoaded || loading) {
+  if (!fontsLoaded || !authReady) {
     return <LoadingIndicator />;
   }
 

@@ -1,22 +1,22 @@
 import { createContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
-const API_BASE = Constants.expoConfig.extra.API_BASE;
+
+const API_BASE = Constants.expoConfig?.extra?.API_BASE;
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [authReady, setAuthReady] = useState(false);
 
     // validate token
     const validateToken = async (token) => {
-        try {
+       try {
             const res = await fetch(`${API_BASE}/users/me`, {
-            headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` },
             });
-
             return res.ok;
         } catch {
             return false;
@@ -29,16 +29,8 @@ export const AuthProvider = ({ children }) => {
             try {
                 const storedToken = await AsyncStorage.getItem('token');
                 const storedUser = await AsyncStorage.getItem('user');
-                let parsedUser = null;
-
-                if (storedUser) {
-                    try {
-                        parsedUser = JSON.parse(storedUser);
-                    } catch (e) {
-                        console.log("Broken user in storage");
-                        await AsyncStorage.removeItem("user");
-                    }
-                }
+                
+                const parsedUser = storedUser ? JSON.parse(storedUser) : null;
 
                 if (storedToken && parsedUser?.id) {
                     const isValid = await validateToken(storedToken);
@@ -49,21 +41,15 @@ export const AuthProvider = ({ children }) => {
                     } else {
                         await AsyncStorage.removeItem("token");
                         await AsyncStorage.removeItem("user");
-                        setToken(null);
-                        setUser(null);
                     }
                 } else {
                     await AsyncStorage.removeItem("token");
                     await AsyncStorage.removeItem("user");
-                    setToken(null);
-                    setUser(null);
                 } 
             } catch (error) {
                 console.error("Auth load error:", error);
-                setToken(null);
-                setUser(null);
             } finally {
-                setLoading(false); 
+                setAuthReady(true);
             }
         };
         loadAuthData();
@@ -77,8 +63,8 @@ export const AuthProvider = ({ children }) => {
 
             setToken(newToken);
             setUser(newUser);
-        } catch (e) {
-            console.error("Login error:", e);
+        } catch (error) {
+            console.error("Login error:", error);
         }
     };
 
@@ -87,8 +73,8 @@ export const AuthProvider = ({ children }) => {
         try {
             await AsyncStorage.removeItem("token");
             await AsyncStorage.removeItem("user");
-        } catch (e) {
-            console.error("Logout error:", e);
+        } catch (error) {
+            console.error("Logout error:", error);
         }
 
         setToken(null);
@@ -100,13 +86,20 @@ export const AuthProvider = ({ children }) => {
         try {
             await AsyncStorage.setItem("user", JSON.stringify(newUser));
             setUser(newUser);
-        } catch (e) {
-            console.error("Update user error:", e);
+        } catch (error) {
+            console.error("Update user error:", error);
         }
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
+        <AuthContext.Provider 
+            value={{ 
+                user, 
+                token, 
+                authReady, 
+                login, 
+                logout, 
+                updateUser }}>
             {children}
         </AuthContext.Provider>
     );

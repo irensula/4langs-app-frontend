@@ -12,7 +12,7 @@ import NextArrow from "../components/NextArrow";
 import { layout, textStyles, colors, spacing } from "../constants/layout";
 import CategoryTitle from "../components/CategoryTitle";
 import { saveProgress } from "../utils/progressService";
-import { setApiHandlers } from "../utils/apiClient";
+import { api } from "../utils/apiClient";
 
 const MemoScreen = ({ route, navigation }) => {
   const { name, categoryID } = route.params;
@@ -124,7 +124,6 @@ const MemoScreen = ({ route, navigation }) => {
 
     try {
       const result = await saveProgress({
-        API_BASE,
         userId: user?.id,
         token,
         exerciseID: originalCards[0]?.exerciseID,
@@ -203,7 +202,6 @@ const MemoScreen = ({ route, navigation }) => {
               isOpened={openedCards.includes(index)}
               isMatched={matchedCards.includes(index)}
               onPress={handleCardPress}
-              API_BASE={API_BASE}
               selectedLanguage={selectedLanguage}
             />
           ))}

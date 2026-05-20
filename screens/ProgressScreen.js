@@ -21,7 +21,7 @@ const ProgressScreen = ({ navigation }) => {
           token
         );
 
-        if (!Array.isArray(data)) return;
+        if (!data) return;
         
         setUserProgress(data);
 

@@ -1,13 +1,12 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../utils/AuthContext";
-import Constants from "expo-constants";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import MessageBox from "../components/MessageBox";
 import BackButton from "../components/BackButton";
 import { layout, textStyles, spacing, colors } from "../constants/layout";
+import { api } from "../utils/apiClient";
 
 const Login = ({ navigation }) => {
-  const API_BASE = Constants.expoConfig.extra.API_BASE;
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,20 +24,25 @@ const Login = ({ navigation }) => {
       return;
     }
     try {
-      const response = await fetch(`${API_BASE}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const data = await api.post(
+        "/login",
+        {
           email: email,
           password: password,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const user = {
+        }
+      );
+      
+      if (!data ||data.error) {
+        setMessage(data?.data?.error || "Kirjautuminen epäonnistui");
+        setMessageType("error");
+        
+        setTimeout(() => setMessage(""), 5000);
+        
+        return;
+      }
+      console.log("LOGIN DATA:", data); 
+      console.log("LOGIN CALLED");
+      const user = {
           id: data.id,
           username: data.username,
           email: data.email,
@@ -46,17 +50,15 @@ const Login = ({ navigation }) => {
           imageID: data.imageID,
           url: data.url,
         };
+
         await login(data.token, user);
-      } else {
-        const errorData = await response.json();
-        setMessage(errorData.error || "Kirjautuminen epäonnistui");
-        setMessageType("error");
-        setTimeout(() => setMessage(""), 5000);
-      }
+
     } catch (error) {
-      console.error(error);
+      console.error("Error login: ", error);
+
       setMessage("Verkkovirhe. Tarkista yhteys");
       setMessageType("error");
+      
       setTimeout(() => setMessage(""), 5000);
     }
   };

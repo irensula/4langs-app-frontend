@@ -7,13 +7,13 @@ import HouseIcons from "../components/HouseIcons";
 import { api } from "../utils/apiClient";
 
 const HomeScreen = ({ route, navigation }) => {
-  const { user, token, loading } = useContext(AuthContext);
+  const { user, token, authReady } = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => { 
 
-      if (!token || !user || loading) return;
+      if (!token || !user || !authReady) return;
       
       try {
         const data = await api.get(
@@ -31,7 +31,7 @@ const HomeScreen = ({ route, navigation }) => {
       }
     };
     fetchCategories();
-  }, [loading, token, user]);
+  }, [authReady, token, user]);
 
   const handleSelectCategory = (category) => {
     navigation.navigate("Category", {
