@@ -23,6 +23,12 @@ const Navbar = ({ user, navigation }) => {
         </Pressable>
 
         <Pressable
+          onPress={() => navigation.navigate("SettingsScreen", { user })}
+        >
+          <Ionicons name="settings" size={32} color={colors.secondary} />
+        </Pressable>
+
+        <Pressable
           onPress={() => navigation.navigate("ProgressScreen", { user })}
         >
           <AntDesign name="star" size={32} color={colors.secondary} />

@@ -114,7 +114,7 @@ const UserScreen = ({ route, navigation }) => {
                         {message !== '' && (<MessageBox message={message} type={messageType} />)}
                     </View>
 
-                    <View style={[styles.infoCard, layout.shadowStyle]}>
+                    <View style={[layout.infoCard, layout.shadowStyle]}>
                         <View style={styles.info}>
                         {!editMode && <Image
                             source={{ uri: getImageUrl(userAvatarUrl || user?.url) }}
@@ -199,18 +199,6 @@ const UserScreen = ({ route, navigation }) => {
 }
 
 const styles = StyleSheet.create({
-    infoCard: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 20,
-        borderWidth: 2,
-        borderColor: colors.secondary,
-        backgroundColor: '#f0f8eb',
-        overflow: 'visible',
-        marginVertical: 20,
-        alignSelf: 'stretch',
-    },
     info: {
         alignItems: 'center',
         width: '100%',

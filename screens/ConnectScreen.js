@@ -36,7 +36,7 @@ const ConnectScreen = ({ navigation, route }) => {
   useEffect(() => {
 
     const fetchConnectTask = async () => {
-      if (authReady || !token || !user || !categoryID) return;
+      if (!authReady || !token || !user || !categoryID) return;
 
       try {
         const data = await api.get(
@@ -70,6 +70,13 @@ const ConnectScreen = ({ navigation, route }) => {
 
     setShuffledWords(shuffledArray(words));
     setShuffledImages(shuffledArray(images));
+
+    setMatchedPairs([]);
+    setSelectedWord(null);
+    setSelectedImage(null);
+    setActiveLanguage(false);
+    setHasScored(false);
+
   }, [pairs, selectedLanguage]);
 
   const handleWordPress = (word) => {

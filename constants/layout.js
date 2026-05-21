@@ -178,4 +178,16 @@ export const layout = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
+  infoCard: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: colors.secondary,
+    backgroundColor: '#f0f8eb',
+    overflow: 'visible',
+    marginVertical: 20,
+    alignSelf: 'stretch',
+},
 });

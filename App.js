@@ -15,6 +15,7 @@ import MemoScreen from "./screens/MemoScreen";
 import ProgressScreen from "./screens/ProgressScreen";
 import ConnectScreen from "./screens/ConnectScreen";
 import GapsScreen from "./screens/GapsScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 import { colors } from "./constants/layout";
 import { AuthProvider, AuthContext } from './utils/AuthContext';
 import { navigationRef } from "./utils/navigationRef";
@@ -72,6 +73,7 @@ function AppContent() {
           <Stack.Screen name="MemoScreen" component={MemoScreen} />
           <Stack.Screen name="ConnectScreen" component={ConnectScreen} />
           <Stack.Screen name="GapsScreen" component={GapsScreen} />
+          <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         </>
       )}
     </Stack.Navigator>

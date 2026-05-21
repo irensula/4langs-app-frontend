@@ -163,6 +163,18 @@ const MemoScreen = ({ route, navigation }) => {
   selectedLanguage
 ]);
 
+  const resetGame = () => {
+    setOpenedCards([]);
+    setMatchedCards([]);
+    setHasScored(false);
+    setActiveLanguage(false);
+    setMemoCards(doubleAndShuffle(originalCards));
+  };
+
+  useEffect(() => {
+    resetGame();
+  }, [selectedLanguage]);
+
   return (
     <View style={layout.screen}>
       <ScrollView contentContainerStyle={layout.scrollContent}>
@@ -213,15 +225,7 @@ const MemoScreen = ({ route, navigation }) => {
               layout.buttonInner,
               { width: "auto", paddingHorizontal: 20, height: 40 },
             ]}
-            onPress={() => {
-              setModalMessage("");
-              setModalVisible(false);
-              setOpenedCards([]);
-              setMatchedCards([]);
-              setHasScored(false);
-              setMemoCards(doubleAndShuffle(originalCards));
-              setActiveLanguage(false);
-            }}
+            onPress={() => {resetGame}}
           >
             <Text style={textStyles.buttonTextInner}>Käynnistä uudelleen</Text>
           </Pressable>

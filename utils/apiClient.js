@@ -57,6 +57,15 @@ export const api = {
       },
       body: JSON.stringify(body),
     }),
+  put: (url, body, token) =>
+    request(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    }),
 };
 
 export const getImageUrl = (path) => {
