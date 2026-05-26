@@ -245,7 +245,7 @@ const ConnectScreen = ({ navigation, route }) => {
           </Pressable>
 
           <NextArrow
-            screen={"MemoScreen"}
+            screen={"GapsScreen"}
             name={name}
             categoryID={categoryID}
             user={user}

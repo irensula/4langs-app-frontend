@@ -1,5 +1,4 @@
 import Constants from "expo-constants";
-import { reset } from "./navigationRef";
 
 const API_BASE = Constants.expoConfig?.extra?.API_BASE;
 
@@ -11,11 +10,6 @@ export const setApiHandlers = (logout) => {
 
 const handle401 = async () => {
   if (logoutRef) await logoutRef();
-
-  reset({
-      index: 0,
-      routes: [{ name: "Start" }],
-    });
 };
 
 const request = async (endpoint, options = {}) => {

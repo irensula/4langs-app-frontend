@@ -110,7 +110,7 @@ export const layout = StyleSheet.create({
   },
   formContainer: {
     backgroundColor: colors.lightgreen,
-    borderColor: "#00C04B",
+    borderColor: colors.secondary,
     borderWidth: 2,
     borderRadius: 20,
     paddingHorizontal: 30,

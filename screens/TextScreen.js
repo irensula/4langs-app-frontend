@@ -68,7 +68,7 @@ const TextScreen = ({ route, navigation }) => {
                         />)
                     )}
                 </View>
-                <NextArrow screen={'ConnectScreen'} name={name} categoryID={categoryID} />
+                <NextArrow screen={'MemoScreen'} name={name} categoryID={categoryID} />
             </ScrollView>
 
             {user && (

@@ -231,7 +231,7 @@ const MemoScreen = ({ route, navigation }) => {
           </Pressable>
 
           <NextArrow
-            screen={"GapsScreen"}
+            screen={"ConnectScreen"}
             name={name}
             categoryID={categoryID}
           />
