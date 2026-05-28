@@ -65,6 +65,11 @@ export const textStyles = StyleSheet.create({
     fontSize: 18,
     color: colors.text,
   },
+  formButtonText: {
+    fontFamily: "ABeeZee",
+    fontSize: 18,
+    color: colors.white,
+  },
   buttonTextInner: {
     color: "#ffffff",
     fontFamily: "NunitoBold",
@@ -132,6 +137,15 @@ export const layout = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 3,
     borderColor: colors.secondary,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 15,
+  },
+  formButton: {
+    width: '100%',
+    height: 60,
+    backgroundColor: colors.violet,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 15,
