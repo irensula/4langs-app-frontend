@@ -84,8 +84,7 @@ const RegisterScreen = ({ navigation }) => {
       passwordConfirm: userdata.passwordConfirm,
       privacyPolicy: privacyAccepted
     });
-    console.log("errors:", errors);
-    console.log("imageID:", userdata.imageID);
+
     if (Object.keys(errors).length > 0) {
       setErrors(errors);
       return;
@@ -94,7 +93,7 @@ const RegisterScreen = ({ navigation }) => {
     setErrors({});
 
     try {
-      const response = await api.post(
+      await api.post(
         `/register`,
         {
           username: userdata.username,
@@ -102,24 +101,18 @@ const RegisterScreen = ({ navigation }) => {
           phonenumber: userdata.phonenumber,
           password: userdata.password,
           imageID: parseInt(userdata.imageID) || 0,
-        }
-      );
+        });
 
-      if (response) {
         setMessage("Tervetuloa sovellukseen!");
         setMessageType("success");
-        
+          
         setTimeout(() => {
           navigation.navigate("Login");
         }, 3000);
 
-      } else {
-        setMessage("Rekisteröinti epäonnistui");
-        setMessageType("error");
-      }
     } catch (error) {
-      console.error("Error registering new user: ", error);
-      setMessage("Verkkovirhe");
+      const backendMessage = error?.response?.data?.error;
+      setMessage(backendMessage || "Rekisteröinti epäonnistui");
       setMessageType("error");
     }
   };
@@ -187,7 +180,7 @@ const RegisterScreen = ({ navigation }) => {
               <AntDesign 
                 name={showPassword ? "eye-invisible" : "eye"}
                 size={24} 
-                color={errors.password ? 'red' : colors.secondary} 
+                color={errors.password ? 'red' : colors.darkblue} 
               />
             </Pressable>
           </View>
@@ -209,7 +202,7 @@ const RegisterScreen = ({ navigation }) => {
               <AntDesign 
                 name={showPasswordConfirm ? "eye-invisible" : "eye"} 
                 size={24} 
-                color={errors.passwordConfirm ? 'red' : colors.secondary}
+                color={errors.passwordConfirm ? 'red' : colors.darkblue}
               />
             </Pressable>
             
@@ -243,10 +236,10 @@ const RegisterScreen = ({ navigation }) => {
                   }));
                 }
               }}
-              color={privacyAccepted ? '#54932f' : undefined}
+              color={privacyAccepted ? colors.darkblue : undefined}
             />
             <Text>Hyväksyn {" "}
-              <Text style={{ color: colors.secondary, textDecorationLine: 'underline', fontWeight: "600" }} onPress={() => Linking.openURL(
+              <Text style={{ color: colors.darkblue, textDecorationLine: 'underline', fontWeight: "600" }} onPress={() => Linking.openURL(
                 "https://irensula.github.io/privacy_policy/"
               )}>
                 tietosuojaselosteen

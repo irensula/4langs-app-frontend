@@ -114,8 +114,8 @@ const Login = ({ navigation }) => {
             onBlur={() => setPasswordFocused(false)}
           />
           <View style={layout.center}>
-            <Pressable onPress={handleLogin} style={layout.button}>
-              <Text style={textStyles.buttonText}>Kirjaudu</Text>
+            <Pressable onPress={handleLogin} style={layout.formButton}>
+              <Text style={textStyles.formButtonText}>Kirjaudu</Text>
             </Pressable>
           </View>
         </View>

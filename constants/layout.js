@@ -49,7 +49,7 @@ export const textStyles = StyleSheet.create({
   },
   title: {
     fontFamily: "LuckiestGuy",
-    color: colors.white,
+    color: colors.violet,
     fontSize: 32,
     marginBottom: 10,
     textAlign: "center",
@@ -57,7 +57,7 @@ export const textStyles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: "ABeeZee",
-    color: colors.secondary,
+    color: colors.darkblue,
     marginVertical: 10,
   },
   buttonText: {
@@ -115,7 +115,7 @@ export const layout = StyleSheet.create({
   },
   formContainer: {
     backgroundColor: colors.lightgreen,
-    borderColor: colors.secondary,
+    borderColor: colors.darkblue,
     borderWidth: 2,
     borderRadius: 20,
     paddingHorizontal: 30,
@@ -153,7 +153,7 @@ export const layout = StyleSheet.create({
   input: {
     height: 50,
     lineHeight: 30,
-    borderColor: colors.secondary,
+    borderColor: colors.darkblue,
     borderWidth: 2,
     borderRadius: 15,
     backgroundColor: colors.white,

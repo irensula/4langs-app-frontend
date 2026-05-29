@@ -38,7 +38,7 @@ const AvatarPicker = ({ avatars, selectedAvatar, onSelect }) => {
                             style={styles.image}
                         />
                         <View style={styles.overlay}>
-                            <MaterialIcons name="edit" size={24} color={colors.secondary} />
+                            <MaterialIcons name="edit" size={24} color={colors.darkblue} />
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         borderWidth: 3,
-        borderColor: colors.secondary,
+        borderColor: colors.darkblue,
         overflow: 'hidden'
     },
     image: {
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 35,
-        backgroundColor: "rgba(84, 147, 47, 0.4)",
+        backgroundColor: "rgba(21, 143, 212, 0.4)",
         justifyContent: "center",
         alignItems: "center",
     },

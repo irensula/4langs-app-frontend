@@ -21,17 +21,23 @@ const request = async (endpoint, options = {}) => {
       return null;
     }
 
+    const data = await res.json();
+
     if (!res.ok) {
-        const text = await res.text();
-        console.log("API error:", res.status, text);
-        return null;
+        // console.log("API error:", res.status, data);
+
+        throw { 
+          status: res.status, 
+          response: { data } 
+        };
     }
 
-    return res.json();
+    return data;
+
   } catch (err) {
-    console.error("Network error:", err);
-    return null;
-  }
+    // console.error("Network/API error:", err);
+    throw err;
+  };
 };
 
 export const api = {
