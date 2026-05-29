@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, Pressable, TextInput, StyleSheet } from "react-native";
 import MessageBox from '../components/MessageBox';
-import AvatarList from '../components/AvatarsList';
+import AvatarPicker from '../components/AvatarPicker';
 import Navbar from '../components/Navbar';
 import { layout, textStyles, spacing, colors } from '../constants/layout';
 import { ScrollView } from 'react-native';
@@ -116,63 +116,64 @@ const UserScreen = ({ route, navigation }) => {
 
                     <View style={[layout.infoCard, layout.shadowStyle]}>
                         <View style={styles.info}>
-                        {!editMode && <Image
-                            source={{ uri: getImageUrl(userAvatarUrl || user?.url) }}
-                            style={styles.image}
-                        />}
-                        {editMode && 
-                            <AvatarList 
-                                avatars={avatars} 
-                                onSelect={setSelectedImageID}
-                                selectedImageID={selectedImageID} 
-                        />}
-
-                        {editMode && (<Text style={textStyles.label}>Username</Text>)}
-                        <TextInput
-                            value={userdata.username}
-                            editable={editMode}
-                            onChangeText={(val) => handleChange('username', val)}
-                            autoCapitalize='none'
-                            style={[textStyles.title, { color: colors.secondary }]}
-                        />
-                        <Text style={textStyles.label}>Email</Text>
-                        <TextInput
-                            value={userdata.email}
-                            editable={editMode}
-                            onChangeText={(val) => handleChange('email', val)}
-                            keyboardType="email-address"
-                            autoCapitalize='none'
-                            style={styles.textInput}
-                        />
-                        <Text style={textStyles.label}>Phonenumber</Text>
-                        <TextInput
-                            value={userdata.phonenumber}
-                            editable={editMode}
-                            onChangeText={(val) => handleChange('phonenumber', val)}
-                            keyboardType="phone-pad"
-                            autoCapitalize='none'
-                            style={styles.textInput}
-                        />
-                        <Text style={textStyles.label}>Password</Text>
-                        <TextInput
-                            value={userdata.password}
-                            editable={editMode}
-                            placeholder="●●●●●●"
-                            placeholderTextColor="lightgrey"
-                            onChangeText={(val) => handleChange('password', val)}
-                            secureTextEntry
-                            style={styles.textInput}
-                        />
                         
-                        {editMode ? (
-                            <Pressable onPress={editUserData}>
-                                <Text>Tallenna</Text>
-                            </Pressable>
-                        ) : (
-                            <Pressable style={layout.buttonInner} onPress={() => setEditMode(true)}>
-                                <Text style={textStyles.buttonTextInner}>Muokkaa</Text>
-                            </Pressable>
-                        )}
+                            {!editMode && <Image
+                                source={{ uri: getImageUrl(userAvatarUrl || user?.url) }}
+                                style={styles.image}
+                            />}
+                            {editMode && 
+                                <AvatarPicker 
+                                    avatars={avatars} 
+                                    selectedAvatar={selectedImageID}
+                                    onSelect={setSelectedImageID}
+                                />}
+
+                            {editMode && (<Text style={textStyles.label}>Username</Text>)}
+                            <TextInput
+                                value={userdata.username}
+                                editable={editMode}
+                                onChangeText={(val) => handleChange('username', val)}
+                                autoCapitalize='none'
+                                style={textStyles.title}
+                            />
+                            <Text style={textStyles.label}>Email</Text>
+                            <TextInput
+                                value={userdata.email}
+                                editable={editMode}
+                                onChangeText={(val) => handleChange('email', val)}
+                                keyboardType="email-address"
+                                autoCapitalize='none'
+                                style={styles.textInput}
+                            />
+                            <Text style={textStyles.label}>Phonenumber</Text>
+                            <TextInput
+                                value={userdata.phonenumber}
+                                editable={editMode}
+                                onChangeText={(val) => handleChange('phonenumber', val)}
+                                keyboardType="phone-pad"
+                                autoCapitalize='none'
+                                style={styles.textInput}
+                            />
+                            <Text style={textStyles.label}>Password</Text>
+                            <TextInput
+                                value={userdata.password}
+                                editable={editMode}
+                                placeholder="●●●●●●●●"
+                                placeholderTextColor="lightgrey"
+                                onChangeText={(val) => handleChange('password', val)}
+                                secureTextEntry
+                                style={styles.textInput}
+                            />
+                            
+                            {editMode ? (
+                                <Pressable style={layout.formButton} onPress={editUserData}>
+                                    <Text style={textStyles.formButtonText}>Tallenna</Text>
+                                </Pressable>
+                            ) : (
+                                <Pressable style={layout.formButton} onPress={() => setEditMode(true)}>
+                                    <Text style={textStyles.formButtonText}>Muokkaa</Text>
+                                </Pressable>
+                            )}
                         </View>
                     </View>
                     <Pressable 
@@ -205,12 +206,12 @@ const styles = StyleSheet.create({
         marginTop: -40,
     },
     image: {
-        width: 80,
-        height: 80,
+        width: 100,
+        height: 100,
         margin: 5,
-        borderWidth: 2,
-        borderColor: '#55962f',
-        borderRadius: 40,
+        borderWidth: 3,
+        borderColor: colors.darkblue,
+        borderRadius: 100,
         backgroundColor: '#f0f8eb',
     },
     label: {
