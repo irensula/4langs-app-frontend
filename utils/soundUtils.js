@@ -1,34 +1,35 @@
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 
-let player = null;
+let wordPlayer = null;
+let uiPlayer = null;
 
 export const initAudio = async () => {
-  if (!player) {
-    await setAudioModeAsync({
-      playsInSilentMode: true,
-    });
+  if (!wordPlayer) wordPlayer = createAudioPlayer();
+  if (!uiPlayer) uiPlayer = createAudioPlayer();
 
-    player = createAudioPlayer();
-  }
+  await setAudioModeAsync({
+    playsInSilentMode: true,
+  });
 };
 
 export const playSound = async (file, baseUri = "") => {
-  if (!file) return;
+  await initAudio();
 
-  try {
-    await initAudio();
+  const uri = `${baseUri}${file}`;
 
-    const uri = `${baseUri}${file}`;
+  wordPlayer.pause?.();
+  wordPlayer.seekTo?.(0);
 
-    // reset current playback
-    player.pause?.();
-    player.seekTo?.(0);
+  wordPlayer.replace?.({ uri });
+  wordPlayer.play?.();
+};
 
-    // IMPORTANT: set new source instead of creating new player
-    player.replace?.({ uri }); 
+export const playCorrectSound = async () => {
+  await initAudio();
 
-    player.play?.();
-  } catch (err) {
-    console.error("Sound play error:", err);
-  }
+  uiPlayer.pause?.();
+  uiPlayer.seekTo?.(0);
+
+  uiPlayer.replace?.(require("../assets/sounds/correct.mp3"));
+  uiPlayer.play?.();
 };

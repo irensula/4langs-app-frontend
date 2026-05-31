@@ -39,19 +39,19 @@ export default function CategoryScreen({ route, navigation }) {
           </Pressable>
           <Pressable
             onPress={() =>
-              navigation.navigate("ConnectScreen", { name, categoryID })
-            }
-            style={styles.category}
-          >
-            <Text style={styles.categoryTitle}>Connect Task</Text>
-          </Pressable>
-          <Pressable
-            onPress={() =>
               navigation.navigate("MemoScreen", { name, categoryID })
             }
             style={styles.category}
           >
             <Text style={styles.categoryTitle}>MemoGame</Text>
+          </Pressable>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("ConnectScreen", { name, categoryID })
+            }
+            style={styles.category}
+          >
+            <Text style={styles.categoryTitle}>Connect Task</Text>
           </Pressable>
           <Pressable
             onPress={() =>

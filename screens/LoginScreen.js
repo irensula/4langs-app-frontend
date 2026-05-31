@@ -5,6 +5,7 @@ import MessageBox from "../components/MessageBox";
 import BackButton from "../components/BackButton";
 import { layout, textStyles, spacing, colors } from "../constants/layout";
 import { api } from "../utils/apiClient";
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const Login = ({ navigation }) => {
   const { login } = useContext(AuthContext);
@@ -15,6 +16,7 @@ const Login = ({ navigation }) => {
   const [hasError, setHasError] = useState(false);
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -96,23 +98,34 @@ const Login = ({ navigation }) => {
             onBlur={() => setUsernameFocused(false)}
           />
           <Text style={textStyles.label}>Salasana</Text>
-          <TextInput
-            style={[
-              layout.input,
-              { color: colors.text },
-              hasError && styles.inputError,
-              passwordFocused && styles.inputFocused,
-            ]}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={true}
-            underlineColorAndroid="transparent"
-            onFocus={() => {
-              setHasError(false);
-              setPasswordFocused(true);
-            }}
-            onBlur={() => setPasswordFocused(false)}
-          />
+          
+          <View style={[
+              layout.input, 
+              {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }
+            ]}>
+            <TextInput
+              style={{
+                flex: 1,
+               color: colors.text,
+              }}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              underlineColorAndroid="transparent"
+              onFocus={() => {
+                setHasError(false);
+                setPasswordFocused(true);
+              }}
+              onBlur={() => setPasswordFocused(false)}
+            />
+            <Pressable onPress={() => setShowPassword(!showPassword)}>
+              <AntDesign 
+                name={showPassword ? "eye-invisible" : "eye"}
+                size={24} 
+                color={hasError ? 'red' : colors.darkblue} 
+              />
+            </Pressable>
+          </View>
           <View style={layout.center}>
             <Pressable onPress={handleLogin} style={layout.formButton}>
               <Text style={textStyles.formButtonText}>Kirjaudu</Text>

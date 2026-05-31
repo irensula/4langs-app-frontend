@@ -14,6 +14,7 @@ import { layout, textStyles } from "../constants/layout";
 import { useIsFocused } from "@react-navigation/native";
 import { saveProgress } from "../utils/progressService";
 import { api } from "../utils/apiClient";
+import { playCorrectSound } from "../utils/soundUtils";
 
 const ConnectScreen = ({ navigation, route }) => {
   const { token, user, authReady, logout } = useContext(AuthContext);
@@ -106,6 +107,7 @@ const ConnectScreen = ({ navigation, route }) => {
       return;
     }
 
+    playCorrectSound();
     const updatedPairs = [...matchedPairs, wordID];
     setMatchedPairs(updatedPairs);
 

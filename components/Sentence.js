@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import ImageCard from './ImageCard';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { layout, colors, spacing, textStyles } from '../constants/layout';
+import { playCorrectSound } from "../utils/soundUtils";
 
 const Sentence = ({ 
         sentence, 
@@ -18,6 +19,18 @@ const Sentence = ({
     const parts = fullSentence.split('{{answer}}');
 
     const isCorrect = value && value.trim().toLowerCase() === correctAnswer;
+
+    const playedRef = useRef(false);
+    useEffect(() => {
+        if (isCorrect && !playedRef.current) {
+            playedRef.current = true;
+            playCorrectSound();
+        }
+
+        if (!isCorrect) {
+            playedRef.current = false;
+        }
+    }, [isCorrect]);
 
     return (
         <View style={{flexDirection: 'row', alignItems: 'center' }}>

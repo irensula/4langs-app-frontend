@@ -61,10 +61,6 @@ const GapsScreen = ({ navigation, route }) => {
     fetchGapsTask();
   }, [token, categoryID]);
 
-  const markAnswer = (index, isCorrect) => {
-    setCorrectAnswers((prev) => ({ ...prev, [index]: isCorrect }));
-  };
-
   const handleSendAnswers = async () => {
     if (submitted) return;
 
@@ -118,6 +114,7 @@ const GapsScreen = ({ navigation, route }) => {
   const resetGame = () => {
     setShuffledWords(shuffledArray(words));
     setCorrectAnswers({});
+    setAnswers({});
     setActiveLanguage(false);
 
     setModalMessage("");
@@ -130,22 +127,29 @@ const GapsScreen = ({ navigation, route }) => {
   };
 
   const calculateScore = () => {
-  let correct = 0;
+    let correct = 0;
 
-  sentences.forEach((sentence, index) => {
-    const user = answers[index]?.trim().toLowerCase();
-    const correctAnswer =
-      sentence?.[`answer_${selectedLanguage}`]
-        ?.trim()
-        .toLowerCase();
+    sentences.forEach((sentence, index) => {
+      const user = answers[index]?.trim().toLowerCase();
+      const correctAnswer =
+        sentence?.[`answer_${selectedLanguage}`]
+          ?.trim()
+          .toLowerCase();
 
-      if (user && user === correctAnswer) {
-        correct++;
-      }
-    });
+        if (user && user === correctAnswer) {
+          correct++;
+        }
+      });
 
-    return correct;
+      return correct;
   };
+
+  // when user changes the language
+  useEffect(() => {
+    setAnswers({});
+    setCorrectAnswers({});
+    setActiveLanguage(false);
+  }, [selectedLanguage]);
 
   return (
     <View style={layout.screen}>
