@@ -89,6 +89,7 @@ const GapsScreen = ({ navigation, route }) => {
     setModalVisible(true);
 
     setTimeout(() => {
+      playUISound("win");
       setModalMessage(
         `You got ${correctCount} out of ${maxScore} correct.`
       );

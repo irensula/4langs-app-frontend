@@ -4,7 +4,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { AuthContext } from "../utils/AuthContext";
 
 import shuffledArray from "../utils/shuffledArray";
-import { playCorrectSound } from "../utils/soundUtils";
+import { playUISound } from "../utils/soundUtils";
 import LanguageTabs from "../components/LanguageTabs";
 import MemoCard from "../components/MemoCard";
 import MessageModal from "../components/MessageModal";
@@ -75,7 +75,7 @@ const MemoScreen = ({ route, navigation }) => {
       if (isMatch) {
         setTimeout(() => {
           setMatchedCards((prev) => [...prev, firstIndex, secondIndex]);
-          playCorrectSound();
+          playUISound("correct");
           setOpenedCards([]);
           setIsDisabled(false);
         }, 500);
@@ -113,6 +113,7 @@ const MemoScreen = ({ route, navigation }) => {
 
      const maxScore = originalCards[0]?.maxScore || 0;
 
+    playUISound("win");
     setModalMessage("Congratulations! All cards matched.");
     setMessageType("win");
     setModalVisible(true);

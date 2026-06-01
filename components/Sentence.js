@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import ImageCard from './ImageCard';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { layout, colors, spacing, textStyles } from '../constants/layout';
-import { playCorrectSound } from "../utils/soundUtils";
+import { playUISound } from "../utils/soundUtils";
 
 const Sentence = ({ 
         sentence, 
@@ -24,7 +24,7 @@ const Sentence = ({
     useEffect(() => {
         if (isCorrect && !playedRef.current) {
             playedRef.current = true;
-            playCorrectSound();
+            playUISound("correct");
         }
 
         if (!isCorrect) {

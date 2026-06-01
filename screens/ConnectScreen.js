@@ -14,7 +14,7 @@ import { layout, textStyles } from "../constants/layout";
 import { useIsFocused } from "@react-navigation/native";
 import { saveProgress } from "../utils/progressService";
 import { api } from "../utils/apiClient";
-import { playCorrectSound } from "../utils/soundUtils";
+import { playUISound } from "../utils/soundUtils";
 
 const ConnectScreen = ({ navigation, route }) => {
   const { token, user, authReady, logout } = useContext(AuthContext);
@@ -107,7 +107,7 @@ const ConnectScreen = ({ navigation, route }) => {
       return;
     }
 
-    playCorrectSound();
+    playUISound("correct");
     const updatedPairs = [...matchedPairs, wordID];
     setMatchedPairs(updatedPairs);
 
@@ -135,6 +135,8 @@ const ConnectScreen = ({ navigation, route }) => {
       maxScore,
       categoryID
     });
+
+    playUISound("win");
 
     setModalMessage(
       `You did it!\nYou've got ${maxScore} stars for ${selectedLanguage.toUpperCase()}.`
