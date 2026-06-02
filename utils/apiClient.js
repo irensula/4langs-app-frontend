@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 
 const API_BASE = Constants.expoConfig?.extra?.API_BASE;
-
+console.log("API_BASE:", API_BASE);
 let logoutRef = null;
 
 export const setApiHandlers = (logout) => {
@@ -14,22 +14,36 @@ const handle401 = async () => {
 
 const request = async (endpoint, options = {}) => {
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`, options);
+    console.log("API CALL:", endpoint);
 
-    if (res.status === 401) {
-      await handle401();
-      return null;
+    let res;
+
+    try {
+      res = await safeFetch(`${API_BASE}${endpoint}`, options);
+    } catch (networkError) {
+      console.log("❌ NETWORK FAIL:", endpoint, networkError);
+      throw networkError;
     }
 
-    const data = await res.json();
+    console.log("STATUS:", res.status);
+
+    let data = null;
+
+    const text = await res.text().catch(() => null);
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.log("JSON parse error:", text);
+      }
+    }
 
     if (!res.ok) {
-        // console.log("API error:", res.status, data);
-
-        throw { 
-          status: res.status, 
-          response: { data } 
-        };
+      throw {
+        status: res.status,
+        response: data,
+      };
     }
 
     return data;
@@ -66,6 +80,35 @@ export const api = {
       },
       body: JSON.stringify(body),
     }),
+};
+
+const fetchWithTimeout = (url, options = {}, ms = 12000) => {
+  const controller = new AbortController();
+
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, ms);
+
+  return fetch(url, {
+    ...options,
+    signal: controller.signal,
+  }).finally(() => {
+    clearTimeout(timeout);
+  });
+};
+
+const wait = (ms) => new Promise(res => setTimeout(res, ms));
+
+const safeFetch = async (url, options, retries = 2) => {
+  try {
+    return await fetchWithTimeout(url, options);
+  } catch (e) {
+    if (retries > 0) {
+      await wait(500);
+      return safeFetch(url, options, retries - 1);
+    }
+    throw e;
+  }
 };
 
 export const getImageUrl = (path) => {

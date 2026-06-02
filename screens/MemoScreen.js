@@ -228,7 +228,7 @@ const MemoScreen = ({ route, navigation }) => {
               layout.buttonInner,
               { width: "auto", paddingHorizontal: 20, height: 40 },
             ]}
-            onPress={() => {resetGame}}
+            onPress={resetGame}
           >
             <Text style={textStyles.buttonTextInner}>Käynnistä uudelleen</Text>
           </Pressable>
