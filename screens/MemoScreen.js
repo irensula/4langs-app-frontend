@@ -103,7 +103,7 @@ const MemoScreen = ({ route, navigation }) => {
     setOpenedCards(newOpened);
   };
 
-  const handleGameComplete = async () => {
+  const handleGameComplete = () => {
     const totalCards = memoCards.length;
     const allMatched = matchedCards.length === totalCards && totalCards > 0;
 
@@ -111,29 +111,34 @@ const MemoScreen = ({ route, navigation }) => {
 
     setHasScored(true);
 
-     const maxScore = originalCards[0]?.maxScore || 0;
+    const maxScore = originalCards[0]?.maxScore || 0;
 
     playUISound("win");
-    setModalMessage("Congratulations! All cards matched.");
-    setMessageType("win");
-    setModalVisible(true);
 
+    setModalMessage("Onnittelut! Kaikki kortit löysivät parinsa.");
+    setModalVisible(true);
+    setMessageType("win");
     setTimeout(() => {
       setModalMessage(
-        `You've got ${maxScore} stars for ${selectedLanguage.toUpperCase()}.`
+        `Kielestä tulee ${maxScore} tähteä.`
       );
       setMessageType("success");
     }, 2500);
 
-    try {
-      const result = await saveProgress({
+      saveProgress({
         userId: user?.id,
         token,
         exerciseID: originalCards[0]?.exerciseID,
         selectedLanguage,
         maxScore,
         categoryID
-      });
+      })
+      .then(() => {
+    console.log("Progress saved");
+  })
+      .catch((error) => {
+    console.error("Progress save failed:", error);
+  });
 
       setTimeout(() => {
         setModalMessage("");
@@ -145,15 +150,6 @@ const MemoScreen = ({ route, navigation }) => {
         setHasScored(false);
         setRefreshProgress(Date.now());
       }, 5000);
-
-    } catch (error) {
-      console.error(error);
-
-      setModalMessage("Saving failed");
-      setMessageType("error");
-      setModalVisible(true);
-      setHasScored(false);
-    }
   };
 
   useEffect(() => {
@@ -180,6 +176,12 @@ const MemoScreen = ({ route, navigation }) => {
 
   return (
     <View style={layout.screen}>
+      <MessageModal
+          visible={modalVisible}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+      />
+
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           categoryID={categoryID}
@@ -193,12 +195,6 @@ const MemoScreen = ({ route, navigation }) => {
           selectedLanguage={selectedLanguage}
           setSelectedLanguage={setSelectedLanguage}
           activeLanguage={activeLanguage}
-        />
-
-        <MessageModal
-          visible={modalVisible}
-          message={modalMessage}
-          onClose={() => setModalVisible(false)}
         />
 
         <View

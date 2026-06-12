@@ -1,6 +1,11 @@
 const { getDefaultConfig } = require("@expo/metro-config");
+const path = require("path");
+const { fileURLToPath } = require("url");
 
-const config = getDefaultConfig(__dirname);
+// FIX for Windows + ESM issues
+const projectRoot = path.resolve(process.cwd());
+
+const config = getDefaultConfig(projectRoot);
 
 config.transformer.babelTransformerPath = require.resolve(
   "react-native-svg-transformer"
@@ -9,6 +14,7 @@ config.transformer.babelTransformerPath = require.resolve(
 config.resolver.assetExts = config.resolver.assetExts.filter(
   (ext) => ext !== "svg"
 );
+
 config.resolver.sourceExts.push("svg");
 
 module.exports = config;

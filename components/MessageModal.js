@@ -2,22 +2,26 @@ import { useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, Pressable } from "react-native"; 
 import { colors } from '../constants/layout';
 
-const MessageModal = ({ visible, message, onClose, autoClose = true, messageType }) => {
+const MessageModal = ({ visible, message, onClose, autoClose = true }) => {
     
     useEffect(() => {
-        if (visible && autoClose) {
-            const timer = setTimeout(() => {
-                onClose();
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
+        if (!visible && !autoClose) return;
+        
+        const timer = setTimeout(onClose, 5000);
+        return () => clearTimeout(timer);
     }, [visible]);
 
     return (
-        <Modal transparent animationType='fade' visible={visible}>
+        <Modal 
+            transparent 
+            animationType='fade' 
+            visible={visible}
+            statusBarTranslucent
+        >
             <View style={styles.overlay}>
                 <View style={styles.modalBox}>
                     <Text style={styles.message}>{message}</Text>
+                    
                     <Pressable style={styles.button}>
                         <Text style={styles.buttonText} onPress={onClose}>OK</Text>
                     </Pressable>
@@ -29,6 +33,12 @@ const MessageModal = ({ visible, message, onClose, autoClose = true, messageType
 
 const styles=StyleSheet.create({
     overlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',

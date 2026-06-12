@@ -120,45 +120,54 @@ const ConnectScreen = ({ navigation, route }) => {
   };
 
   const handleWin = async () => {
-  if (hasScored) return;
+    if (hasScored) return;
 
-  setHasScored(true);
+    setHasScored(true);
 
-  try {
     const maxScore = pairs[0]?.maxScore || 0;
 
-    const result = await saveProgress({
+    playUISound("win");
+
+    setModalMessage("Onnittelut! Kaikki kortit löysivät parinsa.");
+    setModalVisible(true);
+    setMessageType("win");
+    setTimeout(() => {
+      setModalMessage(
+        `Kielestä tulee ${maxScore} tähteä.`
+      );
+      setMessageType("success");
+    }, 2500);
+
+    setTimeout(() => {
+      resetGame();
+    }, 5000);
+
+    await saveProgress({
       userId: user?.id,
       token,
       exerciseID: pairs[0]?.exerciseID,
       selectedLanguage,
       maxScore,
       categoryID
+    })
+    .then(() => {
+      console.log("Progress saved");
+    })
+        .catch((error) => {
+      console.error("Progress save failed:", error);
     });
 
-    playUISound("win");
-
-    setModalMessage(
-      `You did it!\nYou've got ${maxScore} stars for ${selectedLanguage.toUpperCase()}.`
-    );
-
-    setMessageType("win");
-    setModalVisible(true);
-
     setTimeout(() => {
-      resetGame();
-    }, 5000);
-
-  } catch (error) {
-    console.error(error);
-
-    setModalMessage("Saving failed");
-    setMessageType("error");
-    setModalVisible(true);
-
-    setHasScored(false);
-  }
-};
+        setModalMessage("");
+        setModalVisible(false);
+        setMatchedPairs([]);
+        setSelectedWord(null);
+        setSelectedImage(null);
+        setActiveLanguage(false);
+        setHasScored(false);
+        setRefreshProgress(Date.now());
+      }, 5000);
+  };
 
   const resetGame = () => {
     const words = pairs.map((pair) => ({
@@ -184,6 +193,12 @@ const ConnectScreen = ({ navigation, route }) => {
 
   return (
     <View style={layout.screen}>
+      <MessageModal
+          visible={modalVisible}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+      />
+
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           categoryID={categoryID}
@@ -191,12 +206,6 @@ const ConnectScreen = ({ navigation, route }) => {
           subtitle="Yhdistä"
           isFocused={isFocused}
           refreshProgress={refreshProgress}
-        />
-
-        <MessageModal
-          visible={modalVisible}
-          message={modalMessage}
-          onClose={() => setModalVisible(false)}
         />
 
         <LanguageTabs

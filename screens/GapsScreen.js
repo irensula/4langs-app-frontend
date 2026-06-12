@@ -13,6 +13,7 @@ import CategoryTitle from "../components/CategoryTitle";
 import { useIsFocused } from "@react-navigation/native";
 import { saveProgress } from "../utils/progressService";
 import { api } from "../utils/apiClient";
+import { playUISound } from "../utils/soundUtils";
 
 const GapsScreen = ({ navigation, route }) => {
   const { user, token } = useContext(AuthContext);
@@ -84,12 +85,12 @@ const GapsScreen = ({ navigation, route }) => {
         categoryID
       });
 
+    playUISound("win");
     setModalMessage("Good job!");
     setMessageType("win");
     setModalVisible(true);
 
     setTimeout(() => {
-      playUISound("win");
       setModalMessage(
         `You got ${correctCount} out of ${maxScore} correct.`
       );
@@ -154,6 +155,12 @@ const GapsScreen = ({ navigation, route }) => {
 
   return (
     <View style={layout.screen}>
+      <MessageModal
+          visible={modalVisible}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+      />
+
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           categoryID={categoryID}
@@ -163,11 +170,6 @@ const GapsScreen = ({ navigation, route }) => {
           refreshProgress={refreshProgress}
         />
 
-        <MessageModal
-          visible={modalVisible}
-          message={modalMessage}
-          onClose={() => setModalVisible(false)}
-        />
         <View style={layout.wrapper}>
           <LanguageTabs
             selectedLanguage={selectedLanguage}
