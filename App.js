@@ -3,10 +3,19 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+import { colors } from "./constants/layout";
+import { AuthProvider, AuthContext } from './utils/AuthContext';
+import { navigationRef } from "./utils/navigationRef";
+import { setApiHandlers } from "./utils/apiClient";
+import { View, ActivityIndicator } from 'react-native';
+// screens
 import StartScreen from './screens/StartScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
+import ChooseLanguageScreen from './screens/ChooseLanguageScreen';
 import HomeScreen from './screens/HomeScreen';
+import CourseScreen from './screens/CourseScreen';
 import UserScreen from "./screens/UserScreen";
 import CategoryScreen from './screens/CategoryScreen';
 import WordsListScreen from './screens/WordsListScreen';
@@ -16,11 +25,6 @@ import ProgressScreen from "./screens/ProgressScreen";
 import ConnectScreen from "./screens/ConnectScreen";
 import GapsScreen from "./screens/GapsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import { colors } from "./constants/layout";
-import { AuthProvider, AuthContext } from './utils/AuthContext';
-import { navigationRef } from "./utils/navigationRef";
-import { setApiHandlers } from "./utils/apiClient";
-import { View, ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,7 +46,7 @@ function AppContent() {
     NunitoBold: require('./assets/fonts/Nunito-Bold.ttf'),
   });
 
-  const { user, authReady, logout } = useContext(AuthContext);
+  const { user, courses, authReady, logout } = useContext(AuthContext);
 
   useEffect(() => {
     if (logout) setApiHandlers(logout);
@@ -52,31 +56,39 @@ function AppContent() {
     return <LoadingIndicator />;
   }
 
+  const hasCourses = Array.isArray(courses) && courses.length > 0;
+
   return (
     <NavigationContainer ref={navigationRef}>
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Start" component={StartScreen} />
-      
-      {!user ? (
-        <>
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="UserScreen" component={UserScreen} />
-          <Stack.Screen name="ProgressScreen" component={ProgressScreen} />
-          <Stack.Screen name="Category" component={CategoryScreen} />
-          <Stack.Screen name="WordsListScreen" component={WordsListScreen} />
-          <Stack.Screen name="TextScreen" component={TextScreen} />
-          <Stack.Screen name="MemoScreen" component={MemoScreen} />
-          <Stack.Screen name="ConnectScreen" component={ConnectScreen} />
-          <Stack.Screen name="GapsScreen" component={GapsScreen} />
-          <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
-        </>
-      )}
-    </Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Start" component={StartScreen} />
+        
+        {!user ? (
+          <>
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+          </>
+        ) : !hasCourses ? (
+          <>
+            <Stack.Screen name="ChooseLanguage" component={ChooseLanguageScreen} />
+            <Stack.Screen name="UserScreen" component={UserScreen} />
+          </>  
+        ) : (
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Course" component={CourseScreen} />
+            <Stack.Screen name="UserScreen" component={UserScreen} />
+            <Stack.Screen name="ProgressScreen" component={ProgressScreen} />
+            <Stack.Screen name="Category" component={CategoryScreen} />
+            <Stack.Screen name="WordsListScreen" component={WordsListScreen} />
+            <Stack.Screen name="TextScreen" component={TextScreen} />
+            <Stack.Screen name="MemoScreen" component={MemoScreen} />
+            <Stack.Screen name="ConnectScreen" component={ConnectScreen} />
+            <Stack.Screen name="GapsScreen" component={GapsScreen} />
+            <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

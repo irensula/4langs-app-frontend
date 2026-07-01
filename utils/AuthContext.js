@@ -9,43 +9,46 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
+    const [courses, setCourses] = useState(null);
     const [authReady, setAuthReady] = useState(false);
-
+    // load full session from backend
     // validate token
-    const validateToken = async (token) => {
+    const loadUser = async (token) => {
        try {
             const res = await fetch(`${API_BASE}/users/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            return res.ok;
+            if (!res.ok) return false;
+
+            const data = await res.json();
+            
+            setUser(data.user);
+            setCourses(data.courses);
+            
+            return true;
         } catch {
+            console.error("loadUser error:", err);
             return false;
         }
     };
 
-    // initial load
+    // initial bootstrap
     useEffect(() => {
         const loadAuthData = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('token');
-                const storedUser = await AsyncStorage.getItem('user');
+
+                if (!storedToken) {
+                    setAuthReady(true);
+                    return;
+                }
+                const ok = await loadUser(storedToken);
                 
-                const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-
-                if (storedToken && parsedUser?.id) {
-                    const isValid = await validateToken(storedToken);
-
-                    if (isValid) {
-                        setToken(storedToken);
-                        setUser(parsedUser);
-                    } else {
-                        await AsyncStorage.removeItem("token");
-                        await AsyncStorage.removeItem("user");
-                    }
+                if (ok) {
+                    setToken(storedToken);
                 } else {
                     await AsyncStorage.removeItem("token");
-                    await AsyncStorage.removeItem("user");
-                } 
+                }
             } catch (error) {
                 console.error("Auth load error:", error);
             } finally {
@@ -56,13 +59,17 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // login
-    const login = async (newToken, newUser) => {
+    const login = async (newToken) => {
         try {
             await AsyncStorage.setItem("token", newToken);
-            await AsyncStorage.setItem("user", JSON.stringify(newUser));
 
-            setToken(newToken);
-            setUser(newUser);
+            const ok = await loadUser(newToken);
+
+            if (ok) {
+                setToken(newToken);
+            } else {
+                await AsyncStorage.removeItem("token");
+            }
         } catch (error) {
             console.error("Login error:", error);
         }
@@ -72,35 +79,26 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             await AsyncStorage.removeItem("token");
-            await AsyncStorage.removeItem("user");
         } catch (error) {
             console.error("Logout error:", error);
         }
 
         setToken(null);
         setUser(null);
-    };
-
-    // update user
-    const updateUser = async (newUser) => {
-        try {
-            await AsyncStorage.setItem("user", JSON.stringify(newUser));
-            setUser(newUser);
-        } catch (error) {
-            console.error("Update user error:", error);
-        }
+        setCourses(null);
     };
 
     return (
         <AuthContext.Provider 
             value={{ 
-                user, 
                 token, 
+                user,
+                courses, 
                 authReady, 
                 login, 
-                logout, 
-                updateUser }}>
-            {children}
+                logout 
+            }}>
+                {children}
         </AuthContext.Provider>
     );
 };

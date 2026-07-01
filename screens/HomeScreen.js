@@ -1,69 +1,74 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../utils/AuthContext";
-import { ScrollView, View } from "react-native";
-import { layout, colors, spacing, textStyles } from "../constants/layout";
+import { ScrollView, View, Text } from "react-native";
+import { layout, colors, textStyles } from "../constants/layout";
 import Navbar from "../components/Navbar";
-import HouseIcons from "../components/HouseIcons";
+import CourseCard from "../components/CourseCard";
 import { api } from "../utils/apiClient";
 
 const HomeScreen = ({ route, navigation }) => {
-  const { user, token, authReady } = useContext(AuthContext);
-  const [categories, setCategories] = useState([]);
+  const { user, courses, token, authReady } = useContext(AuthContext);
+  const [userCourses, setUserCourses] = useState([]);
 
   useEffect(() => {
-    const fetchCategories = async () => { 
+    const fetchCourses = async () => { 
 
-      if (!token || !user || !authReady) return;
+      if (!token || !user || !courses || !authReady) return;
       
       try {
         const data = await api.get(
-            `/categories`, 
+            `/courses`, 
             token
         );
       
         if (!Array.isArray(data)) return;
 
-        setCategories(data);
+        setUserCourses(data);
 
       } catch (error) {
-        console.error("Error fetching categories:", error);
-        setCategories([]);
+        console.error("Error fetching courses:", error);
+        setUserCourses([]);
       }
     };
-    fetchCategories();
-  }, [authReady, token, user]);
+    fetchCourses();
+  }, [authReady, token, user, courses]);
 
-  const handleSelectCategory = (category) => {
-    navigation.navigate("Category", {
-      name: category.name,
-      categoryID: category.categoryID,
-      user
-    });
+  const handleSelectCourse = (courseId ) => {
+    console.log("courseId: ", courseId);
+    navigation.navigate("Course", { courseId });
   };
 
   return (
-    <View style={layout.screen}>
+    <View
+      style={[
+        layout.screen,
+        { paddingHorizontal: 10, backgroundColor: colors.primary },
+      ]}
+    >
       <ScrollView
-        contentContainerStyle={[
-          layout.scrollContent,
-          {
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        ]}
+        contentContainerStyle={{
+          backgroundColor: colors.primary,
+          paddingBottom: 80,
+          paddingTop: 15
+        }}
       >
-        <HouseIcons
-          categories={categories}
-          onSelect={handleSelectCategory}
-        />
+        <Text style={[textStyles.title, { color: colors.violet }]}>
+          My courses
+        </Text>
+        
+        {userCourses.map((course) => (
+          <CourseCard 
+            key={course.course} 
+            course={course} 
+            handleSelectCourse={() => handleSelectCourse(course.course)} 
+          />
+        ))}
+        
       </ScrollView>
-
-      {user?.id && (
-        <View style={layout.navbarWrapper}>
-          <Navbar user={user} navigation={navigation} />
-        </View>
-      )}
+      {/* navbar */}
+      <View style={layout.navbarWrapper}>
+        <Navbar user={user} navigation={navigation} />
+      </View>
     </View>
   );
 };

@@ -3,32 +3,32 @@ import Svg, { Rect, Polygon, Path, G } from "react-native-svg";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { layout, colors, textStyles, spacing } from "../constants/layout";
 
-const HouseIcons = ({ categories = [], onSelect }) => {
+const Category = ({ categories = [], onSelect }) => {
   const safeCategories = Array.isArray(categories) ? categories : [];
   
   return (
     <View style={{ width: "90%" }}>
       {safeCategories.map((category, index) => {
           if (!category) return null;
-          const isLocked = !category.isOpen;
+          
+          const status = category.status;
+          
         return (
           <Pressable
             key={category?.categoryID ?? index}
-            disabled={isLocked}
+            disabled={status === "locked"}
             onPress={() => onSelect?.(category)}
             style={styles.category}
           >
             <Text
-              style={[textStyles.subtitle, { opacity: isLocked ? 0.4 : 1 }]}
+              style={[textStyles.subtitle, { opacity: status === "locked" ? 0.4 : 1 }]}
             >
               {category.name}{" "}
-              {Entypo ? (
-                  isLocked ? (
-                    <Entypo name="lock" size={30} color={colors.white} />
-                  ) : (
-                    <Entypo name="lock-open" size={30} color={colors.white} />
-                  )
-                ) : null }
+              {status === "locked" ? (
+                <Entypo name="lock" size={30} color={colors.white} />
+              ) : (
+                <Entypo name="lock-open" size={30} color={colors.white} />
+              )}
             </Text>
           </Pressable>
         );
@@ -49,4 +49,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HouseIcons;
+export default Category;
+// "categoryId": 1,
+//     "name": "Family",
+//     "imagePath": "/images/category_images/family.png",
+//     "status": "current",
+//     "percent": 33

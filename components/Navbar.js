@@ -1,12 +1,15 @@
 import { View, Image, Text, Pressable, StyleSheet } from "react-native";
+import { useContext } from "react";
+import { AuthContext } from "../utils/AuthContext";
+import { getImageUrl } from "../utils/apiClient";
+import { layout, textStyles, spacing, colors } from "../constants/layout";
 // icons
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { layout, textStyles, spacing, colors } from "../constants/layout";
-import { getImageUrl } from "../utils/apiClient";
 
-const Navbar = ({ user, navigation }) => {
+const Navbar = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
   return (
     <View style={styles.navbarContainer}>
       <View style={styles.iconsWrapper}>
@@ -23,18 +26,18 @@ const Navbar = ({ user, navigation }) => {
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate("SettingsScreen", { user })}
+          onPress={() => navigation.navigate("SettingsScreen")}
         >
           <Ionicons name="settings" size={32} color={colors.secondary} />
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate("ProgressScreen", { user })}
+          onPress={() => navigation.navigate("ProgressScreen")}
         >
           <AntDesign name="star" size={32} color={colors.secondary} />
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("UserScreen", { user })}>
+        <Pressable onPress={() => navigation.navigate("UserScreen")}>
           <Image
             source={{ uri: getImageUrl(user?.url) }}
             style={layout.avatar}

@@ -12,7 +12,9 @@ import { layout, textStyles, spacing, colors } from "../constants/layout";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const StartScreen = ({ navigation }) => {
-  const { user, token } = useContext(AuthContext);
+  const { user, courses } = useContext(AuthContext);
+
+  const hasCourses = Array.isArray(courses) && courses.length > 0;
 
   const handleExit = () => {
     if (Platform.OS === "android") {
@@ -34,7 +36,14 @@ const StartScreen = ({ navigation }) => {
         <Text style={styles.bigTitle}>4langs</Text>
         <Text style={textStyles.mainTitle}>Tervetuloa!</Text>
         {user ? (
-          <Pressable onPress={() => navigation.replace("Home")}>
+          <Pressable onPress={() => {
+            if (!user) {
+              navigation.navigate("Login");
+            } else if (hasCourses) {
+              navigation.replace("Home");
+            } else {
+              navigation.replace("ChooseLanguage");
+            }}}>
             <View style={layout.button}>
               <Text style={textStyles.buttonText}>Let's go!</Text>
             </View>

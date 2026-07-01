@@ -204,5 +204,15 @@ export const layout = StyleSheet.create({
     overflow: 'visible',
     marginVertical: 20,
     alignSelf: 'stretch',
-},
+  },
+  cardWrapper: {
+    backgroundColor: colors.lightgreen,
+    borderColor: colors.secondary,
+    borderWidth: 2,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 30,
+    marginVertical: 10,
+    width: "100%",
+  }
 });

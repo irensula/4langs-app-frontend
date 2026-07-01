@@ -10,7 +10,7 @@ const ProgressCard = ({
   language,
 }) => {
   return (
-    <View style={[styles.wrapper, layout.shadowStyle]}>
+    <View style={[layout.cardWrapper, layout.shadowStyle]}>
       <Text style={[textStyles.default, { fontSize: 22 }]}>{language}</Text>
       <View
         style={{
@@ -37,16 +37,6 @@ const ProgressCard = ({
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: colors.lightgreen,
-    borderColor: colors.secondary,
-    borderWidth: 2,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 30,
-    marginVertical: 10,
-    width: "100%",
-  },
   percents: {
     fontSize: 50,
     fontWeight: 800,
