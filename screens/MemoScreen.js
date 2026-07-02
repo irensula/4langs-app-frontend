@@ -237,11 +237,10 @@ const MemoScreen = ({ route, navigation }) => {
         </View>
       </ScrollView>
 
-      {user && (
-        <View style={layout.navbarWrapper}>
-          <Navbar user={user} navigation={navigation} />
-        </View>
-      )}
+      <View style={layout.navbarWrapper}>
+        <Navbar navigation={navigation} />
+      </View>
+      
     </View>
   );
 };

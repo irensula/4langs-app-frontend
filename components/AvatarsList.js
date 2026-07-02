@@ -4,21 +4,21 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getImageUrl } from "../utils/apiClient";
 import { colors } from "../constants/layout";
 
-const AvatarsList = ({ avatars, onSelect, selectedImageID }) => {
+const AvatarsList = ({ avatars, onSelect, selectedImageId }) => {
     return (
             <FlatList
                 contentContainerStyle={styles.listContent}
                 horizontal
                 data={avatars}
-                keyExtractor={(item) => item.imageID.toString()}
+                keyExtractor={(item) => item.avatar_id}
                 renderItem={({ item }) => {
-                    const isSelected = item.imageID === selectedImageID;
+                    const isSelected = item.avatar_id === selectedImageId;
                     return (
                         <TouchableOpacity onPress={() => {
-                            onSelect?.(item.imageID);
+                            onSelect?.(item.avatar_id);
                         }}>
                         <Image
-                            source={{ uri: getImageUrl(item.url) }}
+                            source={{ uri: getImageUrl(item.avatar_path) }}
                             style={[styles.image, isSelected && styles.selectedImage]}
                         />
                         </TouchableOpacity>

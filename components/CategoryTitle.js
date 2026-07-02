@@ -6,60 +6,47 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { api } from "../utils/apiClient";
 
 const CategoryTitle = ({
-    categoryID,
     name,
-    subtitle,
+    courseId,
     isFocused,
     refreshProgress,
-    setUnlocked,
   }) => {
-    const [progress, setProgress] = useState({
-      totalProgress: 0,
-      progressPercent: 0,
-      unlockNext: false,
-    });
-    const { token, user } = useContext(AuthContext);    
-
+    const { token } = useContext(AuthContext);  
+    const [progressPercent, setProgressPercent] = useState(null);
+    
     useEffect(() => {
       const fetchProgress = async () => {
-        if (!token || !user || !categoryID) return;
+        if (!token || !courseId) return;
 
         try {
           const data = await api.get(
-            `/progress/${user.id}/${categoryID}`, 
+            `/courses/${courseId}/progress`, 
             token
           );
 
           if (!data) return;
 
-          setProgress(data);
-
-          if (setUnlocked) {
-            setUnlocked(data.unlockNext);
-          }
+          setProgressPercent(data);
+          console.log("courseId: ", courseId);
 
         } catch(error) {
           console.error("Fetch error:", error);
-          setProgress({
-            totalProgress: 0,
-            progressPercent: 0,
-            unlockNext: false,
-          });
+          setProgressPercent(null);
         }
       };
       fetchProgress();
-  }, [token, user, categoryID, isFocused, refreshProgress]);
+  }, [token, courseId, isFocused, refreshProgress]);
 
   return (
     <View style={styles.categoryWrapper}>
       <View style={styles.progressWrapper}>
         <AntDesign name="star" size={24} color={colors.yellow} />
         <Text style={styles.progressText}>
-          {(progress?.currentScoreAll ?? 0)} / {progress.maxScoreAll}
+          {(progressPercent?.progress.percent ?? 0)} / 100%
         </Text>
       </View>
       <Text style={textStyles.title}>{name}</Text>
-      {subtitle && <Text style={textStyles.subtitle}>{subtitle}</Text>}
+      
     </View>
   );
 };

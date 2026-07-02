@@ -5,10 +5,17 @@ import { layout, colors, textStyles } from "../constants/layout";
 import Navbar from "../components/Navbar";
 import CourseCard from "../components/CourseCard";
 import { api } from "../utils/apiClient";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const HomeScreen = ({ route, navigation }) => {
   const { user, courses, token, authReady } = useContext(AuthContext);
   const [userCourses, setUserCourses] = useState([]);
+
+  useEffect(() => {
+    if (courses?.length === 0) {
+        navigation.replace("ChooseLanguage");
+    }
+  }, [courses]);
 
   useEffect(() => {
     const fetchCourses = async () => { 
@@ -34,7 +41,6 @@ const HomeScreen = ({ route, navigation }) => {
   }, [authReady, token, user, courses]);
 
   const handleSelectCourse = (courseId ) => {
-    console.log("courseId: ", courseId);
     navigation.navigate("Course", { courseId });
   };
 
@@ -52,9 +58,23 @@ const HomeScreen = ({ route, navigation }) => {
           paddingTop: 15
         }}
       >
-        <Text style={[textStyles.title, { color: colors.violet }]}>
-          My courses
-        </Text>
+        <View style={{
+            flexDirection: "row", 
+            columnGap: 15, 
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center", 
+          }}>
+          <Text style={[textStyles.title, { color: colors.violet }]}>
+            My courses
+          </Text>
+          <MaterialIcons 
+            name="add" size={50} 
+            color={colors.orange} 
+            style={{ position: "absolute", right: 15, bottom: 5 }}
+            onPress={() => navigation.navigate('ChooseLanguage')}
+          />
+        </View>
         
         {userCourses.map((course) => (
           <CourseCard 

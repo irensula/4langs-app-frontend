@@ -1,73 +1,74 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../utils/AuthContext";
 import { ScrollView, Text, View, Pressable, StyleSheet } from "react-native";
 import Navbar from "../components/Navbar";
+import ExerciseCard from '../components/ExerciseCard';
 import { layout, colors, textStyles, spacing } from "../constants/layout";
 import { useIsFocused } from "@react-navigation/native";
 import CategoryTitle from "../components/CategoryTitle";
+import { api } from "../utils/apiClient";
 
 export default function CategoryScreen({ route, navigation }) {
-  const { user } = useContext(AuthContext);
-  const { name, categoryID, unlocked } = route.params;
+  const { token, authReady } = useContext(AuthContext);
+  const { name, courseId, categoryId, unlocked } = route.params;
   const isFocused = useIsFocused();
+  const [exercises, setExercises] = useState([]);
+
+  console.log("CategoryScreen route.params: ", route.params);
+
+  useEffect(() => {
+    const fetchExercises = async () => { 
+    
+      if (!token || !authReady) return;
+      
+      try {
+        const data = await api.get(
+            `/courses/${courseId}/categories/${categoryId}/exercises`, 
+            token
+        );
+      
+        if (!Array.isArray(data)) return;
+
+        setExercises(data);
+
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+        setExercises([]);
+      }
+    };
+    fetchExercises();
+  }, [authReady, token]);
+
+  const handleSelectExercise = (exercise) => {
+    console.log("exercise:", exercise);
+    navigation.navigate(exercise.name, {
+      exerciseId: exercise.exercise_id,
+      courseId
+    });
+  };
 
   return (
     <View style={layout.screen}>
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
-          categoryID={categoryID}
+          courseId={courseId}
           name={name}
           isFocused={isFocused}
         />
 
         <View style={styles.categoriesWrap}>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("WordsListScreen", { name, categoryID })
-            }
-            style={styles.category}
-          >
-            <Text style={styles.categoryTitle}>Words list</Text>
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("TextScreen", { name, categoryID })
-            }
-            style={styles.category}
-          >
-            <Text style={styles.categoryTitle}>Text</Text>
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("MemoScreen", { name, categoryID })
-            }
-            style={styles.category}
-          >
-            <Text style={styles.categoryTitle}>MemoGame</Text>
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("ConnectScreen", { name, categoryID })
-            }
-            style={styles.category}
-          >
-            <Text style={styles.categoryTitle}>Connect Task</Text>
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("GapsScreen", { name, categoryID })
-            }
-            style={styles.category}
-          >
-            <Text style={styles.categoryTitle}>Gaps Task</Text>
-          </Pressable>
+          {exercises.map((exercise) => (<ExerciseCard
+            key={exercise.exercise_id}
+            exercise={exercise}
+            onSelect={handleSelectExercise}
+          />))}
         </View>
       </ScrollView>
-      {user && (
+      
         <View style={layout.navbarWrapper}>
-          <Navbar user={user} navigation={navigation} />
+          <Navbar navigation={navigation} />
         </View>
-      )}
+      
     </View>
   );
 }

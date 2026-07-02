@@ -17,7 +17,6 @@ const UserScreen = ({ route, navigation }) => {
     const [userdata, setUserdata] = useState({
         username: contextUser?.username || '',
         email: contextUser?.email || '',
-        phonenumber: contextUser?.phonenumber || '',
         password: '',
     });
     const [avatars, setAvatars] = useState([]);
@@ -29,7 +28,6 @@ const UserScreen = ({ route, navigation }) => {
         setUserdata({
             username: user?.username || '',
             email: user?.email || '',
-            phonenumber: user?.phonenumber || '',
             password: '',
         });
     }, [user]);
@@ -78,7 +76,6 @@ const UserScreen = ({ route, navigation }) => {
                 {
                     username: userdata.username,
                     email: userdata.email,
-                    phonenumber: userdata.phonenumber,
                     password: userdata.password,
                     imageID: selectedImageID
                 },
@@ -142,15 +139,6 @@ const UserScreen = ({ route, navigation }) => {
                                 editable={editMode}
                                 onChangeText={(val) => handleChange('email', val)}
                                 keyboardType="email-address"
-                                autoCapitalize='none'
-                                style={styles.textInput}
-                            />
-                            <Text style={textStyles.label}>Phonenumber</Text>
-                            <TextInput
-                                value={userdata.phonenumber}
-                                editable={editMode}
-                                onChangeText={(val) => handleChange('phonenumber', val)}
-                                keyboardType="phone-pad"
                                 autoCapitalize='none'
                                 style={styles.textInput}
                             />

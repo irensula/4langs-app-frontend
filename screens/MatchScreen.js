@@ -16,7 +16,7 @@ import { saveProgress } from "../utils/progressService";
 import { api } from "../utils/apiClient";
 import { playUISound } from "../utils/soundUtils";
 
-const ConnectScreen = ({ navigation, route }) => {
+const MatchScreen = ({ navigation, route }) => {
   const { token, user, authReady, logout } = useContext(AuthContext);
   const { name, categoryID } = route.params;
   const [pairs, setPairs] = useState([]);
@@ -284,4 +284,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ConnectScreen;
+export default MatchScreen;

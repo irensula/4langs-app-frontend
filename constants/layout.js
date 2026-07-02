@@ -184,6 +184,14 @@ export const layout = StyleSheet.create({
     borderColor: colors.secondary,
     borderRadius: 15,
   },
+  flagImage: {
+    width: 35,
+    height: 35,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: colors.white,
+    borderRadius: 35,
+  },
   buttonInner: {
     width: 120,
     height: 50,

@@ -12,10 +12,9 @@ const AvatarPicker = ({ avatars, selectedAvatar, onSelect }) => {
         return null;
     }
 
-    const current = 
-        avatars?.find(
-            (a) => a.imageID === Number(selectedAvatar)
-        ) || avatars[0];
+    const current = avatars.find(
+        a => a.avatar_id === selectedAvatar
+    ) || avatars[0];
 
         if (open) {
             return (
@@ -25,7 +24,7 @@ const AvatarPicker = ({ avatars, selectedAvatar, onSelect }) => {
                         onSelect(id);
                         setOpen(false);
                     }}
-                    selectedImageID={Number(selectedAvatar)}
+                    selectedImageId={Number(selectedAvatar)}
                 />
             );
         }
@@ -34,7 +33,7 @@ const AvatarPicker = ({ avatars, selectedAvatar, onSelect }) => {
             <TouchableOpacity onPress={() => setOpen(true)}>
                     <View style={styles.preview}>
                         <Image 
-                            source={{ uri: getImageUrl(current.url) }}
+                            source={{ uri: getImageUrl(current.avatar_path) }}
                             style={styles.image}
                         />
                         <View style={styles.overlay}>

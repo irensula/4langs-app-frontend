@@ -22,10 +22,9 @@ const RegisterScreen = ({ navigation }) => {
   const [userdata, setUserdata] = useState({
     username: "",
     email: "",
-    phonenumber: "",
     password: "",
     passwordConfirm: "",
-    imageID: "",
+    avatar_id: null,
   }); {/* user validation data */}
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -55,10 +54,10 @@ const RegisterScreen = ({ navigation }) => {
 
   {/* dedault avatar to choose */}
   useEffect(() => {
-    if (avatars.length > 0 && !userdata.imageID) {
-      handleChange("imageID", avatars[0].imageID.toString());
+    if (avatars.length > 0 && !userdata.avatar_id) {
+      handleChange("avatar_id", avatars[0].avatar_id);
     }
-  }, [avatars, userdata.imageID]);
+  }, [avatars, userdata.avatar_id]);
 
   {/* fetch user's input */}
   const handleChange = (field, value) => {
@@ -78,8 +77,7 @@ const RegisterScreen = ({ navigation }) => {
     const errors = validateUser({
       username: userdata.username,
       email: userdata.email,
-      phonenumber: userdata.phonenumber,
-      imageID: userdata.imageID,
+      avatar_id: userdata.avatar_id,
       password: userdata.password,
       passwordConfirm: userdata.passwordConfirm,
       privacyPolicy: privacyAccepted
@@ -98,9 +96,8 @@ const RegisterScreen = ({ navigation }) => {
         {
           username: userdata.username,
           email: userdata.email,
-          phonenumber: userdata.phonenumber,
           password: userdata.password,
-          imageID: parseInt(userdata.imageID) || 0,
+          avatar_id: userdata.avatar_id
         });
 
         setMessage("Tervetuloa sovellukseen!");
@@ -154,15 +151,6 @@ const RegisterScreen = ({ navigation }) => {
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-          {/* phonenumber input */}
-          <Text style={textStyles.label}>Puhelinnumero</Text>
-          <TextInput
-            value={userdata.phonenumber}
-            onChangeText={(text) => handleChange("phonenumber", text)}
-            style={[layout.input, {marginBottom: 5}, errors.phonenumber && styles.errorInput]}
-          />
-          {errors.phonenumber && <Text style={styles.errorText}>{errors.phonenumber}</Text>}
-
           {/* password input */}
           <Text style={textStyles.label}>Password</Text>
           <View style={[
@@ -214,13 +202,13 @@ const RegisterScreen = ({ navigation }) => {
             <Text style={textStyles.label}>Valitse kuva</Text>
             <AvatarPicker
               avatars={avatars}
-              selectedAvatar={userdata.imageID}
-              onSelect={(imageID) => {
+              selectedAvatar={userdata.avatar_id}
+              onSelect={(avatarId) => {
                 setAvatarTouched(true);
-                handleChange("imageID", imageID.toString());
+                handleChange("avatar_id", avatarId);
               }}
             />
-            {errors.imageID && <Text style={styles.errorText}>{errors.imageID}</Text>}
+            {errors.avatar_id && <Text style={styles.errorText}>{errors.avatar_id}</Text>}
           </View>
 
           {/* privacy policy */}

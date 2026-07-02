@@ -3,7 +3,7 @@ import { AuthContext } from "../utils/AuthContext";
 import { ScrollView, View } from "react-native";
 import { layout, colors, spacing, textStyles } from "../constants/layout";
 import Navbar from "../components/Navbar";
-import Category from "../components/Category";
+import CategoryCard from "../components/CategoryCard";
 import { api } from "../utils/apiClient";
 
 const CourseScreen = ({ route, navigation }) => {
@@ -37,7 +37,8 @@ const CourseScreen = ({ route, navigation }) => {
   const handleSelectCategory = (category) => {
     navigation.navigate("Category", {
       name: category.name,
-      categoryID: category.categoryID,
+      courseId: courseId,
+      categoryId: category.categoryId,
       user
     });
   };
@@ -54,7 +55,7 @@ const CourseScreen = ({ route, navigation }) => {
           },
         ]}
       >
-        <Category
+        <CategoryCard
           categories={categories}
           onSelect={handleSelectCategory}
         />

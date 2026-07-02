@@ -19,10 +19,11 @@ import CourseScreen from './screens/CourseScreen';
 import UserScreen from "./screens/UserScreen";
 import CategoryScreen from './screens/CategoryScreen';
 import WordsListScreen from './screens/WordsListScreen';
+import WordCardScreen from './screens/WordsListScreen';
 import TextScreen from "./screens/TextScreen";
 import MemoScreen from "./screens/MemoScreen";
 import ProgressScreen from "./screens/ProgressScreen";
-import ConnectScreen from "./screens/ConnectScreen";
+import MatchScreen from "./screens/MatchScreen";
 import GapsScreen from "./screens/GapsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
@@ -46,7 +47,7 @@ function AppContent() {
     NunitoBold: require('./assets/fonts/Nunito-Bold.ttf'),
   });
 
-  const { user, courses, authReady, logout } = useContext(AuthContext);
+  const { user, authReady, logout } = useContext(AuthContext);
 
   useEffect(() => {
     if (logout) setApiHandlers(logout);
@@ -55,8 +56,6 @@ function AppContent() {
   if (!fontsLoaded || !authReady) {
     return <LoadingIndicator />;
   }
-
-  const hasCourses = Array.isArray(courses) && courses.length > 0;
 
   return (
     <NavigationContainer ref={navigationRef}>
@@ -67,25 +66,22 @@ function AppContent() {
           <>
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
-          </>
-        ) : !hasCourses ? (
-          <>
-            <Stack.Screen name="ChooseLanguage" component={ChooseLanguageScreen} />
-            <Stack.Screen name="UserScreen" component={UserScreen} />
-          </>  
+          </>        
         ) : (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Course" component={CourseScreen} />
-            <Stack.Screen name="UserScreen" component={UserScreen} />
-            <Stack.Screen name="ProgressScreen" component={ProgressScreen} />
+            <Stack.Screen name="ChooseLanguage" component={ChooseLanguageScreen} />
+            <Stack.Screen name="Course" component={CourseScreen} /> 
             <Stack.Screen name="Category" component={CategoryScreen} />
-            <Stack.Screen name="WordsListScreen" component={WordsListScreen} />
-            <Stack.Screen name="TextScreen" component={TextScreen} />
-            <Stack.Screen name="MemoScreen" component={MemoScreen} />
-            <Stack.Screen name="ConnectScreen" component={ConnectScreen} />
-            <Stack.Screen name="GapsScreen" component={GapsScreen} />
-            <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+            <Stack.Screen name="WordsList" component={WordsListScreen} />
+            <Stack.Screen name="WordCard" component={WordCardScreen} />
+            <Stack.Screen name="Text" component={TextScreen} />
+            <Stack.Screen name="MemoGame" component={MemoScreen} />
+            <Stack.Screen name="MatchGame" component={MatchScreen} />
+            <Stack.Screen name="GapsTask" component={GapsScreen} />
+            <Stack.Screen name="User" component={UserScreen} />
+            <Stack.Screen name="Progress" component={ProgressScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
           </>
         )}
       </Stack.Navigator>

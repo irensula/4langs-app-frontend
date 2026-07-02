@@ -3,7 +3,7 @@ import Svg, { Rect, Polygon, Path, G } from "react-native-svg";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { layout, colors, textStyles, spacing } from "../constants/layout";
 
-const Category = ({ categories = [], onSelect }) => {
+const CategoryCard = ({ categories = [], onSelect }) => {
   const safeCategories = Array.isArray(categories) ? categories : [];
   
   return (
@@ -30,6 +30,9 @@ const Category = ({ categories = [], onSelect }) => {
                 <Entypo name="lock-open" size={30} color={colors.white} />
               )}
             </Text>
+            <Text style={[textStyles.subtitle, { opacity: status === "locked" ? 0.4 : 1 }]}>
+              {category.percent} / 100%
+            </Text>
           </Pressable>
         );
       })}
@@ -49,9 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Category;
-// "categoryId": 1,
-//     "name": "Family",
-//     "imagePath": "/images/category_images/family.png",
-//     "status": "current",
-//     "percent": 33
+export default CategoryCard;

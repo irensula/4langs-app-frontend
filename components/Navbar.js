@@ -26,18 +26,18 @@ const Navbar = ({ navigation }) => {
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate("SettingsScreen")}
+          onPress={() => navigation.navigate("Settings")}
         >
           <Ionicons name="settings" size={32} color={colors.secondary} />
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate("ProgressScreen")}
+          onPress={() => navigation.navigate("Progress")}
         >
           <AntDesign name="star" size={32} color={colors.secondary} />
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("UserScreen")}>
+        <Pressable onPress={() => navigation.navigate("User")}>
           <Image
             source={{ uri: getImageUrl(user?.url) }}
             style={layout.avatar}
