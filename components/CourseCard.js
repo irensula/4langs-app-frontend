@@ -9,14 +9,14 @@ const CourseCard = ({ course, handleSelectCourse }) => {
             style={[layout.cardWrapper, layout.shadowStyle]}>
             <View style={{ flexDirection: "row", columnGap: 15, alignItems: "center", marginVertical: 5 }}>
                 <Image 
-                    source={{ uri: getImageUrl(course.flag_path) }}
+                    source={{ uri: getImageUrl(course.studyFlag) }}
                     style={layout.flagImage}
                 />
                 <Text style={[textStyles.default, { fontSize: 25 }]}>{course.studyLanguage}</Text>
             </View>
             <View style={{ flexDirection: "row", columnGap: 15, alignItems: "center", marginVertical: 5 }}>
                 <Image 
-                    source={{ uri: getImageUrl(course.flag_path) }}
+                    source={{ uri: getImageUrl(course.translationFlag) }}
                     style={layout.flagImage}
                 />
                 <Text style={[textStyles.default, { fontSize: 25 }]}>{course.translationLanguage}</Text>

@@ -12,7 +12,7 @@ const HomeScreen = ({ route, navigation }) => {
   const [userCourses, setUserCourses] = useState([]);
 
   useEffect(() => {
-    if (courses?.length === 0) {
+    if (courses && courses.length === 0) {
         navigation.replace("ChooseLanguage");
     }
   }, [courses]);

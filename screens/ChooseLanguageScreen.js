@@ -1,20 +1,27 @@
 import { useState, useEffect, useContext } from "react";
+import { View, Text, Pressable, ScrollView, Image } from "react-native";
+
 import { AuthContext } from "../utils/AuthContext";
-import { api } from "../utils/apiClient";
-import { View, Text, Pressable } from "react-native";
-import { layout } from "../constants/layout";
-import Sentence from "../components/Sentence";
+import { api, getImageUrl } from "../utils/apiClient";
+
+import { layout, textStyles } from "../constants/layout";
+
 import Navbar from "../components/Navbar";
+import MessageBox from "../components/MessageBox";
+import BackButton from "../components/BackButton";
 
 const ChooseLanguageScreen = ({ navigation }) => {
-    const { token, loadUser } = useContext(AuthContext);
-
+    const { token, refreshSession } = useContext(AuthContext);
+    // languages list
     const [languages, setLanguages] = useState([]);
     const [translationLanguages, setTranslationLanguages] = useState([]);
-
+    // chosen course
     const [studyLanguage, setStudyLanguage] = useState(null);
     const [translationLanguage, setTranslationLanguage] = useState(null);
-
+    // messages
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("success");
+    
     useEffect(() => {
         const fetchLanguages = async () => {
         
@@ -30,6 +37,7 @@ const ChooseLanguageScreen = ({ navigation }) => {
                 
                 setLanguages(data.slice(0, 3));
                 setTranslationLanguages(data);
+
             } catch (error) {
                 console.error("Error fetching languages:", error);
             }
@@ -38,7 +46,7 @@ const ChooseLanguageScreen = ({ navigation }) => {
         fetchLanguages();
     }, [token]);
 
-    const handleChoosingLanguage = async () => {
+    const handleCreateCourse = async () => {
         if (!studyLanguage || !translationLanguage || !token ) return;
 
         try {
@@ -50,51 +58,85 @@ const ChooseLanguageScreen = ({ navigation }) => {
                 },
                 token
             );
-            await loadUser(token);
+            await refreshSession();
+
+            setMessage("You created the course!");
+            setMessageType("success");
+
+            setTimeout(() => {
+                navigation.replace("Home");
+            }, 3000);
 
         } catch (error) {
-            console.error("Error choosing language:", error);
-        }
+            setMessage(error.response?.error || "Failed to create course");
+            setMessageType("error");
+
+            setTimeout(() => {
+                setMessage("");
+                setMessageType("");
+            }, 3000);
+                }
     }
 
     return (
-        <View style={layout.container}>
-            <Text>Choose language to study</Text>
-            {languages.map((lang) => (
-                <Pressable 
-                    key={lang.language_id}
-                    onPress={() => setStudyLanguage(lang.language_id)}
-                >
-                    <Text>
-                        {lang.name}{studyLanguage === lang.language_id ? "✓" : ""}
-                    </Text>
-                </Pressable>
-            ))}
-            <Text>Choose translation language</Text>
-            {translationLanguages.map((lang) => (
-                <Pressable 
-                    key={lang.language_id}
-                    onPress={() => setTranslationLanguage(lang.language_id)}    
-                >
-                    <Text>
-                        {lang.name}{translationLanguage === lang.language_id ? "✓" : ""}
-                    </Text>
-                </Pressable>
-            ))}
+        <View style={layout.screen}>
+            <ScrollView contentContainerStyle={[layout.scrollContent, { margin: 10 }]}>
+                <BackButton />
+                {/* message box */}
+                {message ? (
+                    <View style={{ minHeight: 50 }}>
+                        <MessageBox message={message} type={messageType} />
+                    </View>
+                ) : null}
 
-            <Pressable 
-                disabled={!studyLanguage || !translationLanguage}
-                onPress={handleChoosingLanguage}
-            >
-                <Text>Continue</Text>
-            </Pressable>
+                <Text style={textStyles.subtitle}>Choose language to study</Text>
+                {languages.map((lang) => (
+                    <Pressable 
+                        key={lang.language_id}
+                        onPress={() => setStudyLanguage(lang.language_id)}
+                        style={layout.langWrap}
+                    >
+                        <Image 
+                            source={{ uri: getImageUrl(lang.flag_path) }}
+                            style={layout.flagImage}
+                            
+                        />
+                        <Text>
+                            {lang.name}{studyLanguage === lang.language_id ? "✓" : ""}
+                        </Text>
+                    </Pressable>
+                ))}
+                <Text style={textStyles.subtitle}>Choose translation language</Text>
+                {translationLanguages.map((lang) => (
+                    <Pressable 
+                        key={lang.language_id}
+                        onPress={() => setTranslationLanguage(lang.language_id)} 
+                        style={layout.langWrap}   
+                    >
+                        <Image 
+                            source={{ uri: getImageUrl(lang.flag_path) }}
+                            style={layout.flagImage}
+                        />
+                        <Text>
+                            {lang.name}{translationLanguage === lang.language_id ? "✓" : ""}
+                        </Text>
+                    </Pressable>
+                ))}
 
-            
+                <Pressable 
+                    disabled={!studyLanguage || !translationLanguage}
+                    onPress={handleCreateCourse}
+                    style={layout.formButton}
+                >
+                    <Text style={textStyles.formButtonText}>Choose!</Text>
+                </Pressable>
+                
+            </ScrollView>
+      
             <View style={layout.navbarWrapper}>
                 <Navbar navigation={navigation} />
             </View>
-            
-        </View>
+    </View>
     )
 }
 

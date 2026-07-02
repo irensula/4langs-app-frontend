@@ -1,8 +1,13 @@
+import { useNavigation } from "@react-navigation/native";
 import { Pressable } from 'react-native';
-import Entypo from '@expo/vector-icons/Entypo';
+
 import { colors } from '../constants/layout';
 
-const BackButton = ({ navigation }) => {
+import Entypo from '@expo/vector-icons/Entypo';
+
+const BackButton = () => {
+    const navigation = useNavigation();
+
     return (
         <Pressable onPress={() => navigation.goBack()}>
             <Entypo name="chevron-left" size={32} color={colors.secondary} />

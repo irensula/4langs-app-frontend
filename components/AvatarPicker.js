@@ -31,16 +31,16 @@ const AvatarPicker = ({ avatars, selectedAvatar, onSelect }) => {
 
         return (
             <TouchableOpacity onPress={() => setOpen(true)}>
-                    <View style={styles.preview}>
-                        <Image 
-                            source={{ uri: getImageUrl(current.avatar_path) }}
-                            style={styles.image}
-                        />
-                        <View style={styles.overlay}>
-                            <MaterialIcons name="edit" size={24} color={colors.darkblue} />
-                        </View>
+                <View style={styles.preview}>
+                    <Image 
+                        source={{ uri: getImageUrl(current.avatar_path) }}
+                        style={styles.image}
+                    />
+                    <View style={styles.overlay}>
+                        <MaterialIcons name="edit" size={24} color={colors.darkblue} />
                     </View>
-                </TouchableOpacity>
+                </View>
+            </TouchableOpacity>
         );
     }
 

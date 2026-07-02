@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
             setCourses(data.courses);
             
             return true;
-        } catch {
-            console.error("loadUser error:", err);
+        } catch (error) {
+            console.error("loadUser error:", error);
             return false;
         }
     };
@@ -74,7 +74,12 @@ export const AuthProvider = ({ children }) => {
             console.error("Login error:", error);
         }
     };
+    // refresh
+    const refreshSession = async (sessionToken = token) => {
+        if (!sessionToken) return false;
 
+        return await loadUser(sessionToken);
+    };
     // logout 
     const logout = async () => {
         try {
@@ -96,6 +101,7 @@ export const AuthProvider = ({ children }) => {
                 courses, 
                 authReady, 
                 login, 
+                refreshSession,
                 logout 
             }}>
                 {children}

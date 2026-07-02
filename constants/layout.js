@@ -222,5 +222,12 @@ export const layout = StyleSheet.create({
     paddingVertical: 30,
     marginVertical: 10,
     width: "100%",
+  },
+  langWrap: {
+    flexDirection: "row",
+    columnGap: 10, 
+    marginVertical: 10,
+    flex: 1,
+    alignItems: "center",
   }
 });
