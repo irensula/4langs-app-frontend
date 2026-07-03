@@ -39,7 +39,7 @@ const Navbar = ({ navigation }) => {
 
         <Pressable onPress={() => navigation.navigate("User")}>
           <Image
-            source={{ uri: getImageUrl(user?.url) }}
+            source={{ uri: getImageUrl(user?.avatar_path) }}
             style={layout.avatar}
           />
         </Pressable>

@@ -1,8 +1,11 @@
-const validateUser = (user) => {
+const validateUser = (user, mode = "register") => {
     const errors = {};
+
     const { username, email, avatar_id, password, passwordConfirm, privacyPolicy } = user;
-    const emailRegex = /^\S+@\S+\.\S+$/;
     
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const isRegister = mode === "register";
+
     if (!username) errors.username = "Käyttäjätunnus puuttu";
     else if (username.length > 32) errors.username = "Käyttäjätunnus on liian pitkä";
 
@@ -10,15 +13,21 @@ const validateUser = (user) => {
     else if (!emailRegex.test(email)) errors.email = "Sähköpostiosoite ei ole kelvollinen";
     else if (email.length > 50) errors.email = "Sähköposti on liian pitkä";
     
-    if (!avatar_id) errors.avatar_id = "Valitse profiilikuva";
+    if (isRegister) {
+      if (!avatar_id) errors.avatar_id = "Valitse profiilikuva";
+    }
     
-    if (!password || password.length < 8) errors.password = "Salasanassa on oltava vähintään 8 merkkiä";
-    else if (password.length > 32) errors.password = "Salasana on liian pitkä";
+    if (isRegister || password || passwordConfirm) {
+      if (!password || password.length < 8) errors.password = "Salasanassa on oltava vähintään 8 merkkiä";
+      else if (password.length > 32) errors.password = "Salasana on liian pitkä";
     
-    if (password !== passwordConfirm) errors.passwordConfirm = "Salasanat eivät täsmää";
+      if (password !== passwordConfirm) errors.passwordConfirm = "Salasanat eivät täsmää";
+    }
     
-    if (privacyPolicy !== true) errors.privacyPolicy = "Hyväksy tietosuojaseloste";
-  
+    if (isRegister && privacyPolicy !== true) {
+      if (privacyPolicy !== true) errors.privacyPolicy = "Hyväksy tietosuojaseloste";
+    }
+
     return errors;
   };
   

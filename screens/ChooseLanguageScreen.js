@@ -6,9 +6,9 @@ import { api, getImageUrl } from "../utils/apiClient";
 
 import { layout, textStyles } from "../constants/layout";
 
-import Navbar from "../components/Navbar";
-import MessageBox from "../components/MessageBox";
 import BackButton from "../components/BackButton";
+import Navbar from "../components/Navbar";
+import MessageModal from "../components/MessageModal";
 
 const ChooseLanguageScreen = ({ navigation }) => {
     const { token, refreshSession } = useContext(AuthContext);
@@ -19,8 +19,8 @@ const ChooseLanguageScreen = ({ navigation }) => {
     const [studyLanguage, setStudyLanguage] = useState(null);
     const [translationLanguage, setTranslationLanguage] = useState(null);
     // messages
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState("success");
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
     
     useEffect(() => {
         const fetchLanguages = async () => {
@@ -60,19 +60,19 @@ const ChooseLanguageScreen = ({ navigation }) => {
             );
             await refreshSession();
 
-            setMessage("You created the course!");
-            setMessageType("success");
+            setModalMessage("You created the course!");
+            setModalVisible(true);
 
             setTimeout(() => {
                 navigation.replace("Home");
             }, 3000);
 
         } catch (error) {
-            setMessage(error.response?.error || "Failed to create course");
-            setMessageType("error");
+            setModalMessage(error.response?.error || "Failed to create course");
+            setModalVisible(true);
 
             setTimeout(() => {
-                setMessage("");
+                setModalMessage("");
                 setMessageType("");
             }, 3000);
                 }
@@ -80,14 +80,14 @@ const ChooseLanguageScreen = ({ navigation }) => {
 
     return (
         <View style={layout.screen}>
+            <MessageModal
+                visible={modalVisible}
+                message={modalMessage}
+                onClose={() => setModalVisible(false)}
+            />
+
             <ScrollView contentContainerStyle={[layout.scrollContent, { margin: 10 }]}>
                 <BackButton />
-                {/* message box */}
-                {message ? (
-                    <View style={{ minHeight: 50 }}>
-                        <MessageBox message={message} type={messageType} />
-                    </View>
-                ) : null}
 
                 <Text style={textStyles.subtitle}>Choose language to study</Text>
                 {languages.map((lang) => (

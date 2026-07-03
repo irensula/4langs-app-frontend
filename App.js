@@ -27,6 +27,7 @@ import ProgressScreen from "./screens/ProgressScreen";
 import MatchScreen from "./screens/MatchScreen";
 import GapsScreen from "./screens/GapsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import CourseSettingsScreen from "./screens/CourseSettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +85,7 @@ function AppContent() {
             <Stack.Screen name="User" component={UserScreen} />
             <Stack.Screen name="Progress" component={ProgressScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="CourseSettings" component={CourseSettingsScreen} />
           </>
         )}
       </Stack.Navigator>

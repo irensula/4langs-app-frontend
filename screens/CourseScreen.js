@@ -1,10 +1,15 @@
 import { useState, useEffect, useContext } from "react";
+import { ScrollView, View, Pressable } from "react-native";
+
 import { AuthContext } from "../utils/AuthContext";
-import { ScrollView, View } from "react-native";
-import { layout, colors, spacing, textStyles } from "../constants/layout";
-import Navbar from "../components/Navbar";
-import CategoryCard from "../components/CategoryCard";
 import { api } from "../utils/apiClient";
+
+import { layout, colors, spacing, textStyles } from "../constants/layout";
+
+import Navbar from "../components/Navbar";
+
+import CategoryCard from "../components/CategoryCard";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CourseScreen = ({ route, navigation }) => {
   const { user, token, authReady } = useContext(AuthContext);
@@ -27,6 +32,10 @@ const CourseScreen = ({ route, navigation }) => {
         setCategories(data);
 
       } catch (error) {
+        if (error.status === 404) {
+            navigation.replace("Home");
+            return;
+        }
         console.error("Error fetching categories:", error);
         setCategories([]);
       }
@@ -55,6 +64,20 @@ const CourseScreen = ({ route, navigation }) => {
           },
         ]}
       >
+      <Pressable 
+        onPress={() =>
+            navigation.navigate("CourseSettings", { courseId })
+        } 
+        style={{
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "flex-end",
+            alignItems: "flex-start",
+            paddingHorizontal: 25 
+          }}>
+          <Ionicons name="settings" size={35} color={colors.orange} />
+        </Pressable>
+        
         <CategoryCard
           categories={categories}
           onSelect={handleSelectCategory}

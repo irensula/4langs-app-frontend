@@ -4,17 +4,14 @@ import { colors } from '../constants/layout';
 
 const MessageModal = ({ 
         visible, 
-        type,
-        title,
         message,
+        title,
         confirmText,
-        cancelText,
         onConfirm,
+        cancelText, 
         onClose, 
         autoClose = true 
     }) => {
-    
-    const isConfirm = type === "confirm";
     
     useEffect(() => {
         if (!visible || !autoClose) return;
@@ -36,35 +33,34 @@ const MessageModal = ({
             <View style={styles.overlay}>
                 <View style={styles.modalBox}>
                     
-                    {title && <Text style={styles.title}>
+                    <Text style={styles.title}>
                         {title}
-                    </Text>}
+                    </Text>
 
-                    {isConfirm ? (
-                        <>
-                            <Text style={styles.message}>Are you sure?</Text>
+                    <Text style={styles.message}>{message}</Text>
 
-                            <View style={styles.buttons}>
-                                <Pressable onPress={onClose} style={styles.cancelButton}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
-                                </Pressable>
+                    <View style={styles.buttons}>
 
-                                <Pressable onPress={onConfirm} style={styles.button}>
-                                    <Text style={styles.buttonText}>Delete</Text>
-                                </Pressable>
-                            </View>
-                        </>
-                    ) : (
-                        <>
-                            <Text style={styles.message}>{message}</Text>
-
-                            <Pressable onPress={onClose} style={styles.button}>
-                                <Text style={styles.buttonText}>OK</Text>
+                            <Pressable
+                                style={styles.cancelButton}
+                                onPress={onClose}
+                            >
+                                <Text style={styles.buttonText}>
+                                    {cancelText}
+                                </Text>
                             </Pressable>
-                        </>
-                    )}
+
+                        <Pressable
+                            style={styles.button}
+                            onPress={onConfirm ?? onClose}
+                        >
+                            <Text style={styles.buttonText}>
+                                {confirmText}
+                            </Text>
+                        </Pressable>
                     </View>
                 </View>
+            </View>
         </Modal>
     )
 } 

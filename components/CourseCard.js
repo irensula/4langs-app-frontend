@@ -33,11 +33,3 @@ const CourseCard = ({ course, handleSelectCourse }) => {
 }
 
 export default CourseCard;
-// "course": 34,
-//     "studyLanguage": "Ukrainian",
-//     "translationLanguage": "Finnish",
-//     "currentCategory": "Family",
-//     "totalScore": 0,
-//     "totalCategories": 5,
-//     "completedCategories": 0,
-//     "percent": 0

@@ -14,6 +14,7 @@ export const colors = {
   lightviolet: "#d8bbfe",
   text: "#333333",
   white: "#ffffff",
+  red: "#FA003F"
 };
 
 export const spacing = {

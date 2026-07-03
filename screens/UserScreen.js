@@ -1,93 +1,110 @@
 import { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, Pressable, TextInput, StyleSheet } from "react-native";
-import MessageBox from '../components/MessageBox';
-import AvatarPicker from '../components/AvatarPicker';
-import Navbar from '../components/Navbar';
-import { layout, textStyles, spacing, colors } from '../constants/layout';
-import { ScrollView } from 'react-native';
+import { View, ScrollView, Text, Image, Pressable, TextInput, StyleSheet } from "react-native";
+
 import { AuthContext } from '../utils/AuthContext';
 import { api, getImageUrl } from "../utils/apiClient";
 
+import MessageBox from '../components/MessageBox';
+import AvatarPicker from '../components/AvatarPicker';
+import Navbar from '../components/Navbar';
+
+import { layout, textStyles, spacing, colors } from '../constants/layout';
+
+import validateUser from "../utils/validateUser";
+
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 const UserScreen = ({ route, navigation }) => {
-    const { user: contextUser, token, logout, updateUser } = useContext(AuthContext);    
-    const [user, setUser] = useState(contextUser);
+    const { user: contextUser, token, logout, refreshSession } = useContext(AuthContext);    
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('success');
+
     const [editMode, setEditMode] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+    const [errors, setErrors] = useState({});
     const [userdata, setUserdata] = useState({
         username: contextUser?.username || '',
         email: contextUser?.email || '',
         password: '',
+        passwordConfirm: ""
     });
+    
     const [avatars, setAvatars] = useState([]);
-    const [selectedImageID, setSelectedImageID] = useState(user?.imageID || null);
-    const userAvatar = avatars.find(a => a.imageID === user?.imageID);
-    const userAvatarUrl = userAvatar ? userAvatar.url : null;
+    const [selectedImageId, setSelectedImageId] = useState(contextUser?.avatar_id || null);
+    const userAvatar = avatars.find(a => a.avatar_id === contextUser?.avatar_id);
+    const userAvatarUrl = userAvatar ? userAvatar.avatar_path : null;
     
     useEffect(() => {
         setUserdata({
-            username: user?.username || '',
-            email: user?.email || '',
+            username: contextUser?.username || '',
+            email: contextUser?.email || '',
             password: '',
+            passwordConfirm: "",
         });
-    }, [user]);
-
-    useEffect(() => {
-        setUser(contextUser);
     }, [contextUser]);
-
 
     useEffect(() => {
         const fetchAvatars = async () => {
-        try {
-            const data = await api.get("/avatars");
+            try {
+                const data = await api.get("/avatars");
 
-            if (!Array.isArray(data)) return;
+                if (!Array.isArray(data)) return;
 
-            setAvatars(data);
-        } catch (error) {
-            console.error("Error fetching avatars: ", error);
-            setAvatars([]);
-        }
+                setAvatars(data);
+            } catch (error) {
+                console.error("Error fetching avatars: ", error);
+                setAvatars([]);
+            }
         }  
         fetchAvatars();
     }, []);
 
     useEffect(() => {
-        setSelectedImageID(user?.imageID || null);
-    }, [user]);
-
-    const handleChange = (field, value) => {
-        setUserdata(prev => ({
-            ...prev,
-            [field]: value
-        }));
-    };
+        setSelectedImageId(contextUser?.avatar_id || null);
+    }, [contextUser]);
 
     const editUserData = async() => {
+        console.log("Call");
+        const errors = validateUser(userdata, "edit");
+
+        if (Object.keys(errors).length > 0) {
+            setErrors(errors);
+            console.log(errors);
+            return;
+        }
+
+        setErrors({});
+
         try {
-            if (!token || !user) {
+            if (!token || !contextUser) {
                 setMessage('Käyttäjän on oltava valtuutettu');
                 return;
             }
             
             const response = await api.put(
-                `/users/${user.id}`, 
+                `/users/${contextUser.user_id}`, 
                 {
                     username: userdata.username,
                     email: userdata.email,
                     password: userdata.password,
-                    imageID: selectedImageID
+                    avatar_id: selectedImageId
                 },
                 token
             );
 
-            if (response) {
+            if (response) {             
+                await refreshSession();
+
                 setMessage('Käyttäjän tiedot on päivitetty');
                 setMessageType('success');
-                setUser(response);
-                updateUser(response);
                 setEditMode(false);
+
+                setUserdata(prev => ({
+                    ...prev,
+                    password: "",
+                    passwordConfirm: "",
+                }));
 
                 setTimeout(() => {
                     setMessage('');
@@ -100,6 +117,18 @@ const UserScreen = ({ route, navigation }) => {
             console.error(err);
             setMessage('Verkko- tai palvelinvirhe');
         }
+    };
+
+    const handleChange = (field, value) => {
+        setUserdata(prev => ({
+            ...prev,
+            [field]: value,
+        }));
+
+        setErrors(prev => ({
+            ...prev,
+            [field]: undefined,
+        }));
     };
 
     return (
@@ -115,14 +144,14 @@ const UserScreen = ({ route, navigation }) => {
                         <View style={styles.info}>
                         
                             {!editMode && <Image
-                                source={{ uri: getImageUrl(userAvatarUrl || user?.url) }}
+                                source={{ uri: getImageUrl(userAvatarUrl || contextUser?.avatar_path) }}
                                 style={styles.image}
                             />}
                             {editMode && 
                                 <AvatarPicker 
                                     avatars={avatars} 
-                                    selectedAvatar={selectedImageID}
-                                    onSelect={setSelectedImageID}
+                                    selectedAvatar={selectedImageId}
+                                    onSelect={setSelectedImageId}
                                 />}
 
                             {editMode && (<Text style={textStyles.label}>Username</Text>)}
@@ -131,8 +160,10 @@ const UserScreen = ({ route, navigation }) => {
                                 editable={editMode}
                                 onChangeText={(val) => handleChange('username', val)}
                                 autoCapitalize='none'
-                                style={textStyles.title}
+                                style={[textStyles.title, { marginBottom: 0 }]}
                             />
+                            {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+
                             <Text style={textStyles.label}>Email</Text>
                             <TextInput
                                 value={userdata.email}
@@ -142,17 +173,64 @@ const UserScreen = ({ route, navigation }) => {
                                 autoCapitalize='none'
                                 style={styles.textInput}
                             />
+                            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
                             <Text style={textStyles.label}>Password</Text>
-                            <TextInput
-                                value={userdata.password}
-                                editable={editMode}
-                                placeholder="●●●●●●●●"
-                                placeholderTextColor="lightgrey"
-                                onChangeText={(val) => handleChange('password', val)}
-                                secureTextEntry
-                                style={styles.textInput}
-                            />
-                            
+                            <View style={[
+                                          layout.input, 
+                                          { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
+                                          errors.password && styles.errorInput
+                                        ]}>
+                                <TextInput
+                                    value={userdata.password}
+                                    editable={editMode}
+                                    placeholder="●●●●●●●●"
+                                    placeholderTextColor="lightgrey"
+                                    secureTextEntry={!showPassword}
+                                    onChangeText={(text) => handleChange("password", text)}
+                                    style={styles.textInput}
+                                />
+                                {editMode && (
+                                    <Pressable onPress={() => setShowPassword(!showPassword)}>
+                                        <AntDesign 
+                                            name={showPassword ? "eye-invisible" : "eye"} 
+                                            size={24} 
+                                            color={errors.password ? 'red' : colors.darkblue}
+                                        />
+                                    </Pressable>
+                                )}
+                            </View>
+                            {errors.password && (<Text style={styles.errorText}>{errors.password}</Text>)}
+
+                            {editMode && (
+                                <>
+                                    <Text style={textStyles.label}>Confirm password</Text>
+                                    <View style={[
+                                        layout.input, 
+                                        { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
+                                        errors.passwordConfirm && styles.errorInput
+                                    ]}>
+                                        
+                                        <TextInput
+                                            value={userdata.passwordConfirm}
+                                            editable={editMode}
+                                            placeholder="●●●●●●●●"
+                                            placeholderTextColor="lightgrey"
+                                            secureTextEntry={!showPasswordConfirm}
+                                            onChangeText={(text) => handleChange("passwordConfirm", text)}
+                                            style={styles.textInput}
+                                            />
+                                        <Pressable onPress={() => setShowPasswordConfirm(!showPasswordConfirm)}>
+                                            <AntDesign 
+                                                name={showPasswordConfirm ? "eye-invisible" : "eye"} 
+                                                size={24} 
+                                                color={errors.passwordConfirm ? 'red' : colors.darkblue}
+                                            />
+                                        </Pressable>
+                                    </View>
+                                    {errors.passwordConfirm && (<Text style={styles.errorText}>{errors.passwordConfirm}</Text>)}
+                                </>
+                            )}
                             {editMode ? (
                                 <Pressable style={layout.formButton} onPress={editUserData}>
                                     <Text style={textStyles.formButtonText}>Tallenna</Text>
@@ -177,11 +255,10 @@ const UserScreen = ({ route, navigation }) => {
                 </View>
             </ScrollView>
             <View style={{ backgroundColor: 'transparent' }}>
-                {user && (
-                    <View style={layout.navbarWrapper}>
-                        <Navbar user={user} navigation={navigation} logout={logout} />
-                    </View>
-                )}
+            
+            <View style={layout.navbarWrapper}>
+                <Navbar navigation={navigation} logout={logout} />
+            </View>
             </View>
         </View>
     )
@@ -209,10 +286,19 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     textInput : {
-        marginBottom: 10,
         textAlign: 'center',
         fontSize: 18,
     },
+    errorText: {
+        color: "red",
+        fontSize: 15,
+        marginBottom: 5,
+        
+    },
+    errorInput: {
+        borderColor: "red",
+        borderWidth: 2,
+    }
 })
 
 export default UserScreen;

@@ -117,6 +117,16 @@ export const api = {
       },
       body: JSON.stringify(body),
     }),
+
+  // DELETE request
+  delete: (url, token) =>
+    request(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 /**

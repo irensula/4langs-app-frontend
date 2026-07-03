@@ -24,10 +24,8 @@ const CategoryCard = ({ categories = [], onSelect }) => {
               style={[textStyles.subtitle, { opacity: status === "locked" ? 0.4 : 1 }]}
             >
               {category.name}{" "}
-              {status === "locked" ? (
+              {status === "locked" && (
                 <Entypo name="lock" size={30} color={colors.white} />
-              ) : (
-                <Entypo name="lock-open" size={30} color={colors.white} />
               )}
             </Text>
             <Text style={[textStyles.subtitle, { opacity: status === "locked" ? 0.4 : 1 }]}>

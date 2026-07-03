@@ -68,11 +68,9 @@ const SettingsScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {user && (
-        <View style={layout.navbarWrapper}>
-          <Navbar user={user} navigation={navigation} />
-        </View>
-      )}
+      <View style={layout.navbarWrapper}>
+        <Navbar user={user} navigation={navigation} />
+      </View>
     </View>
   );
 };
