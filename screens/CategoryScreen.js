@@ -41,7 +41,7 @@ export default function CategoryScreen({ route, navigation }) {
 
   const handleSelectExercise = (exercise) => {
     console.log("exercise:", exercise);
-    navigation.navigate(exercise.name, {
+    navigation.navigate(exercise.screen_name, {
       exerciseId: exercise.exercise_id,
       courseId
     });
