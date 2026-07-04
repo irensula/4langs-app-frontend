@@ -230,5 +230,22 @@ export const layout = StyleSheet.create({
     marginVertical: 10,
     flex: 1,
     alignItems: "center",
-  }
+  },
+  menuItem: {
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: "center"
+  },
+  menuText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  settingsItem: {
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
 });

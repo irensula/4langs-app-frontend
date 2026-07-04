@@ -204,31 +204,32 @@ const CourseSettingsScreen = ({ route, navigation }) => {
                             Course Settings
                         </Text>
 
-                        <View style={styles.menuItem}>
-                            <Text style={styles.menuText}>Study language</Text>
-                            <Text style={styles.menuText}>{course.studyLanguage}</Text>
+                        <View style={layout.menuItem}>
+                            <Text style={layout.menuText}>Study language</Text>
+                            <Text style={layout.menuText}>{course.studyLanguage}</Text>
                         </View>
 
-                        <View style={styles.settingsItem}>
-                            <Text style={styles.menuText}>Change translation language</Text>
+                        <View style={layout.settingsItem}>
+                            <Text style={layout.menuText}>Change translation language</Text>
 
                             <LanguageDropdown 
                                 data={availableLanguages}
                                 value={translationLanguage}
                                 onSelect={confirmChangeTranslationLanguage}
                                 disableItem={(item) => item.disabled}
+                                placeholder = "Change translation language"
                             />
                         </View>
 
-                        <View style={styles.menuItem}>
-                            <Text style={styles.menuText}>              
+                        <View style={layout.menuItem}>
+                            <Text style={layout.menuText}>              
                                 Delete course
                             </Text>
                             <Pressable 
                                 style={styles.deleteButton}
                                 onPress={confirmDelete}
                             >
-                                <Text style={[styles.menuText, { color: colors.white }]}>              
+                                <Text style={[layout.menuText, { color: colors.white }]}>              
                                     Delete
                                 </Text>
                             </Pressable>
@@ -246,32 +247,12 @@ const CourseSettingsScreen = ({ route, navigation }) => {
     );
 }
 const styles = StyleSheet.create({
-  menuItem: {
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: "center"
-  },
-
-  menuText: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-
   deleteButton: {
     borderRadius: 15,
     paddingVertical: 8,
     paddingHorizontal: 20,
     backgroundColor: colors.red
   },
-  settingsItem: {
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-
 });
 
 export default CourseSettingsScreen;

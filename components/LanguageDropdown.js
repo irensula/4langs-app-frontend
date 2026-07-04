@@ -11,7 +11,7 @@ const LanguageDropdown = ({
     value,
     onChange,
     onSelect,
-    placeholder = "Change translation language",
+    placeholder,
     disableItem
   }) => {
     
@@ -41,6 +41,7 @@ const LanguageDropdown = ({
         valueField="language_id"
         placeholder={placeholder}
         onChange={(item) => {
+          console.log(item);
           if (!item.disabled) {
             onSelect?.(item);
           }
