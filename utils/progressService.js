@@ -12,10 +12,9 @@ export const saveProgress = async ({
   if (!exerciseID || !userId) return;
 
   return await api.post(
-    `/progress/${userId}`,
+    `/progress/course/${courseId}/category/${categoryId}/exercise/${exerciseId}`,
     {
       exerciseID,
-      selectedLanguage,
       maxScore,
       categoryID,
     },

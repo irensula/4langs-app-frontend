@@ -41,7 +41,8 @@ export default function CategoryScreen({ route, navigation }) {
     console.log("exercise:", exercise);
     navigation.navigate(exercise.screen_name, {
       exerciseId: exercise.exercise_id,
-      courseId
+      courseId,
+      categoryId
     });
   };
 

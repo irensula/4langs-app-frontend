@@ -1,22 +1,24 @@
 import { useState, useEffect, useContext } from "react";
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
+
 import { useIsFocused } from "@react-navigation/native";
 import { AuthContext } from "../utils/AuthContext";
-
-import shuffledArray from "../utils/shuffledArray";
-import { playUISound } from "../utils/soundUtils";
-import LanguageTabs from "../components/LanguageTabs";
-import MemoCard from "../components/MemoCard";
-import MessageModal from "../components/MessageModal";
-import Navbar from "../components/Navbar";
-import NextArrow from "../components/NextArrow";
-import { layout, textStyles, colors, spacing } from "../constants/layout";
-import CategoryTitle from "../components/CategoryTitle";
-import { saveProgress } from "../utils/progressService";
 import { api } from "../utils/apiClient";
 
+import shuffledArray from "../utils/shuffledArray";
+import { saveProgress } from "../utils/progressService";
+import { playUISound } from "../utils/soundUtils";
+
+import CategoryTitle from "../components/CategoryTitle";
+import MemoCard from "../components/MemoCard";
+import MessageModal from "../components/MessageModal";
+import NextArrow from "../components/NextArrow";
+import Navbar from "../components/Navbar";
+
+import { layout, textStyles, colors, spacing } from "../constants/layout";
+
 const MemoScreen = ({ route, navigation }) => {
-  const { name, categoryID } = route.params;
+  const { name, courseId, categoryId, exerciseId } = route.params;
   const { user, token } = useContext(AuthContext);
   const [originalCards, setOriginalCards] = useState([]);
   const [memoCards, setMemoCards] = useState([]);
@@ -32,35 +34,43 @@ const MemoScreen = ({ route, navigation }) => {
   const [modalMessage, setModalMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [refreshProgress, setRefreshProgress] = useState(0);
+
+  const [exercise, setExercise] = useState(null);
+
   const isFocused = useIsFocused();
 
   const doubleAndShuffle = (array) => shuffledArray([...array, ...array]);
 
+  
   useEffect(() => {
     const fetchMemoGame = async () => {
       
-      if (!token || !categoryID) return;
+      if (!token || !courseId || !categoryId || !exerciseId) return;
 
       try {
           const data = await api.get(
-            `/categories/${categoryID}/memogame`,
+            `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
             token
           );
 
-          if (!Array.isArray(data)) return;
-        
-          setOriginalCards(data);
+          if (!Array.isArray(data.content)) return;
           
-          const shuffled = doubleAndShuffle(data);
+          const cards = data.content;
+          
+          setOriginalCards(cards);
+          setExercise(data.exercise)
+          
+          const shuffled = doubleAndShuffle(cards);
+          
           setMemoCards(shuffled);
-      
+        
         } catch (error) {
           console.error("Error fetching memogame:", error);
           setOriginalCards([]);
       }
     };
     fetchMemoGame();
-  }, [token, categoryID]);
+  }, [token, courseId, categoryId, exerciseId]);
 
   useEffect(() => {
     if (openedCards.length === 2) {
@@ -70,7 +80,7 @@ const MemoScreen = ({ route, navigation }) => {
 
       setIsDisabled(true);
 
-      const isMatch = firstCard.wordID === secondCard.wordID;
+      const isMatch = firstCard.content_id === secondCard.content_id;
 
       if (isMatch) {
         setTimeout(() => {
@@ -111,34 +121,33 @@ const MemoScreen = ({ route, navigation }) => {
 
     setHasScored(true);
 
-    const maxScore = originalCards[0]?.maxScore || 0;
+    const maxScore = exercise?.maxScore ?? 0;
 
     playUISound("win");
 
-    setModalMessage("Onnittelut! Kaikki kortit löysivät parinsa.");
+    setModalMessage("Congratulations! All cards found their pairs!");
     setModalVisible(true);
     setMessageType("win");
     setTimeout(() => {
       setModalMessage(
-        `Kielestä tulee ${maxScore} tähteä.`
+        `You got ${maxScore} stars!`
       );
       setMessageType("success");
     }, 2500);
 
       saveProgress({
-        userId: user?.id,
+        userId: user?.user_id,
         token,
-        exerciseID: originalCards[0]?.exerciseID,
-        selectedLanguage,
+        exerciseId,
         maxScore,
-        categoryID
+        categoryId
       })
       .then(() => {
-    console.log("Progress saved");
-  })
+          console.log("Progress saved");
+        })
       .catch((error) => {
-    console.error("Progress save failed:", error);
-  });
+        console.error("Progress save failed:", error);
+      });
 
       setTimeout(() => {
         setModalMessage("");
@@ -184,19 +193,13 @@ const MemoScreen = ({ route, navigation }) => {
 
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
-          categoryID={categoryID}
+          categoryId={categoryId}
           name={name}
-          subtitle="Memopeli"
+          subtitle="Memo Game"
           isFocused={isFocused}
           refreshProgress={refreshProgress}
         />
-
-        <LanguageTabs
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={setSelectedLanguage}
-          activeLanguage={activeLanguage}
-        />
-
+    
         <View
           style={{
             flexDirection: "row",
@@ -210,10 +213,9 @@ const MemoScreen = ({ route, navigation }) => {
               key={index}
               index={index}
               memoCards={card}
-              isOpened={openedCards.includes(index)}
               isMatched={matchedCards.includes(index)}
               onPress={handleCardPress}
-              selectedLanguage={selectedLanguage}
+              isOpened={openedCards.includes(index)}
             />
           ))}
         </View>
@@ -232,7 +234,7 @@ const MemoScreen = ({ route, navigation }) => {
           <NextArrow
             screen={"ConnectScreen"}
             name={name}
-            categoryID={categoryID}
+            categoryId={categoryId}
           />
         </View>
       </ScrollView>

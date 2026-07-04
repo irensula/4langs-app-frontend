@@ -4,24 +4,11 @@ import { playSound } from '../utils/soundUtils';
 import { layout, colors, spacing, textStyles } from '../constants/layout';
 import { getImageUrl, getSoundUrl } from "../utils/apiClient";
 
-const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress, selectedLanguage }) => {
+const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress }) => {
 
-    const wordMap = {
-        en: memoCards.value_en,
-        fi: memoCards.value_fi,
-        ua: memoCards.value_ua,
-        ru: memoCards.value_ru
-    }
-    const soundMap = {
-        en: memoCards.sound_en,
-        fi: memoCards.sound_fi,
-        ua: memoCards.sound_ua,
-        ru: memoCards.sound_ru
-    };
+    const displayedWord = memoCards.study;
+    const soundFile = memoCards.study_sound;
     
-    const displayedWord = wordMap[selectedLanguage];
-    const soundFile = soundMap[selectedLanguage];  
-
     useEffect(() => {
         if (isOpened && !isMatched) {
             playSound(getSoundUrl(soundFile));
@@ -33,7 +20,7 @@ const MemoCard = ({ memoCards, index, isOpened, isMatched, onPress, selectedLang
             {isOpened || isMatched ? (
                 <View style={styles.container}>
                     <Image 
-                        source={{ uri: getImageUrl(memoCards.word_url) }}
+                        source={{ uri: getImageUrl(memoCards.image_path) }}
                         style={styles.image}
                         resizeMode='cover'
                     />
