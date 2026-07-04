@@ -40,8 +40,8 @@ const HomeScreen = ({ route, navigation }) => {
     fetchCourses();
   }, [authReady, token, user, courses]);
 
-  const handleSelectCourse = (courseId ) => {
-    navigation.navigate("Course", { courseId });
+  const handleSelectCourse = (course) => {
+    navigation.navigate("Course", { course });
   };
 
   return (
@@ -80,7 +80,7 @@ const HomeScreen = ({ route, navigation }) => {
           <CourseCard 
             key={course.course} 
             course={course} 
-            handleSelectCourse={() => handleSelectCourse(course.course)} 
+            handleSelectCourse={() => handleSelectCourse(course)} 
           />
         ))}
         

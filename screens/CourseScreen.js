@@ -13,7 +13,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CourseScreen = ({ route, navigation }) => {
   const { user, token, authReady } = useContext(AuthContext);
-  const { courseId } = route.params;
+  const { course } = route.params;
+  const courseId = course.course;
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const CourseScreen = ({ route, navigation }) => {
       >
       <Pressable 
         onPress={() =>
-            navigation.navigate("CourseSettings", { courseId })
+            navigation.navigate("CourseSettings", { course })
         } 
         style={{
             flexDirection: "row",

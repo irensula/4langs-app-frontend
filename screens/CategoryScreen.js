@@ -14,8 +14,6 @@ export default function CategoryScreen({ route, navigation }) {
   const isFocused = useIsFocused();
   const [exercises, setExercises] = useState([]);
 
-  console.log("CategoryScreen route.params: ", route.params);
-
   useEffect(() => {
     const fetchExercises = async () => { 
     

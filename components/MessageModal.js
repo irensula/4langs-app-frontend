@@ -8,7 +8,7 @@ const MessageModal = ({
         title,
         message,
         confirmText,
-        cancelText,
+        cancelText = "Cancel",
         onConfirm,
         onClose, 
         autoClose = true 
@@ -42,15 +42,15 @@ const MessageModal = ({
 
                     {isConfirm ? (
                         <>
-                            <Text style={styles.message}>Are you sure?</Text>
+                            <Text style={styles.message}>{message}</Text>
 
                             <View style={styles.buttons}>
                                 <Pressable onPress={onClose} style={styles.cancelButton}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={styles.buttonText}>{cancelText}</Text>
                                 </Pressable>
 
                                 <Pressable onPress={onConfirm} style={styles.button}>
-                                    <Text style={styles.buttonText}>Delete</Text>
+                                    <Text style={styles.buttonText}>{confirmText}</Text>
                                 </Pressable>
                             </View>
                         </>
