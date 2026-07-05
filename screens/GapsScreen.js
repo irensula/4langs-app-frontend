@@ -1,23 +1,28 @@
-import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
 import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../utils/AuthContext";
-import shuffledArray from "../utils/shuffledArray";
-import LanguageTabs from "../components/LanguageTabs";
-import MessageModal from "../components/MessageModal";
-import Sentence from "../components/Sentence";
-import WordGap from "../components/WordGap";
-import Navbar from "../components/Navbar";
-import NextArrow from "../components/NextArrow";
-import { layout, colors, spacing, textStyles } from "../constants/layout";
-import CategoryTitle from "../components/CategoryTitle";
+import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
+
 import { useIsFocused } from "@react-navigation/native";
-import { saveProgress } from "../utils/progressService";
+
+import { AuthContext } from "../utils/AuthContext";
 import { api } from "../utils/apiClient";
+
+import shuffledArray from "../utils/shuffledArray";
+import { saveProgress } from "../utils/progressService";
 import { playUISound } from "../utils/soundUtils";
 
+import CategoryTitle from "../components/CategoryTitle";
+import Sentence from "../components/Sentence";
+import WordGap from "../components/WordGap";
+import MessageModal from "../components/MessageModal";
+import NextArrow from "../components/NextArrow";
+import Navbar from "../components/Navbar";
+
+import { layout, colors, spacing, textStyles } from "../constants/layout";
+
 const GapsScreen = ({ navigation, route }) => {
-  const { user, token } = useContext(AuthContext);
-  const { name, categoryID } = route.params;
+  const { token } = useContext(AuthContext);
+  const { name, courseId, categoryId, exerciseId } = route.params;
+
   const [sentences, setSentences] = useState([]);
   const [words, setWords] = useState([]);
   const [shuffledWords, setShuffledWords] = useState([]);
@@ -171,11 +176,7 @@ const GapsScreen = ({ navigation, route }) => {
         />
 
         <View style={layout.wrapper}>
-          <LanguageTabs
-            selectedLanguage={selectedLanguage}
-            setSelectedLanguage={setSelectedLanguage}
-            activeLanguage={activeLanguage}
-          />
+          
 
           <View style={styles.wordsContainer}>
             {shuffledWords.map((word, index) => (

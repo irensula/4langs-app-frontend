@@ -1,23 +1,17 @@
 import { api } from "./apiClient";
 
 export const saveProgress = async ({
-  userId,
   token,
-  exerciseID,
-  selectedLanguage,
-  maxScore,
-  categoryID,
+  courseId,
+  categoryId,
+  exerciseId,
 }) => {
   
-  if (!exerciseID || !userId) return;
+  if (!token || !courseId || !categoryId || !exerciseId) return;
 
   return await api.post(
     `/progress/course/${courseId}/category/${categoryId}/exercise/${exerciseId}`,
-    {
-      exerciseID,
-      maxScore,
-      categoryID,
-    },
+    {},
     token,
   );
 };

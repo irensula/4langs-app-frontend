@@ -6,10 +6,11 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { api } from "../utils/apiClient";
 
 const CategoryTitle = ({
-    name,
+    categoryName,
     courseId,
     isFocused,
     refreshProgress,
+    subtitle
   }) => {
     const { token } = useContext(AuthContext);  
     const [progressPercent, setProgressPercent] = useState(null);
@@ -27,7 +28,6 @@ const CategoryTitle = ({
           if (!data) return;
 
           setProgressPercent(data);
-          console.log("courseId: ", courseId);
 
         } catch(error) {
           console.error("Fetch error:", error);
@@ -45,7 +45,8 @@ const CategoryTitle = ({
           {(progressPercent?.progress.percent ?? 0)} / 100%
         </Text>
       </View>
-      <Text style={textStyles.title}>{name}</Text>
+      <Text style={textStyles.title}>{categoryName}</Text>
+      <Text style={textStyles.subtitle}>{subtitle}</Text>
       
     </View>
   );

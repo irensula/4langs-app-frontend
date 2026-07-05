@@ -11,7 +11,7 @@ const ImageCard = ({ image, selected, onPress, matched }) => {
 
             <View>
                 <Image 
-                    source={{ uri: getImageUrl(image.word_url) }}
+                    source={{ uri: getImageUrl(image.image_path) }}
                     style={[layout.image, {marginBottom: 5, borderWidth: selected ? 3 : 2 }]}
                     resizeMode='cover'
                 /> 

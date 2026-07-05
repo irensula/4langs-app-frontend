@@ -9,15 +9,15 @@ import CategoryTitle from "../components/CategoryTitle";
 import { api } from "../utils/apiClient";
 
 export default function CategoryScreen({ route, navigation }) {
-  const { token, authReady } = useContext(AuthContext);
-  const { name, courseId, categoryId, unlocked } = route.params;
+  const { token } = useContext(AuthContext);
+  const { categoryName, courseId, categoryId, unlocked } = route.params;
   const isFocused = useIsFocused();
   const [exercises, setExercises] = useState([]);
-
+  
   useEffect(() => {
     const fetchExercises = async () => { 
     
-      if (!token || !authReady) return;
+      if (!token) return;
       
       try {
         const data = await api.get(
@@ -35,14 +35,14 @@ export default function CategoryScreen({ route, navigation }) {
       }
     };
     fetchExercises();
-  }, [authReady, token]);
+  }, [token]);
 
   const handleSelectExercise = (exercise) => {
-    console.log("exercise:", exercise);
     navigation.navigate(exercise.screen_name, {
       exerciseId: exercise.exercise_id,
       courseId,
-      categoryId
+      categoryId,
+      categoryName
     });
   };
 
@@ -51,15 +51,16 @@ export default function CategoryScreen({ route, navigation }) {
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           courseId={courseId}
-          name={name}
+          categoryName={categoryName}
           isFocused={isFocused}
         />
 
         <View style={styles.categoriesWrap}>
-          {exercises.map((exercise) => (<ExerciseCard
-            key={exercise.exercise_id}
-            exercise={exercise}
-            onSelect={handleSelectExercise}
+          {exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.exercise_id}
+              exercise={exercise}
+              onSelect={handleSelectExercise}
           />))}
         </View>
       </ScrollView>

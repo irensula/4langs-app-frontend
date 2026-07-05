@@ -12,7 +12,7 @@ import CategoryCard from "../components/CategoryCard";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CourseScreen = ({ route, navigation }) => {
-  const { user, token, authReady } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
   const { course } = route.params;
   const courseId = course.course;
   const [categories, setCategories] = useState([]);
@@ -20,7 +20,7 @@ const CourseScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchCategories = async () => { 
 
-      if (!token || !user || !authReady) return;
+      if (!token) return;
       
       try {
         const data = await api.get(
@@ -42,14 +42,13 @@ const CourseScreen = ({ route, navigation }) => {
       }
     };
     fetchCategories();
-  }, [authReady, token, user]);
+  }, [token]);
 
   const handleSelectCategory = (category) => {
     navigation.navigate("Category", {
-      name: category.name,
+      categoryName: category.name,
       courseId: courseId,
-      categoryId: category.categoryId,
-      user
+      categoryId: category.categoryId
     });
   };
 
@@ -87,7 +86,7 @@ const CourseScreen = ({ route, navigation }) => {
 
       
       <View style={layout.navbarWrapper}>
-        <Navbar user={user} navigation={navigation} />
+        <Navbar navigation={navigation} />
       </View>
     
     </View>

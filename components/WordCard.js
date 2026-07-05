@@ -7,10 +7,9 @@ const WordCard = ({
   word,
   selected,
   onPress,
-  matched,
-  selectedLanguage,
+  matched
 }) => {
-  const soundFile = word[`sound_${selectedLanguage}`];
+  const soundFile = word.study_sound;
 
   const handlePress = () => {
     onPress(word);
@@ -34,7 +33,7 @@ const WordCard = ({
           },
         ]}
       >
-        <Text>{word.value}</Text>
+        <Text>{word.study}</Text>
       </View>
     </Pressable>
   );

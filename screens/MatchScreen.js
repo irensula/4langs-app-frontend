@@ -1,93 +1,87 @@
 import { useState, useEffect, useContext } from "react";
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
+
+import { useIsFocused } from "@react-navigation/native";
+
 import { AuthContext } from "../utils/AuthContext";
+import { api } from "../utils/apiClient";
 
 import shuffledArray from "../utils/shuffledArray";
+import { playUISound } from "../utils/soundUtils";
+import { saveProgress } from "../utils/progressService";
+
+import CategoryTitle from "../components/CategoryTitle";
 import WordCard from "../components/WordCard";
 import ImageCard from "../components/ImageCard";
-import LanguageTabs from "../components/LanguageTabs";
 import MessageModal from "../components/MessageModal";
-import Navbar from "../components/Navbar";
 import NextArrow from "../components/NextArrow";
-import CategoryTitle from "../components/CategoryTitle";
+import Navbar from "../components/Navbar";
+
 import { layout, textStyles } from "../constants/layout";
-import { useIsFocused } from "@react-navigation/native";
-import { saveProgress } from "../utils/progressService";
-import { api } from "../utils/apiClient";
-import { playUISound } from "../utils/soundUtils";
 
 const MatchScreen = ({ navigation, route }) => {
-  const { token, user, authReady, logout } = useContext(AuthContext);
-  const { name, categoryID } = route.params;
+  const { token } = useContext(AuthContext);
+  const { categoryName, courseId, categoryId, exerciseId } = route.params;
+  
   const [pairs, setPairs] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [activeLanguage, setActiveLanguage] = useState(false);
+  const [exercise, setExercise] = useState(null); // get max_score per exercise
+
   const [shuffledWords, setShuffledWords] = useState([]);
   const [shuffledImages, setShuffledImages] = useState([]);
   const [selectedWord, setSelectedWord] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [matchedPairs, setMatchedPairs] = useState([]);
   const [hasScored, setHasScored] = useState(false);
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
-  const isFocused = useIsFocused();
+  
   const [refreshProgress, setRefreshProgress] = useState(0);
-
+  const isFocused = useIsFocused();
+  // GET GAME CONTENT
   useEffect(() => {
-
-    const fetchConnectTask = async () => {
-      if (!authReady || !token || !user || !categoryID) return;
+    const fetchMatchGame = async () => {
+      
+      if (!token || !courseId || !categoryId || !exerciseId) return;
 
       try {
-        const data = await api.get(
-          `/categories/${categoryID}/connect_task`, 
-          token
-        );
+          const data = await api.get(
+            `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
+            token
+          );
 
-        if (!Array.isArray(data)) return;
-
-        setPairs(data);
-      
-      } catch (error) {
-        console.error("Error fetching connect task:", error);
-        setPairs([])
+          if (!Array.isArray(data.content)) return;
+          
+          setPairs(data.content);
+          setExercise(data.exercise);
+        } catch (error) {
+          console.error("Error fetching matchgame:", error);
+          setPairs([]);
       }
     };
-    fetchConnectTask();
-  }, [token, categoryID ]);
-
+    fetchMatchGame();
+  }, [token, courseId, categoryId, exerciseId]);
+  // GET SHUFFLED WORDS AND EMAGES
   useEffect(() => {
-    const words = pairs.map((pair) => ({
-      word: pair.wordID,
-      value: pair[`value_${selectedLanguage}`],
-      [`sound_${selectedLanguage}`]: pair[`sound_${selectedLanguage}`],
-    }));
+    if (!pairs.length) return;
 
-    const images = pairs.map((pair) => ({
-      image: pair.imageID,
-      word_url: pair.word_url,
-    }));
-
-    setShuffledWords(shuffledArray(words));
-    setShuffledImages(shuffledArray(images));
+    setShuffledWords(shuffledArray([...pairs]));
+    setShuffledImages(shuffledArray([...pairs]));
 
     setMatchedPairs([]);
     setSelectedWord(null);
     setSelectedImage(null);
-    setActiveLanguage(false);
     setHasScored(false);
+  }, [pairs]);
 
-  }, [pairs, selectedLanguage]);
-
+  // HANDLE WORD PRESS
   const handleWordPress = (word) => {
-    if (!activeLanguage) setActiveLanguage(true);
 
     setSelectedWord(word);
     
     if (selectedImage) {
-      const isMatch = selectedImage.image === word.word;
-      processMatch(isMatch, word.word);
+      processMatch(selectedImage.content_id === word.content_id, word.content_id);
     }
   };
 
@@ -95,12 +89,11 @@ const MatchScreen = ({ navigation, route }) => {
     setSelectedImage(image);
 
     if (selectedWord) {
-      const isMatch = image.image === selectedWord.word;
-      processMatch(isMatch, selectedWord.word);
+      processMatch(image.content_id === selectedWord.content_id, image.content_id);
     }
   };
 
-  const processMatch = (isMatch, wordID) => {
+  const processMatch = (isMatch, id) => {
     if (!isMatch) {
       setSelectedWord(null);
       setSelectedImage(null);
@@ -108,7 +101,7 @@ const MatchScreen = ({ navigation, route }) => {
     }
 
     playUISound("correct");
-    const updatedPairs = [...matchedPairs, wordID];
+    const updatedPairs = [...matchedPairs, id];
     setMatchedPairs(updatedPairs);
 
     setSelectedWord(null);
@@ -118,22 +111,23 @@ const MatchScreen = ({ navigation, route }) => {
       handleWin();
     }
   };
-
+  // HANDLE WIN
   const handleWin = async () => {
     if (hasScored) return;
 
     setHasScored(true);
 
-    const maxScore = pairs[0]?.maxScore || 0;
+    const maxScore = exercise?.maxScore ?? 0;
 
     playUISound("win");
 
     setModalMessage("Onnittelut! Kaikki kortit löysivät parinsa.");
     setModalVisible(true);
     setMessageType("win");
+
     setTimeout(() => {
       setModalMessage(
-        `Kielestä tulee ${maxScore} tähteä.`
+        `You got ${maxScore} stars!`
       );
       setMessageType("success");
     }, 2500);
@@ -141,21 +135,23 @@ const MatchScreen = ({ navigation, route }) => {
     setTimeout(() => {
       resetGame();
     }, 5000);
+    // save progress
+    try {
+      await saveProgress({
+        courseId,
+        categoryId,
+        exerciseId,
+        token,
+      });
 
-    await saveProgress({
-      userId: user?.id,
-      token,
-      exerciseID: pairs[0]?.exerciseID,
-      selectedLanguage,
-      maxScore,
-      categoryID
-    })
-    .then(() => {
       console.log("Progress saved");
-    })
-        .catch((error) => {
-      console.error("Progress save failed:", error);
-    });
+    } catch (error) {
+      setModalMessage(
+        error.response?.error ?? "Failed to save progress"
+      );
+      setMessageType("error");
+      setModalVisible(true);
+    }
 
     setTimeout(() => {
         setModalMessage("");
@@ -163,30 +159,18 @@ const MatchScreen = ({ navigation, route }) => {
         setMatchedPairs([]);
         setSelectedWord(null);
         setSelectedImage(null);
-        setActiveLanguage(false);
         setHasScored(false);
         setRefreshProgress(Date.now());
       }, 5000);
   };
-
+  // RESET GAME
   const resetGame = () => {
-    const words = pairs.map((pair) => ({
-      word: pair.wordID,
-      value: pair[`value_${selectedLanguage}`],
-    }));
+    setShuffledWords(shuffledArray([...pairs]));
+    setShuffledImages(shuffledArray([...pairs]));
 
-    const images = pairs.map((pair) => ({
-      image: pair.imageID,
-      word_url: pair.word_url,
-    }));
-
-    setShuffledWords(shuffledArray(words));
-    setShuffledImages(shuffledArray(images));
-    
     setMatchedPairs([]);
     setSelectedWord(null);
     setSelectedImage(null);
-    setActiveLanguage(false);
     setHasScored(false);
     setRefreshProgress(Date.now());
   };
@@ -201,17 +185,11 @@ const MatchScreen = ({ navigation, route }) => {
 
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
-          categoryID={categoryID}
-          name={name}
-          subtitle="Yhdistä"
+          categoryId={categoryId}
+          categoryName={categoryName}
+          subtitle={exercise?.name}
           isFocused={isFocused}
           refreshProgress={refreshProgress}
-        />
-
-        <LanguageTabs
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={setSelectedLanguage}
-          activeLanguage={activeLanguage}
         />
 
         <View
@@ -224,23 +202,22 @@ const MatchScreen = ({ navigation, route }) => {
           <View>
             {shuffledImages.map((image, index) => (
               <ImageCard
-                key={index}
+                key={image.content_id}
                 image={image}
-                selected={selectedImage?.image === image.image}
+                selected={selectedImage?.content_id === image.content_id}
                 onPress={() => handleImagePress(image)}
-                matched={matchedPairs.includes(image.image)}
+                matched={matchedPairs.includes(image.content_id)}
               />
             ))}
           </View>
           <View>
             {shuffledWords.map((word, index) => (
               <WordCard
-                key={index}
+                key={word.content_id}
                 word={word}
-                selected={selectedWord?.word === word.word}
+                selected={selectedWord?.content_id === word.content_id}
                 onPress={() => handleWordPress(word)}
-                matched={matchedPairs.includes(word.word)}
-                selectedLanguage={selectedLanguage}
+                matched={matchedPairs.includes(word.content_id)}
               />
             ))}
           </View>
@@ -259,18 +236,15 @@ const MatchScreen = ({ navigation, route }) => {
 
           <NextArrow
             screen={"GapsScreen"}
-            name={name}
-            categoryID={categoryID}
-            user={user}
+            categoryName={categoryName}
+            categoryId={categoryId}
           />
         </View>
       </ScrollView>
 
-      {user && (
-        <View style={layout.navbarWrapper}>
-          <Navbar user={user} navigation={navigation} />
-        </View>
-      )}
+      <View style={layout.navbarWrapper}>
+        <Navbar navigation={navigation} />
+      </View>
     </View>
   );
 };

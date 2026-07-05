@@ -2,12 +2,13 @@ import { useState, useEffect, useContext } from "react";
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
 
 import { useIsFocused } from "@react-navigation/native";
+
 import { AuthContext } from "../utils/AuthContext";
 import { api } from "../utils/apiClient";
 
 import shuffledArray from "../utils/shuffledArray";
-import { saveProgress } from "../utils/progressService";
 import { playUISound } from "../utils/soundUtils";
+import { saveProgress } from "../utils/progressService";
 
 import CategoryTitle from "../components/CategoryTitle";
 import MemoCard from "../components/MemoCard";
@@ -15,33 +16,31 @@ import MessageModal from "../components/MessageModal";
 import NextArrow from "../components/NextArrow";
 import Navbar from "../components/Navbar";
 
-import { layout, textStyles, colors, spacing } from "../constants/layout";
+import { layout, textStyles, colors } from "../constants/layout";
 
 const MemoScreen = ({ route, navigation }) => {
-  const { name, courseId, categoryId, exerciseId } = route.params;
-  const { user, token } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
+  const { categoryName, courseId, categoryId, exerciseId } = route.params;
+
   const [originalCards, setOriginalCards] = useState([]);
+  const [exercise, setExercise] = useState(null);
   const [memoCards, setMemoCards] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const [openedCards, setOpenedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [activeLanguage, setActiveLanguage] = useState(false);
   const [hasScored, setHasScored] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+
   const [refreshProgress, setRefreshProgress] = useState(0);
-
-  const [exercise, setExercise] = useState(null);
-
   const isFocused = useIsFocused();
 
   const doubleAndShuffle = (array) => shuffledArray([...array, ...array]);
 
-  
+  // GET GAME DATA
   useEffect(() => {
     const fetchMemoGame = async () => {
       
@@ -58,7 +57,7 @@ const MemoScreen = ({ route, navigation }) => {
           const cards = data.content;
           
           setOriginalCards(cards);
-          setExercise(data.exercise)
+          setExercise(data.exercise);
           
           const shuffled = doubleAndShuffle(cards);
           
@@ -71,7 +70,7 @@ const MemoScreen = ({ route, navigation }) => {
     };
     fetchMemoGame();
   }, [token, courseId, categoryId, exerciseId]);
-
+  // CHECK 2 OPENED CARDS
   useEffect(() => {
     if (openedCards.length === 2) {
       const [firstIndex, secondIndex] = openedCards;
@@ -97,7 +96,6 @@ const MemoScreen = ({ route, navigation }) => {
       }
     }
   }, [openedCards]);
-
   
   const handleCardPress = (index) => {
     if (
@@ -106,41 +104,38 @@ const MemoScreen = ({ route, navigation }) => {
       matchedCards.includes(index)
     )
       return;
-    if (!activeLanguage) {
-      setActiveLanguage(true);
-    }
     const newOpened = [...openedCards, index];
     setOpenedCards(newOpened);
   };
+  // CHECK IF GAME IS COMPLETE
+  useEffect(() => {
+    const handleGameComplete = () => {
+      const totalCards = memoCards.length;
+      const allMatched = matchedCards.length === totalCards && totalCards > 0;
 
-  const handleGameComplete = () => {
-    const totalCards = memoCards.length;
-    const allMatched = matchedCards.length === totalCards && totalCards > 0;
+      if (!allMatched || hasScored) return;
 
-    if (!allMatched || hasScored) return;
+      setHasScored(true);
 
-    setHasScored(true);
+      const maxScore = exercise?.maxScore ?? 0;
 
-    const maxScore = exercise?.maxScore ?? 0;
+      playUISound("win");
 
-    playUISound("win");
-
-    setModalMessage("Congratulations! All cards found their pairs!");
-    setModalVisible(true);
-    setMessageType("win");
-    setTimeout(() => {
-      setModalMessage(
-        `You got ${maxScore} stars!`
-      );
-      setMessageType("success");
-    }, 2500);
+      setModalMessage("Congratulations! All cards found their pairs!");
+      setModalVisible(true);
+      setMessageType("win");
+      setTimeout(() => {
+        setModalMessage(
+          `You got ${maxScore} stars!`
+        );
+        setMessageType("success");
+      }, 2500);
 
       saveProgress({
-        userId: user?.user_id,
-        token,
+        courseId,
+        categoryId,
         exerciseId,
-        maxScore,
-        categoryId
+        token
       })
       .then(() => {
           console.log("Progress saved");
@@ -149,39 +144,31 @@ const MemoScreen = ({ route, navigation }) => {
         console.error("Progress save failed:", error);
       });
 
-      setTimeout(() => {
-        setModalMessage("");
-        setModalVisible(false);
-        setOpenedCards([]);
-        setMatchedCards([]);
-        setMemoCards(doubleAndShuffle(originalCards));
-        setActiveLanguage(false);
-        setHasScored(false);
-        setRefreshProgress(Date.now());
-      }, 5000);
-  };
+        setTimeout(() => {
+          setModalMessage("");
+          setModalVisible(false);
+          setOpenedCards([]);
+          setMatchedCards([]);
+          setMemoCards(doubleAndShuffle(originalCards));
+          setHasScored(false);
+          setRefreshProgress(Date.now());
+        }, 5000);
+    };
 
-  useEffect(() => {
-  handleGameComplete();
-}, [
-  matchedCards,
-  memoCards.length,
-  hasScored,
-  originalCards,
-  selectedLanguage
-]);
+    handleGameComplete();
+    }, [ matchedCards, memoCards.length, hasScored, originalCards,]
+  );
 
   const resetGame = () => {
     setOpenedCards([]);
     setMatchedCards([]);
     setHasScored(false);
-    setActiveLanguage(false);
     setMemoCards(doubleAndShuffle(originalCards));
   };
 
   useEffect(() => {
     resetGame();
-  }, [selectedLanguage]);
+  }, []);
 
   return (
     <View style={layout.screen}>
@@ -194,8 +181,8 @@ const MemoScreen = ({ route, navigation }) => {
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           categoryId={categoryId}
-          name={name}
-          subtitle="Memo Game"
+          categoryName={categoryName}
+          subtitle={exercise?.name}
           isFocused={isFocused}
           refreshProgress={refreshProgress}
         />
@@ -232,8 +219,8 @@ const MemoScreen = ({ route, navigation }) => {
           </Pressable>
 
           <NextArrow
-            screen={"ConnectScreen"}
-            name={name}
+            screen={"MatchScreen"}
+            categoryName={categoryName}
             categoryId={categoryId}
           />
         </View>

@@ -24,6 +24,11 @@ export const playSound = async (file, baseUri = "") => {
   wordPlayer.play?.();
 };
 
+export const stopSound = () => {
+    wordPlayer.pause?.();
+    wordPlayer.seekTo?.(0);
+};
+
 const UI_SOUNDS = {
   correct: require("../assets/sounds/correct.mp3"),
   wrong: require("../assets/sounds/wrong.mp3"),
