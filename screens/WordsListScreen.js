@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { View, ScrollView, Pressable, Text, StyleSheet} from 'react-native';
+import { useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audio';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -22,14 +23,6 @@ const WordsListScreen = ({ route, navigation }) => {
 
     const [words, setWords] = useState([]);
     const [exercise, setExercise] = useState(null);
-
-    const [playerState, setPlayerState] = useState({
-        playing: false,
-        paused: false,
-        currentId: null,
-        currentPart: null,
-        playAll: false,
-    });
 
     const [hasScored, setHasScored] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -64,110 +57,70 @@ const WordsListScreen = ({ route, navigation }) => {
         };
         fetchWordsList();
     }, [token, courseId, categoryId, exerciseId]);
-    // PLAY ALL WORDS 
-    const playAllWords = async () => {
-        
-        stopRef.current = false;
-        pauseRef.current = false;
+    // PLAYLIST
+    const playlistSources = words.flatMap(word => [
+        { uri: getSoundUrl(word.study_sound) },
+        { uri: getSoundUrl(word.translation_sound) },
+    ]);
 
-        setPlayerState({
-            playing: true,
-            paused: false,
-            playAll: true,
-            currentId: null,
-            currentPart: null,
-        });
+    const playlistItems = words.flatMap(word => [
+        {
+            id: word.content_id,
+            part: "study",
+            uri: getSoundUrl(word.study_sound),
+        },
+        {
+            id: word.content_id,
+            part: "translation",
+            uri: getSoundUrl(word.translation_sound),
+        },
+    ]);
 
-        for (const word of words) {
+    const playlist = useAudioPlaylist({
+        sources: playlistItems.map(item => ({ uri: item.uri })),
+        loop: "none",
+    });
 
-            if (stopRef.current) break;
+    const status = useAudioPlaylistStatus(playlist);
 
-            while (pauseRef.current) {
-                await sleep(100);
-            }
+    const currentItem = playlistItems[status.currentIndex];
 
-            setPlayerState(prev => ({
-                ...prev,
-                currentId: word.content_id,
-                currentPart: "study",
-            }));
-
-            await playSound(getSoundUrl(word.study_sound));
-
-            while (pauseRef.current) {
-                await sleep(100);
-            }
-
-            setPlayerState(prev => ({
-                ...prev,
-                currentPart: "translation",
-            }));
-
-            await playSound(getSoundUrl(word.translation_sound));
-            }
-
-            setPlayerState({
-                playing: false,
-                paused: false,
-                playAll: false,
-                currentId: null,
-                currentPart: null,
-            });
-
-            if (!stopRef.current) {
-                await handleComplete();
-            }
+    const togglePlay = () => {
+        if (status.playing) {
+            playlist.pause();
+        } else {
+            playlist.play();
+        }
     };
-    // stop playing all when user left screen
-    const stopPlayback = () => {
-        stopRef.current = true;
-        pauseRef.current = false;
 
-        stopSound();
+    useEffect(() => {
+        if (!isFocused && status.playing) {
+            playlist.pause();
+            playlist.skipTo(0);
+        };
+    }, [isFocused]);
 
-        setPlayerState({
-            playing: false,
-            paused: false,
-            playAll: false,
-            currentId: null,
-            currentPart: null,
-        });
+    useEffect(() => {
+        if (
+            !status.playing &&
+            status.currentIndex === status.trackCount - 1 &&
+            status.trackCount > 0
+        ) {
+            handleComplete();
+        }
+    }, [status.playing, status.currentIndex]);
+
+    const playSingle = (word, part) => {
+        const index = playlistItems.findIndex(
+            item =>
+                item.id === word.content_id &&
+                item.part === part
+        );
+
+        playlist.skipTo(index);
+        playlist.play();
     };
     
-    // PAUSE
-    const pausePlayback = () => {
-        pauseRef.current = true;
-
-        stopSound();
-
-        setPlayerState(prev => ({
-            ...prev,
-            paused: true,
-            playing: false,
-        }));
-    };
-    const resumePlayback = () => {
-        pauseRef.current = false;
-
-        setPlayerState(prev => ({
-            ...prev,
-            paused: false,
-            playing: true,
-        }));
-    };
-    const togglePlayPause = () => {
-
-        if (!playerState.playAll) {
-            playAllWords();
-            return;
-        }
-
-        if (playerState.paused) {
-            resumePlayback();
-        } else {
-            pausePlayback();
-        }
-    };
     // COMPLETE AND SAVE PROGRESS 
     const handleComplete = async () => {
         if (hasScored) return;
@@ -214,15 +167,15 @@ const WordsListScreen = ({ route, navigation }) => {
                 {/* PLAY ALL SOUNDS */}
                 <Pressable
                     style={layout.buttonInner}
-                    onPress={togglePlayPause}
+                    onPress={togglePlay}
                 >
                     <Text style={textStyles.buttonTextInner}>
                         <AntDesign 
-                            name={playerState.playAll && !playerState.paused ? "pause-circle" : "play-circle"} 
+                            name={status.playing ? "pause-circle" : "play-circle"} 
                             size={24} 
                             color={colors.darkorange} 
                         />
-                        {playerState.playAll && !playerState.paused ? "Pause" : "Play all"}
+                        {status.playing ? "Pause" : "Play all"}
                     </Text>
                 </Pressable>
                 {/* WORDS LIST */}
@@ -232,8 +185,8 @@ const WordsListScreen = ({ route, navigation }) => {
                             key={word.content_id} 
                             word={word}
                             playingPart={
-                                playerState.currentId === word.content_id
-                                    ? playerState.currentPart
+                                currentItem?.id === word.content_id
+                                    ? currentItem.part
                                     : null
                             }
                         />
