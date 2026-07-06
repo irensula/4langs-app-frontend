@@ -1,12 +1,11 @@
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useContext, useRef, useCallback} from 'react';
 import { View, ScrollView, Pressable, Text, StyleSheet} from 'react-native';
-import { useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audio';
+import { createAudioPlayer } from 'expo-audio';
 
 import { useIsFocused } from '@react-navigation/native';
 
 import { AuthContext } from '../utils/AuthContext';
 import { api, getSoundUrl } from "../utils/apiClient";
-import { playSound, stopSound } from "../utils/soundUtils";
 
 import CategoryTitle from '../components/CategoryTitle';
 import WordListCard from '../components/WordListCard';
@@ -27,11 +26,9 @@ const WordsListScreen = ({ route, navigation }) => {
     const [hasScored, setHasScored] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     const isFocused = useIsFocused();
-    
-    const stopRef = useRef(false);
-    const pauseRef = useRef(false);
 
     // GET GAME DATA
     useEffect(() => {
@@ -58,10 +55,18 @@ const WordsListScreen = ({ route, navigation }) => {
         fetchWordsList();
     }, [token, courseId, categoryId, exerciseId]);
     // PLAYLIST
-    const playlistSources = words.flatMap(word => [
-        { uri: getSoundUrl(word.study_sound) },
-        { uri: getSoundUrl(word.translation_sound) },
-    ]);
+
+    // player
+    const playerRef = useRef(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const currentIndexRef = useRef(currentIndex);
+    const isPlaylistPlayingRef = useRef(false);
+    const gapTimeoutRef = useRef(null);
+    const [isGapPending, setIsGapPending] = useState(false);
+    
+    const GAP_BETWEEN_TRACKS_MS = 700;
 
     const playlistItems = words.flatMap(word => [
         {
@@ -75,40 +80,131 @@ const WordsListScreen = ({ route, navigation }) => {
             uri: getSoundUrl(word.translation_sound),
         },
     ]);
+    console.log("playlistItems",playlistItems);
+    const currentItem = playlistItems[currentIndex];
 
-    const playlist = useAudioPlaylist({
-        sources: playlistItems.map(item => ({ uri: item.uri })),
-        loop: "none",
-    });
+    useEffect(() => {
+        currentIndexRef.current = currentIndex;
+    }, [currentIndex]);
 
-    const status = useAudioPlaylistStatus(playlist);
-
-    const currentItem = playlistItems[status.currentIndex];
-
-    const togglePlay = () => {
-        if (status.playing) {
-            playlist.pause();
-        } else {
-            playlist.play();
+    const clearGapTimeout = () => {
+        if (gapTimeoutRef.current) {
+            clearTimeout(gapTimeoutRef.current);
+            gapTimeoutRef.current = null;
         }
+        setIsGapPending(false);
     };
 
-    useEffect(() => {
-        if (!isFocused && status.playing) {
-            playlist.pause();
-            playlist.skipTo(0);
-        };
-    }, [isFocused]);
+    // Создаём плеер один раз при монтировании
+      useEffect(() => {
+        if (!playlistItems.length) return;
+        if (playerRef.current) return;
+        
+        const player = createAudioPlayer(playlistItems[0].uri);
+        
+        playerRef.current = player;
+    
+        const subscription = player.addListener('playbackStatusUpdate', (status) => {
+            console.log('AUDIO STATUS:', JSON.stringify(status));
 
-    useEffect(() => {
-        if (
-            !status.playing &&
-            status.currentIndex === status.trackCount - 1 &&
-            status.trackCount > 0
-        ) {
-            handleComplete();
+          // Трек догружен и готов — можно играть
+          if (status.playbackState === 'readyToPlay' && isPlaylistPlayingRef.current) {
+            player.play();
+          }
+    
+          // Трек доиграл до конца — переключаемся на следующий (с паузой)
+          if (status.didJustFinish) {
+            const nextIndex = currentIndexRef.current + 1;
+    
+            if (nextIndex < playlistItems.length && isPlaylistPlayingRef.current) {
+              setIsGapPending(true);
+              
+              gapTimeoutRef.current = setTimeout(() => {
+                gapTimeoutRef.current = null;
+                setIsGapPending(false);
+                // Если за время паузы пользователь нажал "Пауза" — не продолжаем
+                if (!isPlaylistPlayingRef.current) return;
+                currentIndexRef.current = nextIndex;
+                setCurrentIndex(nextIndex);
+                player.replace(playlistItems[nextIndex].uri);
+                // play() будет вызван автоматически по 'readyToPlay' выше
+              }, GAP_BETWEEN_TRACKS_MS);
+            } else {
+              // Плейлист закончился — сбрасываем в начало
+              isPlaylistPlayingRef.current = false;
+              setIsPlaying(false);
+              currentIndexRef.current = 0;
+              setCurrentIndex(0);
+              player.replace(playlistItems[0].uri);
+              handleComplete(); // show messages and save progress
+            }
+          }
+        });
+    
+        return () => {
+          subscription.remove();
+          clearGapTimeout();
+          player.release();
+        };
+      }, [playlistItems]);
+    
+      const playFromIndex = useCallback((index) => {
+        const player = playerRef.current;
+        if (!player) return;
+
+        const item = playlistItems[index];
+        if (!item) return;
+
+        console.log("index =", index);
+        console.log(item);      
+    
+        clearGapTimeout(); // если кликнули по треку прямо во время паузы между звуками
+        
+        isPlaylistPlayingRef.current = true;
+        setIsPlaying(true);
+        
+        currentIndexRef.current = index;
+        setCurrentIndex(index);
+        
+        player.replace(item.uri);
+        // play() сработает по событию 'readyToPlay'
+      }, [playlistItems]);
+
+      // play all / pause
+      const togglePlay = () => {
+        const player = playerRef.current;
+        if (!player) return;
+
+        if (isPlaying) {
+            isPlaylistPlayingRef.current = false;
+            setIsPlaying(false);
+            clearGapTimeout();
+            player.pause();
+        } else {
+            playFromIndex(currentIndexRef.current);
         }
-    }, [status.playing, status.currentIndex]);
+    };
+    
+      const handleSelectTrack = (index) => {
+        playFromIndex(index);
+      };
+
+      useEffect(() => {
+        if (!isFocused) {
+            isPlaylistPlayingRef.current = false;
+            setIsPlaying(false);
+
+            clearGapTimeout();
+
+            const player = playerRef.current;
+            if (player) {
+                player.pause();
+            }
+
+            currentIndexRef.current = 0;
+            setCurrentIndex(0);
+        }
+    }, [isFocused]);
 
     const playSingle = (word, part) => {
         const index = playlistItems.findIndex(
@@ -117,8 +213,9 @@ const WordsListScreen = ({ route, navigation }) => {
                 item.part === part
         );
 
-        playlist.skipTo(index);
-        playlist.play();
+        if (index !== -1) {
+            playFromIndex(index);
+        }
     };
     
     // COMPLETE AND SAVE PROGRESS 
@@ -171,11 +268,11 @@ const WordsListScreen = ({ route, navigation }) => {
                 >
                     <Text style={textStyles.buttonTextInner}>
                         <AntDesign 
-                            name={status.playing ? "pause-circle" : "play-circle"} 
+                            name={isPlaying ? "pause-circle" : "play-circle"} 
                             size={24} 
                             color={colors.darkorange} 
                         />
-                        {status.playing ? "Pause" : "Play all"}
+                        {isPlaying ? "Pause" : "Play all"}
                     </Text>
                 </Pressable>
                 {/* WORDS LIST */}
