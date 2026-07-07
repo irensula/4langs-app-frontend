@@ -33,6 +33,7 @@ const UI_SOUNDS = {
   correct: require("../assets/sounds/correct.mp3"),
   wrong: require("../assets/sounds/wrong.mp3"),
   win: require("../assets/sounds/win.mp3"),
+  second_win: require("../assets/sounds/second-win.mp3"),
 };
 
 export const playUISound = async (soundName) => {
