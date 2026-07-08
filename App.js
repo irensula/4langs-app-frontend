@@ -19,8 +19,8 @@ import CourseScreen from './screens/CourseScreen';
 import UserScreen from "./screens/UserScreen";
 import CategoryScreen from './screens/CategoryScreen';
 import WordsListScreen from './screens/WordsListScreen';
-import WordCardScreen from './screens/WordsListScreen';
-import SentencesScreen from './screens/SentencesScreen';
+import WordCardScreen from './screens/WordCardScreen';
+import SentenceCardScreen from './screens/SentenceCardScreen';
 import TextScreen from "./screens/TextScreen";
 import MemoScreen from "./screens/MemoScreen";
 import ProgressScreen from "./screens/ProgressScreen";
@@ -77,7 +77,7 @@ function AppContent() {
             <Stack.Screen name="Category" component={CategoryScreen} />
             <Stack.Screen name="WordsList" component={WordsListScreen} />
             <Stack.Screen name="WordCard" component={WordCardScreen} />
-            <Stack.Screen name="Sentences" component={SentencesScreen} />
+            <Stack.Screen name="SentenceCard" component={SentenceCardScreen} />
             <Stack.Screen name="Text" component={TextScreen} />
             <Stack.Screen name="MemoGame" component={MemoScreen} />
             <Stack.Screen name="MatchGame" component={MatchScreen} />

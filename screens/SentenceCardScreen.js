@@ -17,13 +17,12 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 
 import { AuthContext } from '../utils/AuthContext';
 
-const WordCardScreen = ({ route, navigation }) => {
+const SentenceCardScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
-  console.log("Route WordCardScreen", route.params);
+  console.log("Route SentenceCardScreen", route.params);
   const [words, setWords] = useState([]);
   const [exercise, setExercise] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const [hasScored, setHasScored] = useState(false);
   const [modal, setModal] = useState({
@@ -55,6 +54,10 @@ const WordCardScreen = ({ route, navigation }) => {
     };
     fetchWordsList();
   }, [token, courseId, categoryId, exerciseId]);
+  // PRESS CARD
+  const handlePressCard = async () => {
+    console.log("Press the card");
+  }
   // COMPLETE AND SAVE PROGRESS 
   const handleComplete = async () => {
       
@@ -94,13 +97,6 @@ const WordCardScreen = ({ route, navigation }) => {
           }); 
       }
   };
-  const handleNextCard = () => {
-    if (currentIndex < words.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      handleComplete();
-    }
-  }
   // GO TO NEXT SCREEN
   const handleNext = () => {
     navigation.navigate("SentenceCard", {
@@ -126,10 +122,7 @@ const WordCardScreen = ({ route, navigation }) => {
               }))
           }
       />
-      <ScrollView contentContainerStyle={[
-    layout.scrollContent,
-    { flexGrow: 1 },
-  ]}>
+      <ScrollView contentContainerStyle={layout.scrollContent}>
         {/* CATEGORY TITLLE */}
         <CategoryTitle 
             courseId={courseId} 
@@ -138,21 +131,14 @@ const WordCardScreen = ({ route, navigation }) => {
             isFocused={isFocused}
         />        
         {/* WORDS LIST */}
-        <View style={styles.contentContainer}>
-          {words.length > 0 && (
-            <WordImageCard word={words[currentIndex]} />
-          )}
-          <Pressable
-            style={[layout.formButton, {width: "80%"} ]}
-            onPress={handleNextCard}
-          >
-            <Text style={textStyles.formButtonText}>
-              {currentIndex < words.length - 1 ? "Next" : "Finish"}
-            </Text>
-          </Pressable>
+        <Text>Sentence Card Screen</Text>
+        <View style={styles.listContainer}>
+          {words.map((word) => {
+            return (
+              <WordImageCard word={word} onPress={handlePressCard} />
+            );
+          })}
         </View>
-        
-        
         {/* NEXT ARROW */}
         <NextArrow handleNext={handleNext} />
         
@@ -164,15 +150,10 @@ const WordCardScreen = ({ route, navigation }) => {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   contentContainer: {
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 15,
-  }
-});
+    margin: 15
+  },
+})
 
-export default WordCardScreen;
+export default SentenceCardScreen;

@@ -23,6 +23,7 @@ import { AuthContext } from '../utils/AuthContext';
 const WordsListScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
+  console.log("Route WordsListScreen", route.params);
   const playerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0); // индекс внутри playlistItems, не words!
   const [isPlaying, setIsPlaying] = useState(false);
@@ -245,6 +246,15 @@ const WordsListScreen = ({ route, navigation }) => {
           }); 
       }
   };
+  // GO TO NEXT SCREEN
+  const handleNext = () => {
+    navigation.navigate("WordCard", {
+      courseId,
+      categoryId,
+      categoryName,
+      exerciseId: exerciseId + 1,
+    });
+  };
   
   return (
     <View style={layout.screen}>
@@ -326,7 +336,7 @@ const WordsListScreen = ({ route, navigation }) => {
           })}
         </View>
         {/* NEXT ARROW */}
-        <NextArrow screen={'Text'} categoryName={categoryName} categoryId={categoryId} />
+        <NextArrow handleNext={handleNext} />
         </View>
       </ScrollView>
       {/* NAVBAR */}
