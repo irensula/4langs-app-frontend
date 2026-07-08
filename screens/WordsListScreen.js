@@ -5,7 +5,7 @@ import { createAudioPlayer } from 'expo-audio';
 
 import { api, getImageUrl, getSoundUrl } from "../utils/apiClient";
 import { saveProgress } from "../utils/progressService";
-import { playUISound } from "../utils/soundUtils";
+import { playUISound, playSound } from "../utils/soundUtils";
 
 import MessageModal from "../components/MessageModal";
 import CategoryTitle from '../components/CategoryTitle';
@@ -192,19 +192,6 @@ const WordsListScreen = ({ route, navigation }) => {
     }
   }, [isPlaying, playFromIndex]);
 
-  // click on single word (study or translation)
-  const playSingle = useCallback(
-    (wordId, part) => {
-      const index = playlistItems.findIndex(
-        (item) => item.wordId === wordId && item.part === part
-      );
-      if (index !== -1) {
-        playFromIndex(index);
-      }
-    },
-    [playlistItems, playFromIndex]
-  );
-
   useEffect(() => {
     if (!isFocused) {
       // screen is not in focuse - stop playing
@@ -258,7 +245,7 @@ const WordsListScreen = ({ route, navigation }) => {
           }); 
       }
   };
-
+  
   return (
     <View style={layout.screen}>
       {/* MESSAGE MODAL */}
@@ -277,7 +264,7 @@ const WordsListScreen = ({ route, navigation }) => {
       <ScrollView contentContainerStyle={layout.scrollContent}>
         {/* CATEGORY TITLLE */}
         <CategoryTitle 
-            categoryId={categoryId} 
+            courseId={courseId} 
             categoryName={categoryName} 
             subtitle={exercise?.name}
             isFocused={isFocused}
@@ -316,7 +303,7 @@ const WordsListScreen = ({ route, navigation }) => {
                 <View style={{ flex: 1, marginLeft: 10 }}>
                   <TouchableOpacity
                     style={[styles.trackItem, isStudyCurrent && styles.activeTrackItem]}
-                    onPress={() => playSingle(word.content_id, 'study')}
+                    onPress={() => playSound(getSoundUrl(word.study_sound))}
                   >
                     <Text style={[isStudyCurrent && styles.activeTrackText]}>
                       {word.study}                  
@@ -326,7 +313,7 @@ const WordsListScreen = ({ route, navigation }) => {
 
                   <TouchableOpacity
                     style={[styles.trackItem, isTranslationCurrent && styles.activeTrackItem]}
-                    onPress={() => playSingle(word.content_id, 'translation')}
+                    onPress={() => playSound(getSoundUrl(word.translation_sound))}
                   >
                     <Text style={[isTranslationCurrent && styles.activeTrackText]}>
                       {word.translation}

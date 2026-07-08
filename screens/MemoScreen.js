@@ -180,7 +180,7 @@ const MemoScreen = ({ route, navigation }) => {
 
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
-          categoryId={categoryId}
+          courseId={courseId}
           categoryName={categoryName}
           subtitle={exercise?.name}
           isFocused={isFocused}

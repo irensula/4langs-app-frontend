@@ -185,7 +185,7 @@ const MatchScreen = ({ navigation, route }) => {
 
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
-          categoryId={categoryId}
+          courseId={courseId}
           categoryName={categoryName}
           subtitle={exercise?.name}
           isFocused={isFocused}
