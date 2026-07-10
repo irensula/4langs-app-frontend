@@ -8,7 +8,7 @@ import { playUISound, playSound } from "../utils/soundUtils";
 
 import MessageModal from "../components/MessageModal";
 import CategoryTitle from '../components/CategoryTitle';
-import WordImageCard from '../components/WordImageCard';
+import StudyCard from '../components/StudyCard';
 import NextArrow from '../components/NextArrow';
 import Navbar from '../components/Navbar';
 
@@ -20,9 +20,9 @@ import { AuthContext } from '../utils/AuthContext';
 const SentenceCardScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
-  console.log("Route SentenceCardScreen", route.params);
-  const [words, setWords] = useState([]);
+  const [sentences, setSentences] = useState([]);
   const [exercise, setExercise] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const [hasScored, setHasScored] = useState(false);
   const [modal, setModal] = useState({
@@ -35,7 +35,7 @@ const SentenceCardScreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    const fetchWordsList = async () => {
+    const fetchSentences = async () => {
       try {
         const data = await api.get(
           `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
@@ -44,20 +44,16 @@ const SentenceCardScreen = ({ route, navigation }) => {
         
           if (!Array.isArray(data.content)) return;
         
-          setWords(data.content);
+          setSentences(data.content);
           setExercise(data.exercise);
 
       } catch (error) {
-        console.error("Error fetching words list:", error);
-        setWords([]);
+        console.error("Error fetching sentences:", error);
+        setSentences([]);
       }
     };
-    fetchWordsList();
+    fetchSentences();
   }, [token, courseId, categoryId, exerciseId]);
-  // PRESS CARD
-  const handlePressCard = async () => {
-    console.log("Press the card");
-  }
   // COMPLETE AND SAVE PROGRESS 
   const handleComplete = async () => {
       
@@ -97,15 +93,24 @@ const SentenceCardScreen = ({ route, navigation }) => {
           }); 
       }
   };
+  const handleNextCard = () => {
+    if (currentIndex < sentences.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      handleComplete();
+    }
+  }
   // GO TO NEXT SCREEN
   const handleNext = () => {
-    navigation.navigate("SentenceCard", {
+    navigation.navigate("Text", {
       courseId,
       categoryId,
       categoryName,
       exerciseId: exerciseId + 1,
     });
   };
+
+  const sentence = sentences[currentIndex];
 
   return (
     <View style={layout.screen}>
@@ -122,7 +127,10 @@ const SentenceCardScreen = ({ route, navigation }) => {
               }))
           }
       />
-      <ScrollView contentContainerStyle={layout.scrollContent}>
+      <ScrollView contentContainerStyle={[
+    layout.scrollContent,
+    { flexGrow: 1 },
+  ]}>
         {/* CATEGORY TITLLE */}
         <CategoryTitle 
             courseId={courseId} 
@@ -130,15 +138,29 @@ const SentenceCardScreen = ({ route, navigation }) => {
             subtitle={exercise?.name}
             isFocused={isFocused}
         />        
-        {/* WORDS LIST */}
-        <Text>Sentence Card Screen</Text>
-        <View style={styles.listContainer}>
-          {words.map((word) => {
-            return (
-              <WordImageCard word={word} onPress={handlePressCard} />
-            );
-          })}
+        {/* SENTENCES */}
+        <View style={styles.contentContainer}>
+          {sentences.length > 0 && (
+            // <StudyCard sentence={sentences[currentIndex]} />
+            <StudyCard 
+              contentId={sentence.content_id}
+              image={sentence.image_path}
+              studyText={sentence.study}
+              translationText={sentence.translation}
+              studySound={sentence.study_sound}
+              translationSound={sentence.translation_sound}
+            />
+          )}
+          <Pressable
+            style={[layout.formButton, {width: "80%"} ]}
+            onPress={handleNextCard}
+          >
+            <Text style={textStyles.formButtonText}>
+              {currentIndex < sentences.length - 1 ? "Next" : "Finish"}
+            </Text>
+          </Pressable>
         </View>
+        
         {/* NEXT ARROW */}
         <NextArrow handleNext={handleNext} />
         
@@ -150,10 +172,15 @@ const SentenceCardScreen = ({ route, navigation }) => {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   contentContainer: {
-    margin: 15
-  },
-})
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 15,
+  }
+});
 
 export default SentenceCardScreen;

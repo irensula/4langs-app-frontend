@@ -8,7 +8,7 @@ import { playUISound, playSound } from "../utils/soundUtils";
 
 import MessageModal from "../components/MessageModal";
 import CategoryTitle from '../components/CategoryTitle';
-import WordImageCard from '../components/WordImageCard';
+import StudyCard from '../components/StudyCard';
 import NextArrow from '../components/NextArrow';
 import Navbar from '../components/Navbar';
 
@@ -20,7 +20,6 @@ import { AuthContext } from '../utils/AuthContext';
 const WordCardScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
-  console.log("Route WordCardScreen", route.params);
   const [words, setWords] = useState([]);
   const [exercise, setExercise] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,7 +35,7 @@ const WordCardScreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    const fetchWordsList = async () => {
+    const fetchWords = async () => {
       try {
         const data = await api.get(
           `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
@@ -53,7 +52,7 @@ const WordCardScreen = ({ route, navigation }) => {
         setWords([]);
       }
     };
-    fetchWordsList();
+    fetchWords();
   }, [token, courseId, categoryId, exerciseId]);
   // COMPLETE AND SAVE PROGRESS 
   const handleComplete = async () => {
@@ -111,6 +110,8 @@ const WordCardScreen = ({ route, navigation }) => {
     });
   };
 
+  const word = words[currentIndex];
+
   return (
     <View style={layout.screen}>
       {/* MESSAGE MODAL */}
@@ -137,10 +138,17 @@ const WordCardScreen = ({ route, navigation }) => {
             subtitle={exercise?.name}
             isFocused={isFocused}
         />        
-        {/* WORDS LIST */}
+        {/* WORDS */}
         <View style={styles.contentContainer}>
           {words.length > 0 && (
-            <WordImageCard word={words[currentIndex]} />
+            <StudyCard 
+              contentId={word.content_id}
+              image={word.image_path}
+              studyText={word.study}
+              translationText={word.translation}
+              studySound={word.study_sound}
+              translationSound={word.translation_sound}
+            />
           )}
           <Pressable
             style={[layout.formButton, {width: "80%"} ]}
