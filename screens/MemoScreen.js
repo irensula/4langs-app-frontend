@@ -29,13 +29,15 @@ const MemoScreen = ({ route, navigation }) => {
   const [openedCards, setOpenedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
+  
   const [hasScored, setHasScored] = useState(false);
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
-
   const [refreshProgress, setRefreshProgress] = useState(0);
+  const [modal, setModal] = useState({
+    visible: false,
+    type: "message",
+    title: "",
+    message: "",
+  });
   const isFocused = useIsFocused();
 
   const doubleAndShuffle = (array) => shuffledArray([...array, ...array]);
@@ -109,55 +111,63 @@ const MemoScreen = ({ route, navigation }) => {
   };
   // CHECK IF GAME IS COMPLETE
   useEffect(() => {
-    const handleGameComplete = () => {
+    const handleGameComplete = async () => {
       const totalCards = memoCards.length;
       const allMatched = matchedCards.length === totalCards && totalCards > 0;
 
       if (!allMatched || hasScored) return;
 
       setHasScored(true);
-
-      const maxScore = exercise?.maxScore ?? 0;
-
       playUISound("win");
 
-      setModalMessage("Congratulations! All cards found their pairs!");
-      setModalVisible(true);
-      setMessageType("win");
+      try {
+        await saveProgress({
+          courseId,
+          categoryId,
+          exerciseId,
+          token
+        });
+
+        setRefreshProgress(Date.now());
+
+        setModal({
+          visible: true,
+          type: "message",
+          title: "",
+          message: "Exercise completed!",
+          confirmText: "Next",
+        });
+      } catch (error) {
+        setModal({
+          visible: true,
+          type: "message",
+          title: "",
+          message: error.response?.error,
+          confirmText: "OK",
+        }); 
+      }
+      
       setTimeout(() => {
-        setModalMessage(
-          `You got ${maxScore} stars!`
-        );
-        setMessageType("success");
-      }, 2500);
+        setModal((prev) => ({
+          ...prev,
+          visible: false,
+        }));
 
-      saveProgress({
-        courseId,
-        categoryId,
-        exerciseId,
-        token
-      })
-      .then(() => {
-          console.log("Progress saved");
-        })
-      .catch((error) => {
-        console.error("Progress save failed:", error);
-      });
-
-        setTimeout(() => {
-          setModalMessage("");
-          setModalVisible(false);
-          setOpenedCards([]);
-          setMatchedCards([]);
-          setMemoCards(doubleAndShuffle(originalCards));
-          setHasScored(false);
-          setRefreshProgress(Date.now());
-        }, 5000);
+        resetGame();
+      }, 5000);
     };
 
     handleGameComplete();
-    }, [ matchedCards, memoCards.length, hasScored, originalCards,]
-  );
+    }, [ 
+      matchedCards,
+      memoCards.length,
+      hasScored,
+      originalCards,
+      courseId,
+      categoryId,
+      exerciseId,
+      token
+  ]);
 
   const resetGame = () => {
     setOpenedCards([]);
@@ -165,17 +175,29 @@ const MemoScreen = ({ route, navigation }) => {
     setHasScored(false);
     setMemoCards(doubleAndShuffle(originalCards));
   };
-
-  useEffect(() => {
-    resetGame();
-  }, []);
+  // GO TO NEXT SCREEN
+  const handleNext = () => {
+    navigation.navigate("MatchGame", {
+      courseId,
+      categoryId,
+      categoryName,
+      exerciseId: exerciseId + 1,
+    });
+  };
 
   return (
     <View style={layout.screen}>
       <MessageModal
-          visible={modalVisible}
-          message={modalMessage}
-          onClose={() => setModalVisible(false)}
+          visible={modal.visible}
+          type={modal.type}
+          title={modal.title}
+          message={modal.message}
+          onClose={() =>
+              setModal(prev => ({
+                  ...prev,
+                  visible: false,
+              }))
+          }
       />
 
       <ScrollView contentContainerStyle={layout.scrollContent}>
@@ -218,11 +240,7 @@ const MemoScreen = ({ route, navigation }) => {
             <Text style={textStyles.buttonTextInner}>Käynnistä uudelleen</Text>
           </Pressable>
 
-          <NextArrow
-            screen={"MatchScreen"}
-            categoryName={categoryName}
-            categoryId={categoryId}
-          />
+          <NextArrow handleNext={handleNext} />
         </View>
       </ScrollView>
 

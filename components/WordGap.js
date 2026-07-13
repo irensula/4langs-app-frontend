@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
 import { colors, spacing, textStyles, layout } from '../constants/layout';
 
-const WordGap = ({ word, selectedLanguage }) => {
+const WordGap = ({ answer }) => {
     return (
         <View style={styles.wordWrapper}>
-            <Text style={styles.text}>{word[`value_${selectedLanguage}`]}</Text>
+            <Text style={styles.text}>{answer}</Text>
         </View>
     )
 }

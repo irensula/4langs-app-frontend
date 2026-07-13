@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback, useContext, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+
 import { useIsFocused } from '@react-navigation/native';
 import { createAudioPlayer } from 'expo-audio';
 
+import { AuthContext } from '../utils/AuthContext';
 import { api, getImageUrl, getSoundUrl } from "../utils/apiClient";
-import { saveProgress } from "../utils/progressService";
 import { playUISound, playSound } from "../utils/soundUtils";
+import { saveProgress } from "../utils/progressService";
 
 import MessageModal from "../components/MessageModal";
 import CategoryTitle from '../components/CategoryTitle';
@@ -18,23 +20,21 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 
 const GAP_BETWEEN_TRACKS_MS = 700;
 
-import { AuthContext } from '../utils/AuthContext';
-
 const WordsListScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
-  console.log("Route WordsListScreen", route.params);
+  
+  const [words, setWords] = useState([]);
+  const [exercise, setExercise] = useState(null);
+
   const playerRef = useRef(null);
+  const currentIndexRef = useRef(currentIndex);
   const [currentIndex, setCurrentIndex] = useState(0); // индекс внутри playlistItems, не words!
   const [isPlaying, setIsPlaying] = useState(false);
-
-  const currentIndexRef = useRef(currentIndex);
   const isPlaylistPlayingRef = useRef(false);
   const gapTimeoutRef = useRef(null);
   const hasFinishedRef = useRef(false);
   const [isGapPending, setIsGapPending] = useState(false);
-  const [words, setWords] = useState([]);
-  const [exercise, setExercise] = useState(null);
 
   const [hasScored, setHasScored] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(null);
@@ -44,7 +44,6 @@ const WordsListScreen = ({ route, navigation }) => {
       title: "",
       message: "",
   });
-  
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -279,6 +278,7 @@ const WordsListScreen = ({ route, navigation }) => {
             categoryName={categoryName} 
             subtitle={exercise?.name}
             isFocused={isFocused}
+            refreshProgress={refreshProgress}
         />
         {/* PLAY ALL SOUNDS */}
         <View style={styles.contentContainer}>

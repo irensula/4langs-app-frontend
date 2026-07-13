@@ -34,7 +34,7 @@ const TextCard = ({
                 onEnd: !showTranslation ? handleComplete : undefined,
                 onStatusUpdate: (status) => {
                     if (status.didJustFinish) {
-                        setIsPlaying(false); // синхронизируем иконку play/pause
+                        setIsPlaying(false); 
                     }
                 },
             });

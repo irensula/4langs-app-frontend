@@ -20,6 +20,7 @@ import { AuthContext } from '../utils/AuthContext';
 const WordCardScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
+
   const [words, setWords] = useState([]);
   const [exercise, setExercise] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,7 +33,6 @@ const WordCardScreen = ({ route, navigation }) => {
       title: "",
       message: "",
   });
-  
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -129,15 +129,16 @@ const WordCardScreen = ({ route, navigation }) => {
           }
       />
       <ScrollView contentContainerStyle={[
-    layout.scrollContent,
-    { flexGrow: 1 },
-  ]}>
+        layout.scrollContent,
+        { flexGrow: 1 },
+      ]}>
         {/* CATEGORY TITLLE */}
         <CategoryTitle 
             courseId={courseId} 
             categoryName={categoryName} 
             subtitle={exercise?.name}
             isFocused={isFocused}
+            refreshProgress={refreshProgress}
         />        
         {/* WORDS */}
         <View style={styles.contentContainer}>

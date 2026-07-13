@@ -80,9 +80,9 @@ function AppContent() {
             <Stack.Screen name="WordCard" component={WordCardScreen} />
             <Stack.Screen name="SentenceCard" component={SentenceCardScreen} />
             <Stack.Screen name="Text" component={TextScreen} />
-            <Stack.Screen name="WordInput" component={WordInputScreen} />
             <Stack.Screen name="MemoGame" component={MemoScreen} />
             <Stack.Screen name="MatchGame" component={MatchScreen} />
+            <Stack.Screen name="WordInput" component={WordInputScreen} />
             <Stack.Screen name="GapsTask" component={GapsScreen} />
             <Stack.Screen name="User" component={UserScreen} />
             <Stack.Screen name="Progress" component={ProgressScreen} />

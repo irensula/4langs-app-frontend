@@ -31,14 +31,17 @@ const MatchScreen = ({ navigation, route }) => {
   const [selectedWord, setSelectedWord] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [matchedPairs, setMatchedPairs] = useState([]);
+  
   const [hasScored, setHasScored] = useState(false);
-  
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
-  
   const [refreshProgress, setRefreshProgress] = useState(0);
+  const [modal, setModal] = useState({
+    visible: false,
+    type: "message",
+    title: "",
+    message: "",
+  });
   const isFocused = useIsFocused();
+
   // GET GAME CONTENT
   useEffect(() => {
     const fetchMatchGame = async () => {
@@ -116,26 +119,8 @@ const MatchScreen = ({ navigation, route }) => {
     if (hasScored) return;
 
     setHasScored(true);
-
-    const maxScore = exercise?.maxScore ?? 0;
-
     playUISound("win");
 
-    setModalMessage("Onnittelut! Kaikki kortit löysivät parinsa.");
-    setModalVisible(true);
-    setMessageType("win");
-
-    setTimeout(() => {
-      setModalMessage(
-        `You got ${maxScore} stars!`
-      );
-      setMessageType("success");
-    }, 2500);
-
-    setTimeout(() => {
-      resetGame();
-    }, 5000);
-    // save progress
     try {
       await saveProgress({
         courseId,
@@ -143,25 +128,35 @@ const MatchScreen = ({ navigation, route }) => {
         exerciseId,
         token,
       });
+      
+      setRefreshProgress(Date.now());
 
-      console.log("Progress saved");
+      setModal({
+        visible: true,
+        type: "message",
+        title: "",
+        message: "Exercise completed!",
+        confirmText: "Next",
+      });
+
     } catch (error) {
-      setModalMessage(
-        error.response?.error ?? "Failed to save progress"
-      );
-      setMessageType("error");
-      setModalVisible(true);
+      setModal({
+        visible: true,
+        type: "message",
+        title: "",
+        message: error.response?.error,
+        confirmText: "OK",
+      }); 
     }
 
     setTimeout(() => {
-        setModalMessage("");
-        setModalVisible(false);
-        setMatchedPairs([]);
-        setSelectedWord(null);
-        setSelectedImage(null);
-        setHasScored(false);
-        setRefreshProgress(Date.now());
-      }, 5000);
+      setModal((prev) => ({
+        ...prev,
+        visible: false,
+      }));
+
+      resetGame();
+    }, 5000);
   };
   // RESET GAME
   const resetGame = () => {
@@ -178,9 +173,16 @@ const MatchScreen = ({ navigation, route }) => {
   return (
     <View style={layout.screen}>
       <MessageModal
-          visible={modalVisible}
-          message={modalMessage}
-          onClose={() => setModalVisible(false)}
+          visible={modal.visible}
+          type={modal.type}
+          title={modal.title}
+          message={modal.message}
+          onClose={() =>
+              setModal(prev => ({
+                  ...prev,
+                  visible: false,
+              }))
+          }
       />
 
       <ScrollView contentContainerStyle={layout.scrollContent}>

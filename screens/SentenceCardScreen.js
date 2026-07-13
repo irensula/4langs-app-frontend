@@ -20,6 +20,7 @@ import { AuthContext } from '../utils/AuthContext';
 const SentenceCardScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
+
   const [sentences, setSentences] = useState([]);
   const [exercise, setExercise] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,7 +33,6 @@ const SentenceCardScreen = ({ route, navigation }) => {
       title: "",
       message: "",
   });
-  
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -138,6 +138,7 @@ const SentenceCardScreen = ({ route, navigation }) => {
             categoryName={categoryName} 
             subtitle={exercise?.name}
             isFocused={isFocused}
+            refreshProgress={refreshProgress}
         />        
         {/* SENTENCES */}
         <View style={styles.contentContainer}>

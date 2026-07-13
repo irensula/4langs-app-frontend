@@ -10,10 +10,10 @@ import shuffledArray from "../utils/shuffledArray";
 import { saveProgress } from "../utils/progressService";
 import { playUISound } from "../utils/soundUtils";
 
+import MessageModal from "../components/MessageModal";
 import CategoryTitle from "../components/CategoryTitle";
 import Sentence from "../components/Sentence";
 import WordGap from "../components/WordGap";
-import MessageModal from "../components/MessageModal";
 import NextArrow from "../components/NextArrow";
 import Navbar from "../components/Navbar";
 
@@ -21,108 +21,54 @@ import { layout, colors, spacing, textStyles } from "../constants/layout";
 
 const GapsScreen = ({ navigation, route }) => {
   const { token } = useContext(AuthContext);
-  const { name, courseId, categoryId, exerciseId } = route.params;
+  const { categoryName, courseId, categoryId, exerciseId } = route.params;
 
   const [sentences, setSentences] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [exercise, setExercise] = useState(null);
   const [words, setWords] = useState([]);
   const [shuffledWords, setShuffledWords] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [activeLanguage, setActiveLanguage] = useState(false);
+  
   const [correctAnswers, setCorrectAnswers] = useState({});
   const [answers, setAnswers] = useState({});
   const [resetTrigger, setResetTrigger] = useState(0);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
-  const [refreshProgress, setRefreshProgress] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [hasScored, setHasScored] = useState(false);
+  const [refreshProgress, setRefreshProgress] = useState(null);
+  const [modal, setModal] = useState({
+      visible: false,
+      type: "message",
+      title: "",
+      message: "",
+  });
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    const fetchGapsTask = async () => {
-      
-      if (!token || !categoryID) return;
-
-      try {
-        const data = await api.get(
-          `/categories/${categoryID}/gaps_task`,
-          token
-        );
-
-        if (!Array.isArray(data)) return;
-
-        setSentences(data);
-        setWords(data);
-
-        const shuffled = shuffledArray(data);
-        setShuffledWords(shuffled);
-
-      } catch (error) {
-        console.error("Error fetching gaps task:", error);
-        setSentences([]);
-        setWords([]);
-      }
-    };
-    fetchGapsTask();
-  }, [token, categoryID]);
-
-  const handleSendAnswers = async () => {
-    if (submitted) return;
-
-    const correctCount = calculateScore();
-
-    const maxScore = sentences.length;
-
-    if (!activeLanguage) { 
-      setActiveLanguage(true); 
-    }
-
-  setSubmitted(true);
-
-  try {
-    const result = await saveProgress({
-        userId: user?.id,
-        token,
-        exerciseID: sentences[0]?.exerciseID,
-        selectedLanguage,
-        maxScore,
-        categoryID
-      });
-
-    playUISound("win");
-    setModalMessage("Good job!");
-    setMessageType("win");
-    setModalVisible(true);
-
-    setTimeout(() => {
-      setModalMessage(
-        `You got ${correctCount} out of ${maxScore} correct.`
-      );
-      setMessageType(correctCount === maxScore ? "win" : "info");
-    }, 3000);
-
-    setTimeout(() => {
-      setModalMessage("");
-      setModalVisible(false);
-      resetGame();
-      setSubmitted(false);
-    }, 6000);
-  } catch (error) {
-    console.error(error);
-
-    setModalMessage("Saving failed");
-    setMessageType("error");
-    setModalVisible(true);
-    setSubmitted(false);
-  }
-};
+      const fetchSentences = async () => {
+        try {
+          const data = await api.get(
+            `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
+             token
+            );
+          
+            if (!Array.isArray(data.content)) return;
+            console.log("data content", data.content);
+            setSentences(data.content);
+            setExercise(data.exercise);
+  
+        } catch (error) {
+          console.error("Error fetching words list:", error);
+          setSentences([]);
+        }
+      };
+      fetchSentences();
+    }, [token, courseId, categoryId, exerciseId]);
 
   const resetGame = () => {
     setShuffledWords(shuffledArray(words));
     setCorrectAnswers({});
     setAnswers({});
-    setActiveLanguage(false);
 
     setModalMessage("");
     setModalVisible(false);
@@ -132,77 +78,61 @@ const GapsScreen = ({ navigation, route }) => {
     setResetTrigger((prev) => prev + 1);
     setRefreshProgress(Date.now());
   };
-
-  const calculateScore = () => {
-    let correct = 0;
-
-    sentences.forEach((sentence, index) => {
-      const user = answers[index]?.trim().toLowerCase();
-      const correctAnswer =
-        sentence?.[`answer_${selectedLanguage}`]
-          ?.trim()
-          .toLowerCase();
-
-        if (user && user === correctAnswer) {
-          correct++;
-        }
-      });
-
-      return correct;
+  // GO TO NEXT SCREEN
+  const handleNext = () => {
+    navigation.navigate("Course")
   };
 
-  // when user changes the language
-  useEffect(() => {
-    setAnswers({});
-    setCorrectAnswers({});
-    setActiveLanguage(false);
-  }, [selectedLanguage]);
+  const sentence = sentences[currentIndex];
 
   return (
     <View style={layout.screen}>
+      {/* MESSAGE MODAL */}
       <MessageModal
-          visible={modalVisible}
-          message={modalMessage}
-          onClose={() => setModalVisible(false)}
+          visible={modal.visible}
+          type={modal.type}
+          title={modal.title}
+          message={modal.message}
+          onClose={() =>
+              setModal(prev => ({
+                  ...prev,
+                  visible: false,
+              }))
+          }
       />
 
       <ScrollView contentContainerStyle={layout.scrollContent}>
-        <CategoryTitle
-          categoryID={categoryID}
-          name={name}
-          subtitle="Aukkotehtävä"
-          isFocused={isFocused}
-          refreshProgress={refreshProgress}
+        {/* CATEGORY TITLLE */}
+        <CategoryTitle 
+            courseId={courseId} 
+            categoryName={categoryName} 
+            subtitle={exercise?.name}
+            isFocused={isFocused}
+            refreshProgress={refreshProgress}
         />
 
         <View style={layout.wrapper}>
-          
-
+    
           <View style={styles.wordsContainer}>
             {shuffledWords.map((word, index) => (
               <WordGap
                 key={index}
                 word={word}
-                selectedLanguage={selectedLanguage}
               />
             ))}
           </View>
+          
           <View style={styles.row}>
-            {sentences.map((sentence, index) => (
+            {sentences.length > 0 && (
               <Sentence
-                key={index}
-                sentence={sentence}
-                selectedLanguage={selectedLanguage}
-                index={index}
-                value={answers[index] || ""}
-                onChange={(text) =>
-                  setAnswers((prev) => ({
-                    ...prev,
-                    [index]: text,
-                  }))
-                }
+                contentId={sentence.content_id}
+                image={sentence.image_path}
+                studyText={sentence.study}
+                translationText={sentence.translation}
+                studySound={sentence.study_sound}
+                translationSound={sentence.translation_sound}
               />
-            ))}
+            )}
           </View>
 
           <View style={styles.buttonsWrapper}>
@@ -212,7 +142,6 @@ const GapsScreen = ({ navigation, route }) => {
                 { width: "auto", paddingHorizontal: 18, height: 40 },
                 submitted && { opacity: 0.5 }
               ]}
-              onPress={handleSendAnswers}
               disabled={submitted}
             >
               <Text style={textStyles.buttonTextInner}>Lähetä</Text>
@@ -230,13 +159,14 @@ const GapsScreen = ({ navigation, route }) => {
               </Text>
             </Pressable>
 
-            <NextArrow screen={"Home"} name={name} categoryID={categoryID} />
+            <NextArrow handleNext={handleNext} />
           </View>
         </View>
       </ScrollView>
 
+      {/* NAVBAR */}
       <View style={layout.navbarWrapper}>
-        {user && <Navbar user={user} navigation={navigation} />}
+        <Navbar navigation={navigation} />
       </View>
     </View>
   );

@@ -25,6 +25,7 @@ const WordInputScreen = ({ route, navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [hasScored, setHasScored] = useState(false);
+  const [refreshProgress, setRefreshProgress] = useState(null);
   const [modal, setModal] = useState({
       visible: false,
       type: "message",
@@ -138,6 +139,7 @@ const WordInputScreen = ({ route, navigation }) => {
             categoryName={categoryName} 
             subtitle={exercise?.name}
             isFocused={isFocused}
+            refreshProgress={refreshProgress}
         />        
         {/* WORDS */}
         <View style={styles.contentContainer}>

@@ -21,8 +21,6 @@ const TextScreen = ({ route, navigation }) => {
 
     const [text, setText] = useState([]);
     const [exercise, setExercise] = useState(null);
-    
-    const isFocused = useIsFocused();
 
     const [hasScored, setHasScored] = useState(false);
     const [refreshProgress, setRefreshProgress] = useState(null);
@@ -32,6 +30,7 @@ const TextScreen = ({ route, navigation }) => {
           title: "",
           message: "",
       });
+    const isFocused = useIsFocused();
     
     useEffect(() => {
         const fetchText = async () => {
@@ -44,7 +43,6 @@ const TextScreen = ({ route, navigation }) => {
               if (!Array.isArray(data.content)) return;
             
               setText(data.content);
-              console.log(data.content);
               setExercise(data.exercise);
     
           } catch (error) {
@@ -92,7 +90,7 @@ const TextScreen = ({ route, navigation }) => {
             }); 
         }
     };
-    // STOP SOUND WHEN USER GOES TO ANOTHER SCREEN
+    // stop sound when user goes to another screen
     useEffect(() => {
         if (!isFocused) {
             stopSound();
@@ -130,6 +128,7 @@ const TextScreen = ({ route, navigation }) => {
                     categoryName={categoryName} 
                     subtitle={exercise?.name}
                     isFocused={isFocused}
+                    refreshProgress={refreshProgress}
                 />
 
                  {text.map(item => (

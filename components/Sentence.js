@@ -6,42 +6,41 @@ import { layout, colors, spacing, textStyles } from '../constants/layout';
 import { playUISound } from "../utils/soundUtils";
 
 const Sentence = ({ 
-        sentence, 
-        selectedLanguage,
-        index, 
-        value,
-        onChange, 
+        contentId,
+        image,
+        studyText,
+        translationText,
+        studySound,
+        translationSound 
     }) => {
         
-    const correctAnswer = sentence?.[`answer_${selectedLanguage}`]?.trim().toLowerCase() || '';
-    const fullSentence = sentence?.[`sentence_${selectedLanguage}`] || "";
+    const correctAnswer = sentence?.answer?.trim().toLowerCase() || '';
+    const fullSentence = sentence?.sentence || "";
     
     const parts = fullSentence.split('{{answer}}');
 
-    const isCorrect = value && value.trim().toLowerCase() === correctAnswer;
+    // const isCorrect = value && value.trim().toLowerCase() === correctAnswer;
 
-    const playedRef = useRef(false);
-    useEffect(() => {
-        if (isCorrect && !playedRef.current) {
-            playedRef.current = true;
-            playUISound("correct");
-        }
+    // const playedRef = useRef(false);
+    // useEffect(() => {
+    //     if (isCorrect && !playedRef.current) {
+    //         playedRef.current = true;
+    //         playUISound("correct");
+    //     }
 
-        if (!isCorrect) {
-            playedRef.current = false;
-        }
-    }, [isCorrect]);
+    //     if (!isCorrect) {
+    //         playedRef.current = false;
+    //     }
+    // }, [isCorrect]);
 
     return (
         <View style={{flexDirection: 'row', alignItems: 'center' }}>
-            <ImageCard 
-                image={{ word_url: sentence.word_url }} 
-            />
+            <ImageCard source={image} />
         <View style={styles.sentence}>
             <Text style={styles.text}>{parts[0]}</Text>
 
             <TextInput 
-                value={value}
+                // value={value}
                 onChangeText={onChange}
                 style={styles.input}
             />
@@ -49,9 +48,8 @@ const Sentence = ({
             <Text style={styles.text}>{parts[1]}</Text>
 
         </View>
-        {isCorrect && 
-                <AntDesign name="check-circle" size={24} color={colors.primary} />    
-            }
+        
+            <AntDesign name="check-circle" size={24} color={colors.primary} />    
         </View>
     )
 }
