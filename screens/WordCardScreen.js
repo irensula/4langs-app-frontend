@@ -25,6 +25,7 @@ const WordCardScreen = ({ route, navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [hasScored, setHasScored] = useState(false);
+  const [refreshProgress, setRefreshProgress] = useState(null);
   const [modal, setModal] = useState({
       visible: false,
       type: "message",

@@ -17,15 +17,14 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 
 import { AuthContext } from '../utils/AuthContext';
 
-const SentenceCardScreen = ({ route, navigation }) => {
+const WordInputScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext);
   const { categoryName, courseId, categoryId, exerciseId } = route.params;
-  const [sentences, setSentences] = useState([]);
+  const [words, setWords] = useState([]);
   const [exercise, setExercise] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [hasScored, setHasScored] = useState(false);
-  const [refreshProgress, setRefreshProgress] = useState(null);
   const [modal, setModal] = useState({
       visible: false,
       type: "message",
@@ -36,7 +35,7 @@ const SentenceCardScreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    const fetchSentences = async () => {
+    const fetchWords = async () => {
       try {
         const data = await api.get(
           `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
@@ -45,15 +44,15 @@ const SentenceCardScreen = ({ route, navigation }) => {
         
           if (!Array.isArray(data.content)) return;
         
-          setSentences(data.content);
+          setWords(data.content);
           setExercise(data.exercise);
 
       } catch (error) {
-        console.error("Error fetching sentences:", error);
-        setSentences([]);
+        console.error("Error fetching words list:", error);
+        setWords([]);
       }
     };
-    fetchSentences();
+    fetchWords();
   }, [token, courseId, categoryId, exerciseId]);
   // COMPLETE AND SAVE PROGRESS 
   const handleComplete = async () => {
@@ -94,8 +93,9 @@ const SentenceCardScreen = ({ route, navigation }) => {
           }); 
       }
   };
+  // SHOW NEXT CARD
   const handleNextCard = () => {
-    if (currentIndex < sentences.length - 1) {
+    if (currentIndex < words.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
       handleComplete();
@@ -103,7 +103,7 @@ const SentenceCardScreen = ({ route, navigation }) => {
   }
   // GO TO NEXT SCREEN
   const handleNext = () => {
-    navigation.navigate("Text", {
+    navigation.navigate("SentenceCard", {
       courseId,
       categoryId,
       categoryName,
@@ -111,7 +111,7 @@ const SentenceCardScreen = ({ route, navigation }) => {
     });
   };
 
-  const sentence = sentences[currentIndex];
+  const word = words[currentIndex];
 
   return (
     <View style={layout.screen}>
@@ -139,17 +139,17 @@ const SentenceCardScreen = ({ route, navigation }) => {
             subtitle={exercise?.name}
             isFocused={isFocused}
         />        
-        {/* SENTENCES */}
+        {/* WORDS */}
         <View style={styles.contentContainer}>
-          {sentences.length > 0 && (
-            // <StudyCard sentence={sentences[currentIndex]} />
+          <Text>Word Input Screen!!!</Text>
+          {words.length > 0 && (
             <StudyCard 
-              contentId={sentence.content_id}
-              image={sentence.image_path}
-              studyText={sentence.study}
-              translationText={sentence.translation}
-              studySound={sentence.study_sound}
-              translationSound={sentence.translation_sound}
+              contentId={word.content_id}
+              image={word.image_path}
+              studyText={word.study}
+              translationText={word.translation}
+              studySound={word.study_sound}
+              translationSound={word.translation_sound}
             />
           )}
           <Pressable
@@ -157,10 +157,11 @@ const SentenceCardScreen = ({ route, navigation }) => {
             onPress={handleNextCard}
           >
             <Text style={textStyles.formButtonText}>
-              {currentIndex < sentences.length - 1 ? "Next" : "Finish"}
+              {currentIndex < words.length - 1 ? "Next" : "Finish"}
             </Text>
           </Pressable>
         </View>
+        
         
         {/* NEXT ARROW */}
         <NextArrow handleNext={handleNext} />
@@ -184,4 +185,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SentenceCardScreen;
+export default WordInputScreen;

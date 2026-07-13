@@ -2,9 +2,10 @@ import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 
 let wordPlayer = null;
 let uiPlayer = null;
+let wordPlayerSubscription = null;
+let hasEnded = false;
 
 export const initAudio = async () => {
-  if (!wordPlayer) wordPlayer = createAudioPlayer();
   if (!uiPlayer) uiPlayer = createAudioPlayer();
 
   await setAudioModeAsync({
@@ -12,22 +13,62 @@ export const initAudio = async () => {
   });
 };
 
-export const playSound = async (file, baseUri = "") => {
+export const playSound = async (file, { baseUri = "", onEnd, onStatusUpdate } = {}) => {
   await initAudio();
 
   const uri = `${baseUri}${file}`;
 
-  wordPlayer.pause?.();
-  wordPlayer.seekTo?.(0);
+  wordPlayerSubscription?.remove?.();
+  wordPlayerSubscription = null;
+  wordPlayer?.pause?.();
+  wordPlayer?.release?.();
 
-  wordPlayer.replace?.({ uri });
+  hasEnded = false;
+  wordPlayer = createAudioPlayer({ uri });
+
+  wordPlayerSubscription = wordPlayer.addListener("playbackStatusUpdate", (status) => {
+    if (status.didJustFinish) {
+      if (hasEnded) return; // защита от повторных срабатываний (баг Android)
+      hasEnded = true;
+
+      wordPlayerSubscription?.remove?.();
+      wordPlayerSubscription = null;
+
+      onStatusUpdate?.(status);
+      onEnd?.();
+      return;
+    }
+
+    onStatusUpdate?.(status);
+  });
+
   wordPlayer.play?.();
 };
 
 export const stopSound = () => {
-    wordPlayer.pause?.();
-    wordPlayer.seekTo?.(0);
+    wordPlayerSubscription?.remove?.();
+    wordPlayerSubscription = null;
+    wordPlayer?.pause?.();
+    wordPlayer?.seekTo?.(0);
 };
+
+export const pauseSound = () => {
+    wordPlayer?.pause?.();
+};
+
+export const resumeSound = () => {
+    if (hasEnded) {
+        wordPlayer?.seekTo?.(0);
+        hasEnded = false;
+    }
+    wordPlayer?.play?.();
+};
+
+export const isSoundPlaying = () => {
+    return wordPlayer?.playing ?? false;
+};
+
+export const getPlayer = () => wordPlayer;
 
 const UI_SOUNDS = {
   correct: require("../assets/sounds/correct.mp3"),

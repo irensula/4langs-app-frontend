@@ -1,82 +1,161 @@
 import { useState, useEffect, useContext } from 'react';
 import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+
 import { AuthContext } from '../utils/AuthContext';
-import { layout, textStyles, colors, spacing } from '../constants/layout';
-import TextCard from '../components/TextCard';
-import Navbar from '../components/Navbar';
-import NextArrow from '../components/NextArrow';
-import LanguageTabs from '../components/LanguageTabs';
-import CategoryTitle from '../components/CategoryTitle';
 import { api } from "../utils/apiClient";
+import { saveProgress } from "../utils/progressService";
+import { playUISound, stopSound } from "../utils/soundUtils";
+
+import MessageModal from "../components/MessageModal";
+import CategoryTitle from '../components/CategoryTitle';
+import TextCard from '../components/TextCard';
+import NextArrow from '../components/NextArrow';
+import Navbar from '../components/Navbar';
+
+import { layout, textStyles, colors, spacing } from '../constants/layout';
 
 const TextScreen = ({ route, navigation }) => {
-    const { user, token } = useContext(AuthContext);
-    const { name, categoryID } = route.params;
-    const [texts, setTexts] = useState([]);
-    const [selectedLanguage, setSelectedLanguage] = useState('en');
-    const [activeLanguage, setActiveLanguage] = useState(false);
+    const { token } = useContext(AuthContext);
+    const { categoryName, courseId, categoryId, exerciseId } = route.params;
+
+    const [text, setText] = useState([]);
+    const [exercise, setExercise] = useState(null);
+    
     const isFocused = useIsFocused();
+
+    const [hasScored, setHasScored] = useState(false);
+    const [refreshProgress, setRefreshProgress] = useState(null);
+    const [modal, setModal] = useState({
+          visible: false,
+          type: "message",
+          title: "",
+          message: "",
+      });
     
     useEffect(() => {
-        const fetchTexts = async () => {
-
-            if (!token || !categoryID) return;
+        const fetchText = async () => {
+          try {
+            const data = await api.get(
+              `/courses/${courseId}/categories/${categoryId}/exercises/${exerciseId}`,
+               token
+              );
             
-            try {
-                const data = await api.get(
-                    `/categories/${categoryID}/texts`, 
-                    token 
-                );
-
-                if (!Array.isArray(data)) return;
-
-                setTexts(data);
-                
-            } catch (error) {
-                console.error('Error fetching texts:', error);
-                setTexts([]);
-            }
+              if (!Array.isArray(data.content)) return;
+            
+              setText(data.content);
+              console.log(data.content);
+              setExercise(data.exercise);
+    
+          } catch (error) {
+            console.error("Error fetching words list:", error);
+            setText([]);
+          }
         };
-        fetchTexts();
-    }, [token, categoryID]);
+        fetchText();
+      }, [token, courseId, categoryId, exerciseId]);
+
+    // COMPLETE AND SAVE PROGRESS 
+    const handleComplete = async () => {
+        if (hasScored) return;
+
+        setHasScored(true);
+
+        try {
+            await saveProgress({
+                courseId,
+                categoryId,
+                exerciseId,
+                token,
+            });
+
+            playUISound("win");
+
+            setModal({
+                visible: true,
+                type: "message",
+                title: "",
+                message: "Exercise completed!",
+                confirmText: "Next",
+            });
+
+            setRefreshProgress(Date.now());
+
+        } catch (error) {
+            playUISound("second_win");
+            setModal({
+                visible: true,
+                type: "message",
+                title: "",
+                message: error.response?.error,
+                confirmText: "OK",
+            }); 
+        }
+    };
+    // STOP SOUND WHEN USER GOES TO ANOTHER SCREEN
+    useEffect(() => {
+        if (!isFocused) {
+            stopSound();
+        }
+    }, [isFocused]);
+    // GO TO NEXT SCREEN
+    const handleNext = () => {
+        navigation.navigate("MemoGame", {
+            courseId,
+            categoryId,
+            categoryName,
+            exerciseId: exerciseId + 1,
+        });
+    };
     
     return (
         <View style={layout.screen}>
+            <MessageModal
+                visible={modal.visible}
+                type={modal.type}
+                title={modal.title}
+                message={modal.message}
+                onClose={() =>
+                    setModal(prev => ({
+                        ...prev,
+                        visible: false,
+                    }))
+                }
+            />
+            
             <ScrollView contentContainerStyle={layout.scrollContent}>
 
                 <CategoryTitle 
-                    categoryID={categoryID} 
-                    name={name} 
-                    subtitle="Teksti"
+                    courseId={courseId} 
+                    categoryName={categoryName} 
+                    subtitle={exercise?.name}
                     isFocused={isFocused}
                 />
 
-                <View style={layout.wrapper}>
-                    
-                    <LanguageTabs 
-                    selectedLanguage={selectedLanguage}
-                    setSelectedLanguage={setSelectedLanguage}
-                    activeLanguage={activeLanguage}
-                />
+                 {text.map(item => (
+                    <TextCard
+                        key={item.content_id}
+                        contentId={item.content_id}
+                        image={item.image_path}
+                        studyTitle={item.study_title}
+                        studyText={item.study}
+                        studySound={item.study_sound}
+                        translationTitle={item.translation_title}
+                        translationText={item.translation}
+                        translationSound={item.translation_sound}
+                        handleComplete={handleComplete}
+                    />
+                ))}
 
-                    {texts.map((item, index) =>(
-                        <TextCard 
-                            key={index}
-                            texts={item} 
-                            selectedLanguage={selectedLanguage}
-                        />)
-                    )}
-                </View>
-                <NextArrow screen={'MemoScreen'} name={name} categoryID={categoryID} />
+                {/* NEXT ARROW */}
+                <NextArrow handleNext={handleNext} />
+            
             </ScrollView>
 
-            {user && (
-                <View style={layout.navbarWrapper}>
-                    <Navbar user={user} navigation={navigation} />
-                </View>
-            )}
-
+            {/* NAVBAR */}
+            <View style={layout.navbarWrapper}>
+                <Navbar navigation={navigation} />
+            </View>
         </View>
     )
 }

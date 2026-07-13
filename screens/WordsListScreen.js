@@ -37,6 +37,7 @@ const WordsListScreen = ({ route, navigation }) => {
   const [exercise, setExercise] = useState(null);
 
   const [hasScored, setHasScored] = useState(false);
+  const [refreshProgress, setRefreshProgress] = useState(null);
   const [modal, setModal] = useState({
       visible: false,
       type: "message",
@@ -282,7 +283,7 @@ const WordsListScreen = ({ route, navigation }) => {
         {/* PLAY ALL SOUNDS */}
         <View style={styles.contentContainer}>
           <Pressable
-              style={styles.playButton}
+              style={layout.playButton}
               onPress={togglePlay}
           >
             <AntDesign 
@@ -290,7 +291,7 @@ const WordsListScreen = ({ route, navigation }) => {
                 size={26} 
                 color={colors.white} 
             />
-            <Text style={styles.playButtonText}> 
+            <Text style={layout.playButtonText}> 
                 {isPlaying ? "Pause" : "Play all"}
             </Text>
           </Pressable>
@@ -354,23 +355,6 @@ const styles = StyleSheet.create({
   listContainer: { 
     marginVertical: 10, 
     gap: 8 
-  },
-  playButton: {
-    backgroundColor: colors.orange,
-    width: "100%",
-    borderRadius: 50,
-    height: 50,
-    flexDirection: "row",
-    columnGap: 15,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-    alignSelf: "flex-end"
-  },
-  playButtonText: {
-    fontSize: 18,
-    fontWeight: 400,
-    color: colors.white
   },
   trackItem: { 
     flexDirection: "row",

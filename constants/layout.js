@@ -6,10 +6,11 @@ export const colors = {
   lightgreen: "#f0f8eb",
   blue: "#A8F4FF",
   darkblue: "#158fd4",
+  lightblue: "#f1f8fd",
   orange: "#FFB425",
   darkorange: "#FFB425",
   yellow: "#FFE662",
-  lightorange: "#FFCA66",
+  lightorange: "#FFF0D3",
   violet: "#BF8FFD",
   lightviolet: "#d8bbfe",
   text: "#333333",
@@ -247,5 +248,22 @@ export const layout = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
+  },
+  playButton: {
+    backgroundColor: colors.orange,
+    width: "100%",
+    borderRadius: 50,
+    height: 50,
+    flexDirection: "row",
+    columnGap: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    alignSelf: "flex-end"
+  },
+  playButtonText: {
+    fontSize: 18,
+    fontWeight: 400,
+    color: colors.white
   },
 });
