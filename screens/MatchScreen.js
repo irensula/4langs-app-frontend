@@ -170,6 +170,17 @@ const MatchScreen = ({ navigation, route }) => {
     setRefreshProgress(Date.now());
   };
 
+  // GO TO NEXT SCREEN
+  const handleNext = () => {
+    console.log("handleNext");
+    navigation.navigate("GapsTask", {
+      courseId,
+      categoryId,
+      categoryName,
+      exerciseId: exerciseId + 1,
+    });
+  };
+
   return (
     <View style={layout.screen}>
       <MessageModal
@@ -236,11 +247,7 @@ const MatchScreen = ({ navigation, route }) => {
             <Text style={textStyles.buttonTextInner}>Käynnistä uudelleen</Text>
           </Pressable>
 
-          <NextArrow
-            screen={"GapsScreen"}
-            categoryName={categoryName}
-            categoryId={categoryId}
-          />
+          <NextArrow handleNext={handleNext} />
         </View>
       </ScrollView>
 

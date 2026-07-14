@@ -22,7 +22,6 @@ import WordsListScreen from './screens/WordsListScreen';
 import WordCardScreen from './screens/WordCardScreen';
 import SentenceCardScreen from './screens/SentenceCardScreen';
 import TextScreen from "./screens/TextScreen";
-import WordInputScreen from "./screens/WordInputScreen";
 import MemoScreen from "./screens/MemoScreen";
 import ProgressScreen from "./screens/ProgressScreen";
 import MatchScreen from "./screens/MatchScreen";
@@ -82,7 +81,6 @@ function AppContent() {
             <Stack.Screen name="Text" component={TextScreen} />
             <Stack.Screen name="MemoGame" component={MemoScreen} />
             <Stack.Screen name="MatchGame" component={MatchScreen} />
-            <Stack.Screen name="WordInput" component={WordInputScreen} />
             <Stack.Screen name="GapsTask" component={GapsScreen} />
             <Stack.Screen name="User" component={UserScreen} />
             <Stack.Screen name="Progress" component={ProgressScreen} />

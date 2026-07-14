@@ -42,8 +42,7 @@ const Login = ({ navigation }) => {
         
         return;
       }
-      console.log("LOGIN DATA:", data); 
-      console.log("LOGIN CALLED");
+
       const user = {
           id: data.id,
           username: data.username,
@@ -73,12 +72,13 @@ const Login = ({ navigation }) => {
       <View style={layout.mainContainer}>
         <Text style={textStyles.title}>Kirjautuminen</Text>
 
-        <View style={[layout.formContainer, layout.shadowStyle]}>
-          {message ? (
+        {message ? (
             <View style={{ minHeight: 50 }}>
               <MessageBox message={message} type={messageType} />
             </View>
           ) : null}
+
+        <View style={[layout.formContainer, layout.shadowStyle]}>
 
           <Text style={textStyles.label}>Sähköposti</Text>
           <TextInput

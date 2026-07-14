@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const colors = {
   primary: "#8DD54F",
   secondary: "#54932f",
+  lime: "#c3eba0",
   lightgreen: "#f0f8eb",
   blue: "#A8F4FF",
   darkblue: "#158fd4",
@@ -15,7 +16,8 @@ export const colors = {
   lightviolet: "#d8bbfe",
   text: "#333333",
   white: "#ffffff",
-  red: "#FA003F"
+  red: "#FA003F",
+  lightred: "#fa84a2"
 };
 
 export const spacing = {
@@ -146,7 +148,7 @@ export const layout = StyleSheet.create({
   },
   formButton: {
     width: '100%',
-    height: 60,
+    height: 50,
     backgroundColor: colors.violet,
     borderRadius: 50,
     justifyContent: "center",

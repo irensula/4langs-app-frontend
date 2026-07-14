@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
 import { colors, spacing, textStyles, layout } from '../constants/layout';
 
-const WordGap = ({ answer }) => {
+const WordGap = ({ word }) => {
     return (
         <View style={styles.wordWrapper}>
-            <Text style={styles.text}>{answer}</Text>
+            <Text style={styles.text}>{word}</Text>
         </View>
     )
 }
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         paddingVertical: 7,
         paddingHorizontal: 10,
-        marginVertical: 10,
+        marginVertical: 3,
         width: 'auto',
         alignContent: 'space-between'
     }, 

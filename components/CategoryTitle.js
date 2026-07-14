@@ -39,25 +39,36 @@ const CategoryTitle = ({
 
   return (
     <View style={styles.categoryWrapper}>
-      <View style={styles.progressWrapper}>
-        <AntDesign name="star" size={24} color={colors.yellow} />
-        <Text style={styles.progressText}>
-          {(progressPercent?.progress.percent ?? 0)} / 100%
-        </Text>
+      <View style={styles.header}>
+        <Text style={[textStyles.title, { marginBottom: 0 }]}>{categoryName}</Text>
+
+        <View style={styles.progressWrapper}>
+          <AntDesign name="star" size={24} color={colors.yellow} />
+          <Text style={styles.progressText}>
+            {progressPercent?.progress.percent ?? 0} / 100%
+          </Text>
+        </View>
       </View>
-      <Text style={textStyles.title}>{categoryName}</Text>
-      <Text style={textStyles.subtitle}>{subtitle}</Text>
+      
+      <Text style={[textStyles.subtitle, {alignSelf: "flex-start"}]}>{subtitle}</Text>
       
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10
+  },
   categoryWrapper: {
     backgroundColor: colors.primary,
     borderBottomWidth: 2,
     borderColor: colors.secondary,
     paddingTop: 15,
+    paddingHorizontal: 15
   },
   progressWrapper: {
     marginHorizontal: 10,
