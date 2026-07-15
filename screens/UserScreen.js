@@ -65,7 +65,6 @@ const UserScreen = ({ route, navigation }) => {
     }, [contextUser]);
 
     const editUserData = async() => {
-        console.log("Call");
         const errors = validateUser(userdata, "edit");
 
         if (Object.keys(errors).length > 0) {

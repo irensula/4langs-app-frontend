@@ -7,22 +7,22 @@ import { layout, textStyles, spacing, colors } from "../constants/layout";
 import { api } from "../utils/apiClient";
 
 const ProgressScreen = ({ navigation }) => {
-  const { user, token } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
   const [userProgress, setUserProgress] = useState([]);
 
   useEffect(() => {
     const fetchProgress = async () => {
       
-      if (!token || !user?.id) return;
+      if (!token) return;
 
       try {
         const data = await api.get(
-          `/progress/${user.id}`, 
+          `/progress`, 
           token
         );
 
-        if (!data) return;
-        
+        if (!Array.isArray(data)) return;
+        console.log("Data", data);
         setUserProgress(data);
 
       } catch (error) {
@@ -33,46 +33,7 @@ const ProgressScreen = ({ navigation }) => {
 
     fetchProgress();
 
-  }, [user, token]);
-
-  const currentScoreAll = userProgress?.currentScoreAll || 0;
-  const maxScoreAll = userProgress?.maxScoreAll || 0;
-
-  const currentScoreEn = userProgress?.currentScoreEn || 0;
-  const currentScoreFi = userProgress?.currentScoreFi || 0;
-  const currentScoreUa = userProgress?.currentScoreUa || 0;
-  const currentScoreRu = userProgress?.currentScoreRu || 0;
-
-  const maxScorePerLanguage = userProgress?.maxScorePerLanguage || 0;      
-    const percentAll =
-    maxScoreAll > 0
-      ? Math.round((currentScoreAll / maxScoreAll) * 100)
-      : 0;
-
-  const percentEn =
-    maxScorePerLanguage > 0
-      ? Math.round((currentScoreEn / maxScorePerLanguage) * 100)
-      : 0;
-
-  const percentFi =
-    maxScorePerLanguage > 0
-      ? Math.round((currentScoreFi / maxScorePerLanguage) * 100)
-      : 0;
-
-  const percentUa =
-    maxScorePerLanguage > 0
-      ? Math.round((currentScoreUa / maxScorePerLanguage) * 100)
-      : 0;
-
-  const percentRu =
-    maxScorePerLanguage > 0
-      ? Math.round((currentScoreRu / maxScorePerLanguage) * 100)
-      : 0;
-
-  const toFraction = (score, max) => {
-    if (max === 0) return 0;
-    return score / max;
-  };
+  }, [token]);
 
   return (
     <View
@@ -88,59 +49,33 @@ const ProgressScreen = ({ navigation }) => {
         }}
       >
         <View style={layout.container}>
-          <View>
-            <Text style={[textStyles.title, { color: colors.secondary }]}>
-              Edistymisesi
+          <Text style={[textStyles.title]}>
+              My progress
             </Text>
-
-            <ProgressCard
-              language={"Kokonaisedistyminen"}
-              percents={percentAll}
-              totalMaxScoreAllLanguages={maxScoreAll}
-              totalScore={currentScoreAll}
-              value={toFraction(currentScoreAll, maxScoreAll)}
-            />
-
-            <ProgressCard
-              language={"Englanniksi"}
-              percents={percentEn}
-              totalMaxScoreAllLanguages={maxScorePerLanguage}
-              totalScore={currentScoreEn}
-              value={toFraction(currentScoreEn, maxScorePerLanguage)}
-            />
-
-            <ProgressCard
-              language={"Suomeksi"}
-              percents={percentFi}
-              totalMaxScoreAllLanguages={maxScorePerLanguage}
-              totalScore={currentScoreFi}
-              value={toFraction(currentScoreFi, maxScorePerLanguage)}
-            />
-
-            <ProgressCard
-              language={"Ukrainaksi"}
-              percents={percentUa}
-              totalMaxScoreAllLanguages={maxScorePerLanguage}
-              totalScore={currentScoreUa}
-              value={toFraction(currentScoreUa, maxScorePerLanguage)}
-            />
-
-            <ProgressCard
-              language={"Venäjäksi"}
-              percents={percentRu}
-              totalMaxScoreAllLanguages={maxScorePerLanguage}
-              totalScore={currentScoreRu}
-              value={toFraction(currentScoreRu, maxScorePerLanguage)}
-            />
+          <View>
+            {userProgress.map((item) => (
+              <ProgressCard
+                key={item.courseId}
+                studyName={item.languages.study_name}
+                studyFlag={item.languages.study_flag}
+                translationName={item.languages.translation_name}
+                translationFlag={item.languages.translation_flag}
+                progressPercent={item.progressPercent}
+                categoriesDone={item.categories.done}
+                categoriesTotal={item.categories.total}
+                exercisesDone={item.exercises.done}
+                exercisesTotal={item.exercises.total}
+                pointsGot={item.points.got}
+                pointsMax={item.points.max}
+                currentCategory={item.currentCategory}
+            />))}
           </View>
         </View>
       </ScrollView>
-
-      {user && (
-        <View style={layout.navbarWrapper}>
-          <Navbar user={user} navigation={navigation} />
-        </View>
-      )}
+      {/* NAVBAR */}
+      <View style={layout.navbarWrapper}>
+        <Navbar navigation={navigation} />
+      </View>
     </View>
   );
 };

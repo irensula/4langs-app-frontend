@@ -146,8 +146,8 @@ const SettingsScreen = ({ navigation }) => {
       >
         <View style={layout.container}>
           <View style={[layout.formContainer, layout.shadowStyle]}>
-            <Text style={[textStyles.title, { color: colors.secondary }]}>
-              Tiedot
+            <Text style={textStyles.title}>
+              Information
             </Text>     
             
               <View style={layout.menuItem}>
