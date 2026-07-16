@@ -1,14 +1,16 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { View, ActivityIndicator } from 'react-native';
 
 import { colors } from "./constants/layout";
 import { AuthProvider, AuthContext } from './utils/AuthContext';
+import { UpdateProvider, useUpdate } from "./utils/UpdateContext";
 import { navigationRef } from "./utils/navigationRef";
 import { setApiHandlers } from "./utils/apiClient";
-import { View, ActivityIndicator } from 'react-native';
+
 // screens
 import StartScreen from './screens/StartScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -28,6 +30,8 @@ import MatchScreen from "./screens/MatchScreen";
 import GapsScreen from "./screens/GapsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import CourseSettingsScreen from "./screens/CourseSettingsScreen";
+// components
+import UpdateModal from './components/UpdateModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,7 +45,11 @@ function LoadingIndicator() {
 }
 
 function AppContent() {
-
+  // authentication
+  const { user, authReady, logout } = useContext(AuthContext);
+  // check app for updates
+  const { checkForUpdate, updateInfo, openStore } = useUpdate();
+  // fonts
   const [fontsLoaded] = useFonts({
     LuckiestGuy: require('./assets/fonts/LuckiestGuy-Regular.ttf'),
     ABeeZee: require('./assets/fonts/ABeeZee-Regular.ttf'),
@@ -49,17 +57,32 @@ function AppContent() {
     NunitoBold: require('./assets/fonts/Nunito-Bold.ttf'),
   });
 
-  const { user, authReady, logout } = useContext(AuthContext);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   useEffect(() => {
     if (logout) setApiHandlers(logout);
   }, [logout]);
+
+  useEffect(() => {
+    checkForUpdate();
+  }, [checkForUpdate]);
+
+  useEffect(() => {
+      if (updateInfo?.hasUpdate) {
+          setShowUpdateModal(true);
+      }
+  }, [updateInfo]);
+
+  useEffect(() => {
+    console.log("updateInfo",updateInfo);
+  }, [updateInfo]);
 
   if (!fontsLoaded || !authReady) {
     return <LoadingIndicator />;
   }
 
   return (
+    <>
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Start" component={StartScreen} />
@@ -90,17 +113,35 @@ function AppContent() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+
+    <UpdateModal
+      visible={showUpdateModal}
+      forceUpdate={updateInfo?.forceUpdate}
+      title={
+          updateInfo?.forceUpdate
+              ? "Update required"
+              : "Update available"
+      }
+      message={updateInfo?.message}
+      confirmText="Update"
+      cancelText="Later"
+      onConfirm={openStore}
+      onClose={() => setShowUpdateModal(false)}
+      />
+    </>
   );
 }
 
 export default function App() {
   return (
     <AuthProvider>
-      <SafeAreaProvider style={{ flex: 1 }}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }} edges={['top', 'bottom']}>
-          <AppContent />
-        </SafeAreaView>
-      </SafeAreaProvider>
+      <UpdateProvider>
+        <SafeAreaProvider style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }} edges={['top', 'bottom']}>
+            <AppContent />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </UpdateProvider>
     </AuthProvider>
   );
 }
