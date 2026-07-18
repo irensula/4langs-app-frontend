@@ -63,18 +63,15 @@ function AppContent() {
     if (logout) setApiHandlers(logout);
   }, [logout]);
 
+  // check if there is upadte
   useEffect(() => {
-    checkForUpdate();
-  }, [checkForUpdate]);
-
+      checkForUpdate();
+  }, []);
+  // show update modal
   useEffect(() => {
       if (updateInfo?.hasUpdate) {
           setShowUpdateModal(true);
       }
-  }, [updateInfo]);
-
-  useEffect(() => {
-    console.log("updateInfo",updateInfo);
   }, [updateInfo]);
 
   if (!fontsLoaded || !authReady) {

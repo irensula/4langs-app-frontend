@@ -161,6 +161,7 @@ const GapsScreen = ({ navigation, route }) => {
           {/* CATEGORY TITLLE */}
           <CategoryTitle 
               courseId={courseId} 
+              categoryId={categoryId}
               categoryName={categoryName} 
               subtitle={exercise?.name}
               isFocused={isFocused}

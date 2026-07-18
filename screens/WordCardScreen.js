@@ -135,6 +135,7 @@ const WordCardScreen = ({ route, navigation }) => {
         {/* CATEGORY TITLLE */}
         <CategoryTitle 
             courseId={courseId} 
+            categoryId={categoryId}
             categoryName={categoryName} 
             subtitle={exercise?.name}
             isFocused={isFocused}

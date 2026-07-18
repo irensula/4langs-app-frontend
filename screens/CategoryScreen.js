@@ -51,6 +51,7 @@ export default function CategoryScreen({ route, navigation }) {
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           courseId={courseId}
+          categoryId={categoryId}
           categoryName={categoryName}
           isFocused={isFocused}
         />

@@ -125,6 +125,7 @@ const TextScreen = ({ route, navigation }) => {
 
                 <CategoryTitle 
                     courseId={courseId} 
+                    categoryId={categoryId}
                     categoryName={categoryName} 
                     subtitle={exercise?.name}
                     isFocused={isFocused}

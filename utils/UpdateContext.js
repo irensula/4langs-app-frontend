@@ -10,10 +10,8 @@ import { api } from "./apiClient";
 export const UpdateContext = createContext();
 
 export function UpdateProvider({ children }) {
-
   const [updateInfo, setUpdateInfo] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [checked, setChecked] = useState(false);
   
   const openStore = async () => {
     if (!updateInfo?.playStoreUrl) return;
@@ -29,25 +27,29 @@ export function UpdateProvider({ children }) {
     }
   };
 
-  const checkForUpdate = async () => {
-    if (Constants.executionEnvironment === "storeClient") {
+  const checkForUpdate = useCallback(async () => {
+    const isExpoGo = Constants.executionEnvironment === "storeClient";
+
+    if (isExpoGo && !__DEV__) {
         return;
     }
 
     setLoading(true);
     
     try {
-
+        // PRODUCTION
         const currentVersion = Application.nativeApplicationVersion ?? "0.0.0";
-      
-        const response = await api.get("/version");
+        // DEVELOPMENT
+        // const currentVersion = __DEV__
+        //   ? "1.0.0"
+        //   : (Application.nativeApplicationVersion ?? "0.0.0");
 
-        const server = response;
-
+        const server = await api.get("/version");
+        
         const hasUpdate = compareVersions(currentVersion, server.latestVersion) < 0;
 
         const forceUpdate = compareVersions(currentVersion, server.minimumVersion) < 0;
-
+        
         setUpdateInfo({
             currentVersion,
             ...server,
@@ -60,16 +62,15 @@ export function UpdateProvider({ children }) {
     
     } finally {
         setLoading(false);
-        setChecked(true);
+        
     }
-  };
+  }, []);
 
   return (
     <UpdateContext.Provider
       value={{
         updateInfo,
         loading,
-        checked,
         checkForUpdate,
         openStore
       }}

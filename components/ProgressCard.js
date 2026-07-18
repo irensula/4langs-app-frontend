@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   tasks: {
-    fontSize: 20,
+    fontSize: 18,
     color: colors.white
   },
 });

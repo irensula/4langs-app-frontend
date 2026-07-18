@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 
 import { useIsFocused } from "@react-navigation/native";
 
@@ -203,6 +203,7 @@ const MemoScreen = ({ route, navigation }) => {
       <ScrollView contentContainerStyle={layout.scrollContent}>
         <CategoryTitle
           courseId={courseId}
+          categoryId={categoryId}
           categoryName={categoryName}
           subtitle={exercise?.name}
           isFocused={isFocused}
@@ -229,19 +230,8 @@ const MemoScreen = ({ route, navigation }) => {
           ))}
         </View>
 
-        <View style={styles.buttonsWrapper}>
-          <Pressable
-            style={[
-              layout.buttonInner,
-              { width: "auto", paddingHorizontal: 20, height: 40 },
-            ]}
-            onPress={resetGame}
-          >
-            <Text style={textStyles.buttonTextInner}>Käynnistä uudelleen</Text>
-          </Pressable>
+        <NextArrow handleNext={handleNext} />
 
-          <NextArrow handleNext={handleNext} />
-        </View>
       </ScrollView>
 
       <View style={layout.navbarWrapper}>
@@ -251,14 +241,5 @@ const MemoScreen = ({ route, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  buttonsWrapper: {
-    marginTop: 15,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-});
 
 export default MemoScreen;

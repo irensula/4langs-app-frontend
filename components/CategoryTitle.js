@@ -8,6 +8,7 @@ import { api } from "../utils/apiClient";
 const CategoryTitle = ({
     categoryName,
     courseId,
+    categoryId,
     isFocused,
     refreshProgress,
     subtitle
@@ -21,7 +22,7 @@ const CategoryTitle = ({
 
         try {
           const data = await api.get(
-            `/courses/${courseId}/progress`, 
+            `/courses/${courseId}/categories/${categoryId}/progress`, 
             token
           );
 

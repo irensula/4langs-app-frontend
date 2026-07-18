@@ -39,7 +39,11 @@ const UpdateModal = ({
                     <View style={styles.buttons}>
                         {!forceUpdate && (
                             <Pressable
-                                onPress={onClose}
+                                onPress={() => {
+                                    console.log("Later pressed");
+    console.log("Calling onClose...");
+    onClose?.();
+                                }}
                                 style={styles.cancelButton}
                             >
                                 <Text style={styles.buttonText}>{cancelText}</Text>
