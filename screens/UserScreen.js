@@ -13,6 +13,7 @@ import { layout, textStyles, spacing, colors } from '../constants/layout';
 import validateUser from "../utils/validateUser";
 
 import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const UserScreen = ({ route, navigation }) => {
     const { user: contextUser, token, logout, refreshSession } = useContext(AuthContext);    
@@ -231,12 +232,13 @@ const UserScreen = ({ route, navigation }) => {
                                 </>
                             )}
                             {editMode ? (
-                                <Pressable style={layout.formButton} onPress={editUserData}>
-                                    <Text style={textStyles.formButtonText}>Tallenna</Text>
+                                <Pressable style={styles.editButton} onPress={editUserData}>
+                                    <Text style={[textStyles.formButtonText, { color: colors.violet, paddingHorizontal: 10, fontWeight: 700 }]}>Tallenna</Text>
                                 </Pressable>
                             ) : (
-                                <Pressable style={layout.formButton} onPress={() => setEditMode(true)}>
-                                    <Text style={textStyles.formButtonText}>Muokkaa</Text>
+                                <Pressable style={[styles.editButton, { flexDirection: "row" } ]} onPress={() => setEditMode(true)}>
+                                    <FontAwesome6 name="edit" size={24} color={colors.violet} />
+                                    <Text style={[textStyles.formButtonText, { color: colors.violet, paddingHorizontal: 10, fontWeight: 700 }]}>Edit</Text>
                                 </Pressable>
                             )}
                         </View>
@@ -247,8 +249,8 @@ const UserScreen = ({ route, navigation }) => {
                             }} 
                         style={layout.center}
                     >
-                        <View style={layout.button}>
-                            <Text style={[textStyles.buttonText, {fontSize: 16}]}>Kirjaudu ulos</Text>
+                        <View style={layout.formButton}>
+                            <Text style={[textStyles.formButtonText, {fontSize: 16}]}>Log out</Text>
                         </View>
                     </Pressable>
                 </View>
@@ -264,14 +266,26 @@ const UserScreen = ({ route, navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    editButton: {
+        height: 40,
+        width: "auto",
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "flex-end",
+        marginVertical: 15,
+        paddingHorizontal: 15,
+        borderWidth: 2,
+        borderColor: colors.violet,
+        borderRadius: 15
+    },
     info: {
         alignItems: 'center',
         width: '100%',
-        marginTop: -40,
+        marginTop: -70
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 120,
+        height: 120,
         margin: 5,
         borderWidth: 3,
         borderColor: colors.darkblue,

@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { ScrollView, View, Pressable } from "react-native";
+import { ScrollView, View, Pressable, Text } from "react-native";
 
 import { AuthContext } from "../utils/AuthContext";
 import { api } from "../utils/apiClient";
@@ -58,32 +58,35 @@ const CourseScreen = ({ route, navigation }) => {
         contentContainerStyle={[
           layout.scrollContent,
           {
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            paddingBottom: 100,
+            paddingTop: 15
           },
         ]}
       >
-      <Pressable 
-        onPress={() =>
-            navigation.navigate("CourseSettings", { course })
-        } 
-        style={{
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "flex-end",
-            alignItems: "flex-start",
-            paddingHorizontal: 25 
+        <View style={{
+            flexDirection: "row", 
+            columnGap: 15, 
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center", 
           }}>
-          <Ionicons name="settings" size={35} color={colors.orange} />
-        </Pressable>
+            <Text style={[textStyles.title, { color: colors.violet }]}>Categories</Text>
+              <Ionicons 
+                style={{ position: "absolute", right: 15, bottom: 12 }}
+                onPress={() => navigation.navigate("CourseSettings", { course })} 
+                name="settings" 
+                size={35} 
+                color={colors.orange} 
+              />
+        </View>
+        <View style={{flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+          <CategoryCard
+            categories={categories}
+            onSelect={handleSelectCategory}
+          />
+        </View>
         
-        <CategoryCard
-          categories={categories}
-          onSelect={handleSelectCategory}
-        />
       </ScrollView>
-
       
       <View style={layout.navbarWrapper}>
         <Navbar navigation={navigation} />

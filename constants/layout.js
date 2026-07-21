@@ -229,10 +229,13 @@ export const layout = StyleSheet.create({
   },
   langWrap: {
     flexDirection: "row",
-    columnGap: 10, 
-    marginVertical: 10,
+    columnGap: 10,
+    marginVertical: 5,
     flex: 1,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: "transparent",
+    borderRadius: 50,
   },
   menuItem: {
     paddingVertical: 16,

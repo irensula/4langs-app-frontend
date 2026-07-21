@@ -198,11 +198,10 @@ const CourseSettingsScreen = ({ route, navigation }) => {
                 }}
             >
                 <View style={layout.container}>
-                    <View style={[layout.formContainer, layout.shadowStyle]}>
-                        
-                        <Text style={[textStyles.title, { color: colors.secondary, fontSize: 30 }]}>
+                    <Text style={[textStyles.title, { color: colors.violet, fontSize: 30 }]}>
                             Course Settings
                         </Text>
+                    <View style={[layout.formContainer, layout.shadowStyle]}>
 
                         <View style={layout.menuItem}>
                             <Text style={layout.menuText}>Study language</Text>

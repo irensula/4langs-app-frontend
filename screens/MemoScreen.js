@@ -216,6 +216,7 @@ const MemoScreen = ({ route, navigation }) => {
             flexWrap: "wrap",
             justifyContent: "center",
             alignItems: "center",
+            paddingVertical: 15
           }}
         >
           {memoCards.map((card, index) => (

@@ -1,27 +1,32 @@
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { colors } from '../constants/layout';
+import { colors, textStyles } from '../constants/layout';
 
 const NextArrow = ({ handleNext }) => {
     return (
-        <View>
             <Pressable 
                 onPress={handleNext}
                 style={styles.iconWrap}    
             >
-                <Text style={styles.icon}>
-                    <Ionicons name="arrow-forward-circle" size={42} color={colors.secondary} />
-                </Text>
+                <Text style={textStyles.formButtonText}>Next</Text>
+                <Ionicons name="arrow-forward-circle" size={35} color={colors.white} />
             </Pressable>
-        </View>
     )
 }
 
 const styles = StyleSheet.create({
     iconWrap: {
-        alignItems: 'flex-end',
-        marginBottom: 10,
-        marginRight: 10,
+        flexDirection: "row",
+        columnGap: 10,
+        backgroundColor: colors.secondary,
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "flex-end",
+        marginVertical: 15,
+        marginRight: 15,
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 50
     }
 })
 

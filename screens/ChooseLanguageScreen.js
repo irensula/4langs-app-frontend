@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, Pressable, ScrollView, Image } from "react-native";
+import { View, Text, Pressable, ScrollView, Image, StyleSheet } from "react-native";
 
 import { AuthContext } from "../utils/AuthContext";
 import { api, getImageUrl } from "../utils/apiClient";
 
-import { layout, textStyles } from "../constants/layout";
+import { layout, textStyles, colors } from "../constants/layout";
 
 import BackButton from "../components/BackButton";
 import Navbar from "../components/Navbar";
@@ -86,42 +86,57 @@ const ChooseLanguageScreen = ({ navigation }) => {
                 onClose={() => setModalVisible(false)}
             />
 
-            <ScrollView contentContainerStyle={[layout.scrollContent, { margin: 10 }]}>
+            <ScrollView contentContainerStyle={[layout.scrollContent, { padding: 15 }]}>
                 <BackButton />
-
-                <Text style={textStyles.subtitle}>Choose language to study</Text>
-                {languages.map((lang) => (
-                    <Pressable 
-                        key={lang.language_id}
-                        onPress={() => setStudyLanguage(lang.language_id)}
-                        style={layout.langWrap}
-                    >
-                        <Image 
-                            source={{ uri: getImageUrl(lang.flag_path) }}
-                            style={layout.flagImage}
-                            
-                        />
-                        <Text>
-                            {lang.name}{studyLanguage === lang.language_id ? "✓" : ""}
-                        </Text>
-                    </Pressable>
-                ))}
-                <Text style={textStyles.subtitle}>Choose translation language</Text>
-                {translationLanguages.map((lang) => (
-                    <Pressable 
-                        key={lang.language_id}
-                        onPress={() => setTranslationLanguage(lang.language_id)} 
-                        style={layout.langWrap}   
-                    >
-                        <Image 
-                            source={{ uri: getImageUrl(lang.flag_path) }}
-                            style={layout.flagImage}
-                        />
-                        <Text>
-                            {lang.name}{translationLanguage === lang.language_id ? "✓" : ""}
-                        </Text>
-                    </Pressable>
-                ))}
+                <View style={{ paddingVertical: 10 }}>
+                    <Text style={[textStyles.subtitle, { color: colors.violet, alignSelf: "flex-start" }]}>Choose language to study</Text>
+                    {languages.map((lang) => (
+                        <Pressable 
+                            key={lang.language_id}
+                            onPress={() => setStudyLanguage(lang.language_id)}
+                            style={[
+                                layout.langWrap,
+                                {
+                                    borderColor:
+                                    studyLanguage === lang.language_id
+                                        ? colors.primary
+                                        : "transparent",
+                                },
+                            ]}
+                        >
+                            <Image 
+                                source={{ uri: getImageUrl(lang.flag_path) }}
+                                style={layout.flagImage}
+                                
+                            />
+                            <Text>{lang.name}</Text>
+                        </Pressable>
+                    ))}
+                </View>
+                <View style={{ paddingVertical: 10 }}>
+                    <Text style={[textStyles.subtitle, { color: colors.violet, alignSelf: "flex-start" }]}>Choose translation language</Text>
+                    {translationLanguages.map((lang) => (
+                        <Pressable 
+                            key={lang.language_id}
+                            onPress={() => setTranslationLanguage(lang.language_id)} 
+                            style={[
+                                layout.langWrap,
+                                {
+                                    borderColor:
+                                    translationLanguage === lang.language_id
+                                        ? colors.primary
+                                        : "transparent",
+                                },
+                            ]}  
+                        >
+                            <Image 
+                                source={{ uri: getImageUrl(lang.flag_path) }}
+                                style={layout.flagImage}
+                            />
+                            <Text>{lang.name}</Text>
+                        </Pressable>
+                    ))}
+                </View>
 
                 <Pressable 
                     disabled={!studyLanguage || !translationLanguage}

@@ -211,6 +211,7 @@ const MatchScreen = ({ navigation, route }) => {
             flexDirection: "row",
             gap: 10,
             justifyContent: "space-around",
+            paddingVertical: 15
           }}
         >
           <View>

@@ -55,7 +55,6 @@ export default function CategoryScreen({ route, navigation }) {
           categoryName={categoryName}
           isFocused={isFocused}
         />
-
         <View style={styles.categoriesWrap}>
           {exercises.map((exercise) => (
             <ExerciseCard
@@ -77,25 +76,11 @@ export default function CategoryScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   categoriesWrap: {
     flexDirection: "row",
+    rowGap: 15,
+    columnGap: 15,
     flexWrap: "wrap",
     justifyContent: "space-between",
+    paddingVertical: 20,
     paddingHorizontal: 10,
-  },
-  category: {
-    width: "48%",
-    padding: 10,
-    alignItems: "center",
-    marginVertical: 10,
-    height: 100,
-    justifyContent: "center",
-    backgroundColor: colors.orange,
-    borderColor: colors.lightorange,
-    borderRadius: 25,
-    borderWidth: 2,
-  },
-  categoryTitle: {
-    color: colors.white,
-    fontFamily: "ABeeZee",
-    fontSize: 16,
-  },
+  }
 });

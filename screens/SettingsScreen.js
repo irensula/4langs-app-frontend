@@ -145,34 +145,21 @@ const SettingsScreen = ({ navigation }) => {
         }}
       >
         <View style={layout.container}>
-          <View style={[layout.formContainer, layout.shadowStyle]}>
-            <Text style={textStyles.title}>
-              Information
-            </Text>     
+          <Text style={textStyles.title}>Settings</Text>
+          <View style={[layout.formContainer, layout.shadowStyle]}>     
             
               <View style={layout.menuItem}>
-                <Text style={layout.menuText}>              
-                  App version
-                </Text>
-                <Text style={layout.menuText}>
-                  {Constants.expoConfig?.version || "1.0.0"}
-                </Text>
+                <Text style={layout.menuText}>App version</Text>
+                <Text style={layout.menuText}>{Constants.expoConfig?.version || "1.0.0"}</Text>
               </View>
 
               <View style={layout.menuItem}>
-                <Text style={layout.menuText}>              
-                  Developed by
-                </Text>
-                <Text style={layout.menuText}>              
-                  Iryna Sula
-                </Text>
+                <Text style={layout.menuText}>Developed by</Text>
+                <Text style={layout.menuText}>Iryna Sula</Text>
               </View>
 
-              <Pressable style={layout.menuItem} onPress={() => Linking.openURL(
-                      "mailto:irensula19@gmail.com")}>
-                <Text style={layout.menuText}>              
-                  Contact
-                </Text>
+              <Pressable style={layout.menuItem} onPress={() => Linking.openURL("mailto:irensula19@gmail.com")}>
+                <Text style={layout.menuText}>Contact</Text>
                 <Text style={styles.link}>irensula19@gmail.com</Text>
               </Pressable>
 

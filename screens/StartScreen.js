@@ -34,7 +34,7 @@ const StartScreen = ({ navigation }) => {
 
       <View style={layout.mainContainer}>
         <Text style={styles.bigTitle}>4langs</Text>
-        <Text style={textStyles.mainTitle}>Tervetuloa!</Text>
+        <Text style={textStyles.mainTitle}>Welcome to the app!</Text>
         {user ? (
           <Pressable onPress={() => {
             if (!user) {
