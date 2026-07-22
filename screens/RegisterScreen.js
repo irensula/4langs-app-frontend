@@ -16,6 +16,7 @@ import MessageBox from "../components/MessageBox";
 import AvatarPicker from "../components/AvatarPicker";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { layout, textStyles, colors } from "../constants/layout";
+import Constants from "expo-constants";
 import { api } from "../utils/apiClient";
 
 const RegisterScreen = ({ navigation }) => {
@@ -123,7 +124,7 @@ const RegisterScreen = ({ navigation }) => {
 
       <View style={layout.mainContainer}>
 
-        <Text style={textStyles.title}>Rekisteröityminen</Text>
+        <Text style={textStyles.title}>Register</Text>
 
         {/* message box */}
         {message ? (
@@ -134,7 +135,7 @@ const RegisterScreen = ({ navigation }) => {
 
         <View style={[layout.formContainer, layout.shadowStyle]}>
           {/* login input */}
-          <Text style={textStyles.label}>Käyttäjätunnus</Text>
+          <Text style={textStyles.label}>Username</Text>
           <TextInput
             value={userdata.username}
             onChangeText={(text) => handleChange("username", text)}
@@ -143,7 +144,7 @@ const RegisterScreen = ({ navigation }) => {
           {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
 
           {/* email input */}
-          <Text style={textStyles.label}>Sähköposti</Text>
+          <Text style={textStyles.label}>Email</Text>
           <TextInput
             value={userdata.email}
             onChangeText={(text) => handleChange("email", text)}
@@ -199,7 +200,7 @@ const RegisterScreen = ({ navigation }) => {
 
           {/* choose avatar */}
           <View style={[layout.center, { paddingVertical: 20 }]}>
-            <Text style={textStyles.label}>Valitse kuva</Text>
+            <Text style={textStyles.label}>Choose avatar</Text>
             <AvatarPicker
               avatars={avatars}
               selectedAvatar={userdata.avatar_id}
@@ -226,11 +227,11 @@ const RegisterScreen = ({ navigation }) => {
               }}
               color={privacyAccepted ? colors.darkblue : undefined}
             />
-            <Text>Hyväksyn {" "}
+            <Text>I accept {" "}
               <Text style={{ color: colors.darkblue, textDecorationLine: 'underline', fontWeight: "600" }} onPress={() => Linking.openURL(
                 "https://irensula.github.io/privacy_policy/"
               )}>
-                tietosuojaselosteen
+                privacy policy
               </Text>
             </Text>
           </View>
@@ -241,7 +242,9 @@ const RegisterScreen = ({ navigation }) => {
             <Text style={textStyles.formButtonText}>Register</Text>
           </Pressable>
         </View>
+        <Text style={{color: colors.secondary, paddingVertical: 20}}>API: {Constants.expoConfig?.extra?.API_BASE ?? "undefined"}</Text>
       </View>
+      
     </ScrollView>
   );
 };

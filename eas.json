@@ -20,7 +20,7 @@
       },
       "autoIncrement": true,
       "env": {
-        "API_BASE": "https://4langs-app-production.up.railway.app"
+        "API_BASE": "https://study-languages.up.railway.app"
       }
     }
   },

@@ -70,7 +70,7 @@ const Login = ({ navigation }) => {
       </View>
 
       <View style={layout.mainContainer}>
-        <Text style={textStyles.title}>Kirjautuminen</Text>
+        <Text style={textStyles.title}>Login</Text>
 
         {message ? (
             <View style={{ minHeight: 50 }}>
@@ -80,7 +80,7 @@ const Login = ({ navigation }) => {
 
         <View style={[layout.formContainer, layout.shadowStyle]}>
 
-          <Text style={textStyles.label}>Sähköposti</Text>
+          <Text style={textStyles.label}>Email</Text>
           <TextInput
             style={[
               layout.input,
@@ -97,7 +97,7 @@ const Login = ({ navigation }) => {
             }}
             onBlur={() => setUsernameFocused(false)}
           />
-          <Text style={textStyles.label}>Salasana</Text>
+          <Text style={textStyles.label}>Password</Text>
           
           <View style={[
               layout.input, 
@@ -128,7 +128,7 @@ const Login = ({ navigation }) => {
           </View>
           <View style={layout.center}>
             <Pressable onPress={handleLogin} style={layout.formButton}>
-              <Text style={textStyles.formButtonText}>Kirjaudu</Text>
+              <Text style={textStyles.formButtonText}>Login</Text>
             </Pressable>
           </View>
         </View>
