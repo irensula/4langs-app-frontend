@@ -28,7 +28,7 @@ const SettingsScreen = ({ navigation }) => {
 
   const openPolicy = () => {
     Linking.openURL(
-      "https://irensula.github.io/privacy_policy/"
+      "https://study-languages.up.railway.app/privacy-policy"
     );
   };
 

@@ -229,7 +229,7 @@ const RegisterScreen = ({ navigation }) => {
             />
             <Text>I accept {" "}
               <Text style={{ color: colors.darkblue, textDecorationLine: 'underline', fontWeight: "600" }} onPress={() => Linking.openURL(
-                "https://irensula.github.io/privacy_policy/"
+                "https://study-languages.up.railway.app/privacy-policy"
               )}>
                 privacy policy
               </Text>
