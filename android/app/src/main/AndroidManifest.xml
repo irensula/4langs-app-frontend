@@ -35,6 +35,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="opetuspeli"/>
+        <data android:scheme="exp+opetuspeli-app"/>
       </intent-filter>
     </activity>
   </application>

@@ -8,8 +8,12 @@ import { View, ActivityIndicator } from 'react-native';
 import { colors } from "./constants/layout";
 import { AuthProvider, AuthContext } from './utils/AuthContext';
 import { UpdateProvider, useUpdate } from "./utils/UpdateContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { navigationRef } from "./utils/navigationRef";
 import { setApiHandlers } from "./utils/apiClient";
+
+// push notifications
+import NotificationHandler from "./utils/NotificationHandler";
 
 // screens
 import StartScreen from './screens/StartScreen';
@@ -131,14 +135,17 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <UpdateProvider>
-        <SafeAreaProvider style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }} edges={['top', 'bottom']}>
-            <AppContent />
-          </SafeAreaView>
-        </SafeAreaProvider>
-      </UpdateProvider>
-    </AuthProvider>
+    <NotificationProvider>
+      <AuthProvider>
+        <UpdateProvider>
+          <SafeAreaProvider style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }} edges={['top', 'bottom']}>
+              <NotificationHandler />
+              <AppContent />
+            </SafeAreaView>
+          </SafeAreaProvider>
+        </UpdateProvider>
+      </AuthProvider>
+    </NotificationProvider>
   );
 }

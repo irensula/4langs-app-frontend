@@ -66,7 +66,7 @@ const HomeScreen = ({ route, navigation }) => {
             alignItems: "center", 
           }}>
           <Text style={[textStyles.title, { color: colors.violet }]}>
-            My courses
+            My courses DEV
           </Text>
           <MaterialIcons 
             name="add" size={50} 
