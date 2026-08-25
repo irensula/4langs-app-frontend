@@ -14,6 +14,7 @@ import { setApiHandlers } from "./utils/apiClient";
 
 // push notifications
 import NotificationHandler from "./utils/NotificationHandler";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 
 // screens
 import StartScreen from './screens/StartScreen';
@@ -50,7 +51,9 @@ function LoadingIndicator() {
 
 function AppContent() {
   // authentication
-  const { user, authReady, logout } = useContext(AuthContext);
+  const { user, token, authReady, logout } = useContext(AuthContext);
+
+  usePushNotifications(token);
   // check app for updates
   const { checkForUpdate, updateInfo, openStore } = useUpdate();
   // fonts

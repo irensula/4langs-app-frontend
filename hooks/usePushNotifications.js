@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { api } from "../utils/apiClient";
 
 export function usePushNotifications(token) {
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [pushEnabled, setPushEnabled] = useState(false);
-  const API_BASE = Constants.expoConfig?.extra?.API_BASE;
-
+  
   const registerPushToken = async () => {
     try {
       // get Expo Push Token
@@ -15,18 +14,19 @@ export function usePushNotifications(token) {
       setExpoPushToken(data);
 
       // send Expo Push Token to the database
-      await fetch(`${API_BASE}/push-token/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ expo_push_token: data }),
-      });
+      await api.post(
+        `/push-token/register`, 
+        { expo_push_token: data },
+        token
+        );
+
       await AsyncStorage.setItem("expoPushToken", data);
       await AsyncStorage.setItem("pushEnabled", "true");
+      
       setPushEnabled(true);
+      
       console.log("Push token registerd:", data);
+    
     } catch (err) {
       console.error("Failed to register push token:", err);
     }
@@ -36,14 +36,12 @@ export function usePushNotifications(token) {
     try {
       if (!expoPushToken) return;
       // get Expo Push Token
-      await fetch(`${API_BASE}/push-token/unregister`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ expo_push_token: expoPushToken }),
-      });
+      await api.post(
+        `/push-token/unregister`, 
+        { expo_push_token: expoPushToken },
+        token
+      );
+
       setExpoPushToken(null);
       await AsyncStorage.setItem("pushEnabled", "false");
       setPushEnabled(false);

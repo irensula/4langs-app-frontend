@@ -7,10 +7,10 @@ import { NotificationContext } from "../context/NotificationContext";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: false,
-    shouldShowList: false,
+    shouldSetBadge: false
   }),
 });
 
@@ -73,7 +73,7 @@ export default function NotificationHandler() {
 
           addNotification({
             body,
-            notificationID: data?.notificationID ?? Date.now(),
+            notification_id: data?.notification_id ?? Date.now(),
           });
         } catch (err) {
           console.error("Notification processing failed:", err);
@@ -96,23 +96,4 @@ export default function NotificationHandler() {
   }, [pushEnabled]);
 
   return null;
-}
-
-export async function sendPushNotification(expoPushToken, body, data) {
-  const message = {
-    to: expoPushToken,
-    sound: "default",
-    body: body,
-    data: data || {},
-  };
-
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
 }
