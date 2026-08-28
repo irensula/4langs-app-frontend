@@ -17,7 +17,8 @@ export const colors = {
   text: "#333333",
   white: "#ffffff",
   red: "#FA003F",
-  lightred: "#fa84a2"
+  lightred: "#fa84a2",
+  lightgrey: "#CDCDCD"
 };
 
 export const spacing = {

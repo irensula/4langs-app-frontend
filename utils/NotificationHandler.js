@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef, useContext } from "react";
-import { Platform } from "react-native";
-import * as Device from "expo-device";
+// GLOBAL NOTIFICATIONS LISTENER
+
+import { useEffect, useRef, useContext } from "react";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 import { NotificationContext } from "../context/NotificationContext";
 
+// push notification settings
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
@@ -15,55 +15,12 @@ Notifications.setNotificationHandler({
 });
 
 export default function NotificationHandler() {
-  const { setExpoPushToken, addNotification, pushEnabled } =
-    useContext(NotificationContext);
+  const { addNotification, pushEnabled } = useContext(NotificationContext);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   useEffect(() => {
     if (!pushEnabled) return;
-
-    async function register() {
-      let token;
-
-      if (Device.isDevice) {
-        if (Platform.OS === "android") {
-          await Notifications.setNotificationChannelAsync("default", {
-            name: "default",
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: "#FF231F7C",
-          });
-        }
-
-        const { status: existingStatus } =
-          await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-        if (existingStatus !== "granted") {
-          const { status } = await Notifications.requestPermissionsAsync();
-          finalStatus = status;
-        }
-
-        if (finalStatus !== "granted") {
-          console.log("Permission not granted!");
-          return;
-        }
-
-        const projectId =
-          Constants?.expoConfig?.extra?.eas?.projectId ??
-          Constants?.easConfig?.projectId;
-        const pushTokenData = await Notifications.getExpoPushTokenAsync({
-          projectId,
-        });
-        token = pushTokenData.data;
-        setExpoPushToken(token);
-        console.log("Push Token:", token);
-      } else {
-        console.log("Must use physical device for push notifications");
-      }
-    }
-
-    register();
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notif) => {
@@ -97,3 +54,49 @@ export default function NotificationHandler() {
 
   return null;
 }
+
+// import { Platform } from "react-native";
+// import * as Device from "expo-device";
+// import Constants from "expo-constants";
+
+// async function register() {
+//   let token;
+
+//   if (Device.isDevice) {
+//     if (Platform.OS === "android") {
+//       await Notifications.setNotificationChannelAsync("default", {
+//         name: "default",
+//         importance: Notifications.AndroidImportance.MAX,
+//         vibrationPattern: [0, 250, 250, 250],
+//         lightColor: "#FF231F7C",
+//       });
+//     }
+
+//     const { status: existingStatus } =
+//       await Notifications.getPermissionsAsync();
+//     let finalStatus = existingStatus;
+//     if (existingStatus !== "granted") {
+//       const { status } = await Notifications.requestPermissionsAsync();
+//       finalStatus = status;
+//     }
+
+//     if (finalStatus !== "granted") {
+//       console.log("Permission not granted!");
+//       return;
+//     }
+
+//     const projectId =
+//       Constants?.expoConfig?.extra?.eas?.projectId ??
+//       Constants?.easConfig?.projectId;
+//     const pushTokenData = await Notifications.getExpoPushTokenAsync({
+//       projectId,
+//     });
+//     token = pushTokenData.data;
+//     setExpoPushToken(token);
+//     console.log("Push Token:", token);
+//   } else {
+//     console.log("Must use physical device for push notifications");
+//   }
+// }
+
+// register();

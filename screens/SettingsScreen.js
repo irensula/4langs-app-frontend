@@ -1,8 +1,9 @@
-import { useEffect, useState, useContext } from "react";
-import { ScrollView, View, Text, Pressable, Linking, StyleSheet } from "react-native";
+import { useEffect, useState, useContext, useRef } from "react";
+import { ScrollView, View, Text, Pressable, Linking, Animated, StyleSheet } from "react-native";
 
 import { AuthContext } from "../utils/AuthContext";
 import { api } from "../utils/apiClient";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 import Navbar from "../components/Navbar";
 import MessageModal from "../components/MessageModal";
@@ -18,6 +19,10 @@ const SettingsScreen = ({ navigation }) => {
 
   const [languages, setLanguages] = useState([]);
   const [uiLanguage, setUILanguage] = useState(user.ui_language_id);
+  const { pushEnabled, registerPushToken, unregisterPushToken } =
+    usePushNotifications(token, user.user_id);
+  const [toggleOn, setToggleOn] = useState(pushEnabled);
+  const offset = useRef(new Animated.Value(pushEnabled ? 30 : 0)).current;
 
   const [modal, setModal] = useState({
       visible: false,
@@ -74,9 +79,7 @@ const SettingsScreen = ({ navigation }) => {
           }));
           await api.put(
               `/users/${user.user_id}/settings`,
-              {
-                  ui_language_id: selectedLanguage.language_id
-              },
+              { ui_language_id: selectedLanguage.language_id },
               token
           );
           setUILanguage(selectedLanguage.language_id);
@@ -113,6 +116,43 @@ const SettingsScreen = ({ navigation }) => {
           cancelText: "Cancel",
           onConfirm: () => handleChangeUILanguage(selectedLanguage),
       });
+  };
+
+  // PUSH NOTIFICATIONS
+  useEffect(() => {
+    setToggleOn(pushEnabled);
+    Animated.timing(offset, {
+      toValue: pushEnabled ? 30 : 0,
+      duration: 0,
+      useNativeDriver: false,
+    }).start();
+  }, [pushEnabled]);
+
+  const toggle = async () => {
+    const newToggleState = !toggleOn;
+    setToggleOn(newToggleState);
+
+    setModal({
+              visible: true,
+              type: "message",
+              title: "",
+              message: newToggleState
+                ? "Push-notifications are on"
+                : "Push-notifications are off",
+              confirmText: "OK",
+          });    
+
+    Animated.timing(offset, {
+      toValue: newToggleState ? 30 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+
+    if (newToggleState) {
+      await registerPushToken();
+    } else {
+      await unregisterPushToken();
+    }
   };
 
   return (
@@ -179,7 +219,39 @@ const SettingsScreen = ({ navigation }) => {
                       placeholder = "Change application language"
                   />
               </View>
-          </View>
+
+               <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingVertical: 5
+                  }}
+                >
+                  <Text style={layout.menuText}>Push-notifications</Text>
+                  <Pressable
+                    style={{
+                      width: 70,
+                      height: 40,
+                      backgroundColor: toggleOn ? colors.secondary : colors.lightgrey,
+                      borderRadius: 50,
+                      flexDirection: "row",
+                      padding: 5,
+                    }}
+                    onPress={toggle}
+                  >
+                    <Animated.View
+                      style={{
+                        height: 30,
+                        width: 30,
+                        borderRadius: 20,
+                        backgroundColor: colors.white,
+                        marginLeft: offset,
+                      }}
+                    />
+                  </Pressable>
+                </View>
+            </View>
         </View>
       </ScrollView>
 

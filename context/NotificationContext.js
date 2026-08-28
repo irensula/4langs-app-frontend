@@ -1,3 +1,5 @@
+// IN-APP NOTIFICATION STATE
+
 import React, {
   createContext,
   useState,
@@ -20,7 +22,7 @@ export const NotificationContext = createContext({
 
 export const NotificationProvider = ({ children }) => {
   const [expoPushToken, setExpoPushToken] = useState("");
-  const [pushEnabled, setPushEnabled] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [popupNotifications, setPopupNotifications] = useState([]);
   const API_BASE = Constants.expoConfig?.extra?.API_BASE;
