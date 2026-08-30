@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { useIsFocused } from "@react-navigation/native";
 

@@ -128,6 +128,19 @@ export const layout = StyleSheet.create({
     width: "100%",
     minHeight: 350,
   },
+  notification: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.lightgreen,
+    borderColor: colors.darkblue,
+    borderWidth: 2,
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    width: "100%",
+    marginVertical: 5
+  },
   shadowStyle: {
     shadowColor: "#000",
     shadowOffset: { width: 4, height: 8 },
@@ -272,4 +285,15 @@ export const layout = StyleSheet.create({
     fontWeight: 400,
     color: colors.white
   },
+  deleteButton: {
+    backgroundColor: colors.red,
+    width: 100,
+    height: 34,
+    borderRadius: 12,
+    alignSelf: "flex-end",
+    margin: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 5
+  }
 });

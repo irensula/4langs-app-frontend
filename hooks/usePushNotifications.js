@@ -12,7 +12,7 @@ export function usePushNotifications(token, userId) {
   const pushEnabledKey = userId ? `pushEnabled_${userId}` : null;
   const expoPushTokenKey = userId ? `expoPushToken_${userId}` : null;
 
-  // Load saved push settings (push enabled, expo push token)
+  // Load saved push settings for current user (push enabled, expo push token)
   useEffect(() => {
     if (!userId) {
       setPushEnabled(false);
@@ -22,9 +22,11 @@ export function usePushNotifications(token, userId) {
 
     const loadPushSettings = async () => {
       try {
-        const savedPushEnabled = await AsyncStorage.getItem(pushEnabledKey);
-
-        const savedExpoPushToken = await AsyncStorage.getItem(expoPushTokenKey);
+        const [savedPushEnabled, savedExpoPushToken] = 
+          await Promise.all([
+            AsyncStorage.getItem(pushEnabledKey),
+            AsyncStorage.getItem(expoPushTokenKey)
+          ]);
 
         setPushEnabled(savedPushEnabled === "true");
         setExpoPushToken(savedExpoPushToken);
@@ -39,38 +41,39 @@ export function usePushNotifications(token, userId) {
     loadPushSettings();
   }, [userId]);
 
-  // register push token
+  // Register device (push token) for push notifications
   const registerPushToken = async () => {
-    if (!userId) return;
+    if (!userId || !token) return;
 
     try {
       // get Expo Push Token
-      const { data } = await Notifications.getExpoPushTokenAsync();
+      const { data: expoToken } = await Notifications.getExpoPushTokenAsync();
 
       // send Expo Push Token to the database
       await api.post(
         `/push-token/register`, 
-        { expo_push_token: data },
+        { expo_push_token: expoToken },
         token
         );
 
-      setExpoPushToken(data);
+      setExpoPushToken(expoToken);
 
-      await AsyncStorage.setItem(expoPushTokenKey, data);
+      await AsyncStorage.setItem(expoPushTokenKey, expoToken);
       await AsyncStorage.setItem(pushEnabledKey, "true");
       
+      setExpoPushToken(expoToken);
       setPushEnabled(true);
       
-      console.log("Push token registerd:", data);
+      console.log("Push token registerd:", expoToken);
     
     } catch (err) {
       console.error("Failed to register push token:", err);
     }
   };
 
-  // unregister push token
+  // Unregister device (push token) from push notifications
   const unregisterPushToken = async () => {
-    if (!userId) return;
+    if (!userId || !token) return;
 
     try {
       // Use state token or saved token
@@ -88,9 +91,12 @@ export function usePushNotifications(token, userId) {
         token
       );
 
-      setExpoPushToken(null);
       await AsyncStorage.setItem(pushEnabledKey, "false");
+      await AsyncStorage.removeItem(expoPushTokenKey);
+
+      setExpoPushToken(null);
       setPushEnabled(false);
+      
       console.log("Push token unregistered");
     } catch (err) {
       console.error("Failed to unregister push token:", err);

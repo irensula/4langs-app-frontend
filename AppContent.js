@@ -8,7 +8,6 @@ import { View, ActivityIndicator } from 'react-native';
 import { colors } from "./constants/layout";
 import { AuthContext } from './utils/AuthContext';
 import { useUpdate } from "./utils/UpdateContext";
-import { NotificationContext } from "./context/NotificationContext";
 
 import { navigationRef } from "./utils/navigationRef";
 import { setApiHandlers } from "./utils/apiClient";
@@ -23,16 +22,17 @@ import LoginScreen from './screens/LoginScreen';
 import ChooseLanguageScreen from './screens/ChooseLanguageScreen';
 import HomeScreen from './screens/HomeScreen';
 import CourseScreen from './screens/CourseScreen';
-import UserScreen from "./screens/UserScreen";
 import CategoryScreen from './screens/CategoryScreen';
 import WordsListScreen from './screens/WordsListScreen';
 import WordCardScreen from './screens/WordCardScreen';
 import SentenceCardScreen from './screens/SentenceCardScreen';
 import TextScreen from "./screens/TextScreen";
 import MemoScreen from "./screens/MemoScreen";
-import ProgressScreen from "./screens/ProgressScreen";
 import MatchScreen from "./screens/MatchScreen";
 import GapsScreen from "./screens/GapsScreen";
+import UserScreen from "./screens/UserScreen";
+import ProgressScreen from "./screens/ProgressScreen";
+import NotificationsScreen from './screens/NotificationsScreen';
 import SettingsScreen from "./screens/SettingsScreen";
 import CourseSettingsScreen from "./screens/CourseSettingsScreen";
 
@@ -56,23 +56,12 @@ export default function AppContent() {
   const { user, token, authReady, logout } = useContext(AuthContext);
   
   // push notifications
-    const { setPushEnabled: setContextPushEnabled, setExpoPushToken: setContextExpoPushToken } = useContext(NotificationContext);
-
-  const { registerPushToken, pushEnabled, expoPushToken } = usePushNotifications(token, user?.user_id);
+  const { registerPushToken } = usePushNotifications(token, user?.user_id);
   const [pushPermissionAsked, setPushPermissionAsked] = useState(null);
 
   useEffect(() => {
     if (logout) setApiHandlers(logout);
   }, [logout]);
-
-  useEffect(() => {
-    setContextPushEnabled(pushEnabled);
-  }, [pushEnabled]);
-
-  useEffect(() => {
-    if (expoPushToken) setContextExpoPushToken(expoPushToken);
-  }, [expoPushToken]);
-
 
   // Load information whether we already asked user
   useEffect(() => {
@@ -129,8 +118,6 @@ export default function AppContent() {
 
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
-  
-
   // check if there is upadte
   useEffect(() => {
       checkForUpdate();
@@ -172,6 +159,7 @@ export default function AppContent() {
               <Stack.Screen name="GapsTask" component={GapsScreen} />
               <Stack.Screen name="User" component={UserScreen} />
               <Stack.Screen name="Progress" component={ProgressScreen} />
+              <Stack.Screen name="Notifications" component={NotificationsScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
               <Stack.Screen name="CourseSettings" component={CourseSettingsScreen} />
             </>

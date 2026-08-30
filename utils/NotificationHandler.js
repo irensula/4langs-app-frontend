@@ -1,6 +1,6 @@
 // GLOBAL NOTIFICATIONS LISTENER
 
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useContext } from "react";
 import * as Notifications from "expo-notifications";
 import { NotificationContext } from "../context/NotificationContext";
 
@@ -15,20 +15,20 @@ Notifications.setNotificationHandler({
 });
 
 export default function NotificationHandler() {
-  const { addNotification, pushEnabled } = useContext(NotificationContext);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const { addNotification } = useContext(NotificationContext);
 
   useEffect(() => {
-    if (!pushEnabled) return;
 
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notif) => {
+    // Notification was delivered to the device and the application received the event
+    const notificationListener =
+      Notifications.addNotificationReceivedListener((notification) => {
         try {
-          const body = notif?.request?.content?.body ?? "(no body)";
-          const data = notif?.request?.content?.data ?? {};
+          const title = notification?.request?.content?.title ?? "(no title)";
+          const body = notification?.request?.content?.body ?? "(no body)";
+          const data = notification?.request?.content?.data ?? {};
 
           addNotification({
+            title,
             body,
             notification_id: data?.notification_id ?? Date.now(),
           });
@@ -37,66 +37,20 @@ export default function NotificationHandler() {
         }
       });
 
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((resp) => {
-        const data = resp.notification.request.content.data;
-        if (data?.messages) {
-          // add real messages to context
-          data.messages.forEach((msg) => addNotification({ body: msg }));
-        }
+    // user interacted with the notification
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response?.notification?.request?.content?.data ?? {};
+        
+        console.log("Notification pressed:", data);
       });
 
+    // cleanup: when the component is unmounted, the listeners are removed.
     return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
+      notificationListener.remove();
+      responseListener.remove();
     };
-  }, [pushEnabled]);
+  }, [addNotification]);
 
   return null;
 }
-
-// import { Platform } from "react-native";
-// import * as Device from "expo-device";
-// import Constants from "expo-constants";
-
-// async function register() {
-//   let token;
-
-//   if (Device.isDevice) {
-//     if (Platform.OS === "android") {
-//       await Notifications.setNotificationChannelAsync("default", {
-//         name: "default",
-//         importance: Notifications.AndroidImportance.MAX,
-//         vibrationPattern: [0, 250, 250, 250],
-//         lightColor: "#FF231F7C",
-//       });
-//     }
-
-//     const { status: existingStatus } =
-//       await Notifications.getPermissionsAsync();
-//     let finalStatus = existingStatus;
-//     if (existingStatus !== "granted") {
-//       const { status } = await Notifications.requestPermissionsAsync();
-//       finalStatus = status;
-//     }
-
-//     if (finalStatus !== "granted") {
-//       console.log("Permission not granted!");
-//       return;
-//     }
-
-//     const projectId =
-//       Constants?.expoConfig?.extra?.eas?.projectId ??
-//       Constants?.easConfig?.projectId;
-//     const pushTokenData = await Notifications.getExpoPushTokenAsync({
-//       projectId,
-//     });
-//     token = pushTokenData.data;
-//     setExpoPushToken(token);
-//     console.log("Push Token:", token);
-//   } else {
-//     console.log("Must use physical device for push notifications");
-//   }
-// }
-
-// register();

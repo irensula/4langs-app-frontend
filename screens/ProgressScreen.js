@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext } from "react";
-import { ScrollView, View, Text, StyleSheet } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import { AuthContext } from "../utils/AuthContext";
 import ProgressCard from "../components/ProgressCard";
 import Navbar from "../components/Navbar";
-import { layout, textStyles, spacing, colors } from "../constants/layout";
+import { layout, textStyles, colors } from "../constants/layout";
 import { api } from "../utils/apiClient";
 
 const ProgressScreen = ({ navigation }) => {

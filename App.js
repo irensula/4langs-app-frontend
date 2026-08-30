@@ -12,8 +12,8 @@ import AppContent from "./AppContent";
 
 export default function App() {
   return (
-    <NotificationProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <NotificationProvider>
         <UpdateProvider>
           <SafeAreaProvider style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }} edges={['top', 'bottom']}>
@@ -22,7 +22,7 @@ export default function App() {
             </SafeAreaView>
           </SafeAreaProvider>
         </UpdateProvider>
-      </AuthProvider>
-    </NotificationProvider>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
