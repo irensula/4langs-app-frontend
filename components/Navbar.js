@@ -13,6 +13,10 @@ const Navbar = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const { notifications } = useContext(NotificationContext);
 
+  const unreadCount = notifications.filter(
+    (notification) => !notification.read
+  ).length;
+
   return (
     <View style={styles.navbarContainer}>
       <View style={styles.iconsWrapper}>
@@ -34,9 +38,9 @@ const Navbar = ({ navigation }) => {
 
         <Pressable onPress={() => navigation.navigate("Notifications")}>
           <Ionicons name="notifications" size={32} color={colors.secondary} style={{ position: "relative" }} />
-          {notifications.length > 0 && 
+          {unreadCount > 0 && 
             <View  style={styles.numberWrap}>
-              <Text style={styles.number}>{notifications.length}</Text>
+              <Text style={styles.number}>{unreadCount}</Text>
             </View>
           }
         </Pressable>

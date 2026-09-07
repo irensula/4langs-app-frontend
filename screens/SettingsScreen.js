@@ -187,27 +187,6 @@ const SettingsScreen = ({ navigation }) => {
         <View style={layout.container}>
           <Text style={textStyles.title}>Settings</Text>
           <View style={[layout.formContainer, layout.shadowStyle]}>     
-            
-              <View style={layout.menuItem}>
-                <Text style={layout.menuText}>App version</Text>
-                <Text style={layout.menuText}>{Constants.expoConfig?.version || "1.0.0"}</Text>
-              </View>
-
-              <View style={layout.menuItem}>
-                <Text style={layout.menuText}>Developed by</Text>
-                <Text style={layout.menuText}>Iryna Sula</Text>
-              </View>
-
-              <Pressable style={layout.menuItem} onPress={() => Linking.openURL("mailto:irensula19@gmail.com")}>
-                <Text style={layout.menuText}>Contact</Text>
-                <Text style={styles.link}>irensula19@gmail.com</Text>
-              </Pressable>
-
-              <Pressable style={layout.menuItem} onPress={openPolicy}>
-                <Text style={layout.menuText}>Privacy Policy</Text>
-                <Ionicons name="document-text-outline" size={24} color={colors.secondary} />
-              </Pressable>
-
               <View style={layout.settingsItem}>
                   <Text style={layout.menuText}>Change application language</Text>
 
@@ -251,6 +230,26 @@ const SettingsScreen = ({ navigation }) => {
                     />
                   </Pressable>
                 </View>
+
+                <Pressable style={layout.menuItem} onPress={openPolicy}>
+                <Text style={layout.menuText}>Privacy Policy</Text>
+                <Ionicons name="document-text-outline" size={24} color={colors.secondary} />
+              </Pressable>
+
+              <View style={layout.menuItem}>
+                <Text style={layout.menuText}>App version</Text>
+                <Text style={layout.menuText}>{Constants.expoConfig?.version || "1.0.0"}</Text>
+              </View>
+
+              <View style={layout.menuItem}>
+                <Text style={layout.menuText}>Developed by</Text>
+                <Text style={layout.menuText}>Iryna Sula</Text>
+              </View>
+
+              <Pressable style={layout.menuItem} onPress={() => Linking.openURL("mailto:irensula19@gmail.com")}>
+                <Text style={layout.menuText}>Contact</Text>
+                <Text style={styles.link}>irensula19@gmail.com</Text>
+              </Pressable>
             </View>
         </View>
       </ScrollView>

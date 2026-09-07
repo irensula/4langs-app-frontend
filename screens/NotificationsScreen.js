@@ -1,12 +1,17 @@
-import { useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { NotificationContext } from "../context/NotificationContext";
 import NotificationCard from "../components/NotificationCard";
 import Navbar from "../components/Navbar";
 import { layout, textStyles, colors } from "../constants/layout";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const NotificationsScreen = ({ navigation }) => {
-    const {notifications, removeNotification, clearNotifications} = useContext(NotificationContext);
+    const {notifications, removeNotification, clearNotifications, markNotificationsAsRead} = useContext(NotificationContext);
+
+    useEffect(() => {
+        markNotificationsAsRead();
+    }, [markNotificationsAsRead]);
 
     return (
         <View
@@ -31,7 +36,8 @@ const NotificationsScreen = ({ navigation }) => {
                             onPress={clearNotifications}
                             style={layout.deleteButton}
                         >
-                            <Text style={{ color: colors.white, textAlign: "right", fontSize: 18 }}>
+                            <FontAwesome5 name="broom" size={15} color={colors.white} />
+                            <Text style={{ color: colors.white, textAlign: "right", fontSize: 16 }}>
                                 Clear all
                             </Text>
                         </Pressable>

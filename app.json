@@ -2,7 +2,7 @@
   "expo": {
     "name": "4langs",
     "slug": "opetuspeli-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "scheme": "opetuspeli",
     "orientation": "default",
     "userInterfaceStyle": "light",
@@ -34,6 +34,13 @@
           "image": "./assets/splash.png",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff"
         }
       ],
       "expo-status-bar"

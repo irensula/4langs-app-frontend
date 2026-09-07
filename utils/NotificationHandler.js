@@ -27,6 +27,11 @@ export default function NotificationHandler() {
           const body = notification?.request?.content?.body ?? "(no body)";
           const data = notification?.request?.content?.data ?? {};
 
+          console.log(
+      "PUSH RECEIVED:",
+      notification.request.identifier,
+      data?.notification_id
+    );
           addNotification({
             title,
             body,

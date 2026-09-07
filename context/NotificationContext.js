@@ -58,7 +58,17 @@ export const NotificationProvider = ({ children }) => {
 
   // add notification
   const addNotification = useCallback((notification) => {
-    setNotifications((prev) => [notification, ...prev]);    
+    setNotifications((prev) => {
+      const exists = prev.some(
+        (item) => item.notification_id === notification.notification_id);
+        if (exists) {
+          return prev;
+        }
+        return [
+          {...notification, read: false},
+          ...prev,
+        ]    
+    });
   }, []);
 
   const removeNotification = useCallback((notification_id) => {
@@ -69,6 +79,17 @@ export const NotificationProvider = ({ children }) => {
     setNotifications([]);
   }, []);
 
+  const markNotificationsAsRead = useCallback(() => {
+    setNotifications((prev) => {
+      if (prev.every((notification) => notification.read)) {
+        return prev;
+      }
+      return prev.map((notification) => ({
+        ...notification, read: true
+      })); 
+    });  
+  }, []);
+
   return (
     <NotificationContext.Provider
       value={{
@@ -76,6 +97,7 @@ export const NotificationProvider = ({ children }) => {
         addNotification,
         removeNotification, // remove notification from the notifications list
         clearNotifications,
+        markNotificationsAsRead
       }}
     >
       {children}

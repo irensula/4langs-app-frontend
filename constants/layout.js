@@ -287,13 +287,16 @@ export const layout = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: colors.red,
-    width: 100,
+    width: 'auto',
     height: 34,
     borderRadius: 12,
     alignSelf: "flex-end",
     margin: 5,
     alignItems: "center",
     justifyContent: "center",
-    paddingBottom: 5
+    paddingBottom: 3,
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    columnGap: 5
   }
 });
