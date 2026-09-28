@@ -1,6 +1,7 @@
 // DEVICE (EXPO PUSH TOKEN) REGISTRATION 
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { AppState, Alert, Linking } from 'react-native';
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../utils/apiClient";
@@ -8,7 +9,8 @@ import { api } from "../utils/apiClient";
 export function usePushNotifications(token, userId) {
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [pushEnabled, setPushEnabled] = useState(false);
-  
+  const [systemAllowed, setSystemAllowed] = useState(true);
+
   const pushEnabledKey = userId ? `pushEnabled_${userId}` : null;
   const expoPushTokenKey = userId ? `expoPushToken_${userId}` : null;
 
@@ -39,24 +41,76 @@ export function usePushNotifications(token, userId) {
     };
 
     loadPushSettings();
-  }, [userId]);
+  }, [ userId, pushEnabledKey, expoPushTokenKey ]);
+
+  // Check system notification permission
+ const checkPermission = useCallback(async () => {
+    try {
+      const { status } = await Notifications.getPermissionsAsync();
+
+      const allowed = status === "granted";
+
+      setSystemAllowed(allowed);
+
+      console.log( "System notification permission:", status );
+
+      return allowed;
+    } catch (error) {
+      console.error("Failed to check notification permission:", error);
+      return false;
+    }
+  }, []);
+  
+  // Check permission on startup and 
+  // when user returns from Android settings
+  useEffect(() => {
+    checkPermission();
+
+    const subscription = AppState.addEventListener(
+      "change",
+      (state) => {
+        if (state === "active") {
+          checkPermission();
+        }}
+    );
+
+    return () => subscription.remove();
+  }, [checkPermission]);
 
   // Register device (push token) for push notifications
   const registerPushToken = async () => {
     if (!userId || !token) return;
 
     try {
+      let allowed = await checkPermission(); 
+      // Ask user for permission if necessary 
+      if (!allowed) { 
+        const { status, canAskAgain } = await Notifications.requestPermissionsAsync(); 
+        allowed = status === "granted"; 
+        setSystemAllowed(allowed); 
+        
+        if (!allowed) { 
+          if (!canAskAgain) { 
+            Alert.alert( 
+              "Notifications are disabled", 
+              "Please enable notifications in your phone settings.", 
+              [ 
+                { text: "Cancel", }, 
+                { text: "Open settings", onPress: () => Linking.openSettings(), }, 
+              ]); 
+            } 
+            return false; 
+          }}
+
       // get Expo Push Token
       const { data: expoToken } = await Notifications.getExpoPushTokenAsync();
 
       // send Expo Push Token to the database
       await api.post(
-        `/push-token/register`, 
+        "/push-token/register", 
         { expo_push_token: expoToken },
         token
         );
-
-      setExpoPushToken(expoToken);
 
       await AsyncStorage.setItem(expoPushTokenKey, expoToken);
       await AsyncStorage.setItem(pushEnabledKey, "true");
@@ -65,6 +119,7 @@ export function usePushNotifications(token, userId) {
       setPushEnabled(true);
       
       console.log("Push token registerd:", expoToken);
+      return true;
     
     } catch (err) {
       console.error("Failed to register push token:", err);
@@ -86,7 +141,7 @@ export function usePushNotifications(token, userId) {
 
       // unregister Expo Push Token
       await api.post(
-        `/push-token/unregister`, 
+        "/push-token/unregister", 
         { expo_push_token: tokenToRemove },
         token
       );
@@ -98,10 +153,18 @@ export function usePushNotifications(token, userId) {
       setPushEnabled(false);
       
       console.log("Push token unregistered");
+      return true;
     } catch (err) {
       console.error("Failed to unregister push token:", err);
     }
   };
 
-  return { expoPushToken, pushEnabled, registerPushToken, unregisterPushToken };
+  return { 
+    expoPushToken, 
+    pushEnabled,
+    systemAllowed,
+    checkPermission,
+    registerPushToken, 
+    unregisterPushToken
+  };
 }

@@ -7,11 +7,22 @@ import { layout, textStyles, colors } from "../constants/layout";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const NotificationsScreen = ({ navigation }) => {
-    const {notifications, removeNotification, clearNotifications, markNotificationsAsRead} = useContext(NotificationContext);
+    const {
+        notifications, 
+        removeNotification, 
+        clearNotifications, 
+        markNotificationsAsRead, 
+        fetchNotifications
+    } = useContext(NotificationContext);
 
     useEffect(() => {
-        markNotificationsAsRead();
-    }, [markNotificationsAsRead]);
+        const loadNotifications = async () => {
+            const data = await fetchNotifications();
+            await markNotificationsAsRead(data);
+        };
+
+        loadNotifications();
+    }, [fetchNotifications, markNotificationsAsRead]);
 
     return (
         <View

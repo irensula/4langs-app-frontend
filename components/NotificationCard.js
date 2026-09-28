@@ -5,12 +5,12 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 const NotificationCard = ({ notification, removeNotification }) => {
     return (
         <View style={layout.notification}>
-            <View>
-                <Text style={{ fontWeight: "700" }}>{notification.title}</Text>
-                <Text>{notification.body}</Text>
+            <View style={layout.notificationText}>
+                <Text style={layout.notificationTitle}>{notification.title}</Text>
+                <Text style={layout.notificationBody}>{notification.body}</Text>
             </View>
             <Pressable onPress={() => removeNotification(notification.notification_id)}>
-                <FontAwesome5 name="broom" size={24} color={colors.red} />
+                <FontAwesome5 style={layout.notificationIcon} name="broom" size={24} color={colors.red} />
             </Pressable>
         </View>
     )

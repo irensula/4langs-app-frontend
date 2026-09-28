@@ -19,7 +19,7 @@ const SettingsScreen = ({ navigation }) => {
 
   const [languages, setLanguages] = useState([]);
   const [uiLanguage, setUILanguage] = useState(user.ui_language_id);
-  const { pushEnabled, registerPushToken, unregisterPushToken } =
+  const { pushEnabled, systemAllowed, registerPushToken, unregisterPushToken  } =
     usePushNotifications(token, user.user_id);
   const [toggleOn, setToggleOn] = useState(pushEnabled);
   const offset = useRef(new Animated.Value(pushEnabled ? 30 : 0)).current;
@@ -129,30 +129,33 @@ const SettingsScreen = ({ navigation }) => {
   }, [pushEnabled]);
 
   const toggle = async () => {
-    const newToggleState = !toggleOn;
-    setToggleOn(newToggleState);
+    // turn off
+    if (toggleOn) {
+      await unregisterPushToken();
+      
+      setModal({
+        visible: true,
+        type: "message",
+        title: "",
+        message: "Push-notifications are off",
+        confirmText: "OK",
+      });
+
+      return;
+    }
+
+    // turn on
+    const success = await registerPushToken();
+
+    if (!success) return;
 
     setModal({
-              visible: true,
-              type: "message",
-              title: "",
-              message: newToggleState
-                ? "Push-notifications are on"
-                : "Push-notifications are off",
-              confirmText: "OK",
-          });    
-
-    Animated.timing(offset, {
-      toValue: newToggleState ? 30 : 0,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-
-    if (newToggleState) {
-      await registerPushToken();
-    } else {
-      await unregisterPushToken();
-    }
+        visible: true,
+        type: "message",
+        title: "",
+        message: "Push-notifications are on",
+        confirmText: "OK",
+    });    
   };
 
   return (
@@ -199,36 +202,43 @@ const SettingsScreen = ({ navigation }) => {
                   />
               </View>
 
-               <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    paddingVertical: 5
-                  }}
-                >
-                  <Text style={layout.menuText}>Push-notifications</Text>
-                  <Pressable
-                    style={{
-                      width: 70,
-                      height: 40,
-                      backgroundColor: toggleOn ? colors.secondary : colors.lightgrey,
-                      borderRadius: 50,
-                      flexDirection: "row",
-                      padding: 5,
-                    }}
-                    onPress={toggle}
-                  >
-                    <Animated.View
+               <View style={[layout.menuItem, { flexDirection: 'column' }]}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", width: "100%" }}>
+                    <Text style={layout.menuText}>Push-notifications</Text>
+                    <Pressable
                       style={{
-                        height: 30,
-                        width: 30,
-                        borderRadius: 20,
-                        backgroundColor: colors.white,
-                        marginLeft: offset,
+                        width: 70,
+                        height: 40,
+                        backgroundColor: toggleOn ? colors.secondary : colors.lightgrey,
+                        borderRadius: 50,
+                        flexDirection: "row",
+                        padding: 5,
                       }}
-                    />
-                  </Pressable>
+                      onPress={toggle}
+                    >
+                      <Animated.View
+                        style={{
+                          height: 30,
+                          width: 30,
+                          borderRadius: 20,
+                          backgroundColor: colors.white,
+                          marginLeft: offset,
+                        }}
+                      />
+                    </Pressable>
+                  </View>
+                  {/* show if push notifications are off in phone settings */}
+                  {pushEnabled && !systemAllowed && (
+                    <Pressable
+                      onPress={Linking.openSettings}
+                      style={{ marginTop: 5 }}
+                    >
+                      <Text style={{ color: colors.red, fontSize: 13 }}>
+                        Notifications are disabled in phone settings.</Text> 
+                      <Text style={{ color: colors.red, fontSize: 13, fontWeight: 600, textDecorationLine: 'underline' }}>Tap to enable</Text>
+                      
+                    </Pressable>
+                  )}
                 </View>
 
                 <Pressable style={layout.menuItem} onPress={openPolicy}>

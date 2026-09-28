@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { AuthContext } from '../utils/AuthContext';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { api } from "../utils/apiClient";
 
 export const NotificationContext = createContext({
   notifications: [], 
@@ -18,7 +19,7 @@ export const NotificationContext = createContext({
 });
 
 export const NotificationProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const userId = user?.user_id;
   const notificationsKey = userId ? `notifications_${userId}` : null;
   const [notifications, setNotifications] = useState([]);
@@ -71,24 +72,87 @@ export const NotificationProvider = ({ children }) => {
     });
   }, []);
 
-  const removeNotification = useCallback((notification_id) => {
-    setNotifications((prev) => prev.filter((notification) => notification.notification_id !== notification_id));
-  }, []);
+  const removeNotification = useCallback(async (notification_id) => {
+    if (!userId || !token) return;
 
-  const clearNotifications = useCallback(() => {
-    setNotifications([]);
-  }, []);
+    try {
+        await api.patch(
+            `/notifications/${notification_id}/hide`,
+            {},
+            token
+        );
 
-  const markNotificationsAsRead = useCallback(() => {
-    setNotifications((prev) => {
-      if (prev.every((notification) => notification.read)) {
-        return prev;
+        setNotifications((prev) =>
+            prev.filter(
+                (notification) =>
+                    notification.notification_id !== notification_id
+            )
+        );
+    } catch (error) {
+        console.error("Failed to hide notification:", error);
+    }
+}, [userId, token]);
+
+  const clearNotifications = useCallback(async () => {
+      if (!userId || !token) return;
+
+      try {
+          await api.patch(
+              "/notifications/hide-all",
+              {},
+              token
+          );
+
+          setNotifications([]);
+      } catch (error) {
+          console.error("Failed to hide all notifications:", error);
       }
-      return prev.map((notification) => ({
-        ...notification, read: true
-      })); 
-    });  
-  }, []);
+  }, [userId, token]);
+
+  const markNotificationsAsRead = useCallback(async (notificationList) => {
+      if (!userId || !token || !notificationList?.length) return;
+
+      try {
+          const unreadNotifications = notificationList.filter(
+              (notification) => !notification.read
+          );
+          await Promise.all(
+              unreadNotifications.map((notification) =>
+                  api.patch(
+                      `/notifications/${notification.notification_id}/read`,
+                      {},
+                      token
+                  )
+              )
+          );
+
+          setNotifications((prev) =>
+              prev.map((notification) => ({
+                  ...notification,
+                  read: true,
+              }))
+          );
+      } catch (error) {
+          console.error("Failed to mark notifications as read:", error);
+      }
+  }, [userId, token]);
+
+  const fetchNotifications = useCallback(async () => {
+      if (!userId || !token) return;
+
+      try {
+          const data = await api.get("/notifications", token);
+
+          if (Array.isArray(data)) {
+              setNotifications(data);
+              return data;
+          }
+          return [];
+      } catch (error) {
+          console.error("Failed to fetch notifications:", error);
+          return [];
+      }
+  }, [userId, token]);
 
   return (
     <NotificationContext.Provider
@@ -97,7 +161,8 @@ export const NotificationProvider = ({ children }) => {
         addNotification,
         removeNotification, // remove notification from the notifications list
         clearNotifications,
-        markNotificationsAsRead
+        markNotificationsAsRead,
+        fetchNotifications
       }}
     >
       {children}

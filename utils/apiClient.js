@@ -127,6 +127,17 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
     }),
+
+  // PATCH request
+  patch: (url, body, token) =>
+    request(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    }),
 };
 
 /**

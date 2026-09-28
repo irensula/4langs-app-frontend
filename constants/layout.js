@@ -130,16 +130,36 @@ export const layout = StyleSheet.create({
   },
   notification: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: colors.lightgreen,
     borderColor: colors.darkblue,
     borderWidth: 2,
     borderRadius: 15,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingVertical: 15,
     width: "100%",
-    marginVertical: 5
+    marginVertical: 5,
+  },
+  notificationText: {
+      flex: 1,
+      minWidth: 0,
+  },
+
+  notificationTitle: {
+      fontWeight: "700",
+      flexShrink: 1,
+  },
+
+  notificationBody: {
+      flexShrink: 1,
+  },
+
+  notificationIcon: {
+      marginLeft: 10,
+      flexShrink: 0,
+  },
+  notificationIcon: {
+      flexShrink: 0,
   },
   shadowStyle: {
     shadowColor: "#000",
