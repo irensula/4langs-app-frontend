@@ -134,12 +134,14 @@ export const layout = StyleSheet.create({
   },
   input: {
     height: 50,
+    width: 180,
     lineHeight: 30,
     borderColor: colors.darkblue,
     borderWidth: 2,
     borderRadius: 15,
     backgroundColor: colors.white,
     marginBottom: 10,
+    justifyContent: 'center'
   },
   formButton: {
     width: "100%",

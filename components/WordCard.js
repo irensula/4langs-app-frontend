@@ -3,12 +3,7 @@ import { colors } from "../constants/layout";
 import { playSound } from "../utils/soundUtils";
 import { getSoundUrl } from "../utils/apiClient";
 
-const WordCard = ({
-  word,
-  selected,
-  onPress,
-  matched
-}) => {
+const WordCard = ({ word, selected, onPress, matched, style }) => {
   const soundFile = word.study_sound;
 
   const handlePress = () => {
@@ -26,7 +21,8 @@ const WordCard = ({
     >
       <View
         style={[
-          styles.wordCard,
+          styles.wordCard, 
+          style,
           {
             borderWidth: selected ? 3 : 2,
             backgroundColor: selected ? colors.lightgreen : "#fff",

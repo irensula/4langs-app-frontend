@@ -209,9 +209,8 @@ const MatchScreen = ({ navigation, route }) => {
         <View
           style={{
             flexDirection: "row",
-            gap: 10,
             justifyContent: "space-around",
-            paddingVertical: 15
+            paddingVertical: 15,
           }}
         >
           <View>
@@ -222,6 +221,7 @@ const MatchScreen = ({ navigation, route }) => {
                 selected={selectedImage?.content_id === image.content_id}
                 onPress={() => handleImagePress(image)}
                 matched={matchedPairs.includes(image.content_id)}
+                style={{ width: 100, height: 100 }}
               />
             ))}
           </View>
@@ -233,6 +233,7 @@ const MatchScreen = ({ navigation, route }) => {
                 selected={selectedWord?.content_id === word.content_id}
                 onPress={() => handleWordPress(word)}
                 matched={matchedPairs.includes(word.content_id)}
+                style={{ width: 100, height: 100 }}
               />
             ))}
           </View>

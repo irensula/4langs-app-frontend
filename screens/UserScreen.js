@@ -239,7 +239,17 @@ const UserScreen = ({ route, navigation }) => {
                                 editable={editMode}
                                 onChangeText={(val) => handleChange('username', val)}
                                 autoCapitalize='none'
-                                style={[textStyles.title, { marginBottom: 0 }]}
+                                style={[
+                                    textStyles.title, 
+                                    { marginBottom: 0 },
+                                    editMode && {
+                                        borderWidth: 2,
+                                        borderColor: colors.darkblue,
+                                        borderRadius: 15,
+                                        width: 175,
+                                        backgroundColor: colors.white
+                                    }, 
+                                ]}
                             />
                             {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
 
@@ -250,7 +260,16 @@ const UserScreen = ({ route, navigation }) => {
                                 onChangeText={(val) => handleChange('email', val)}
                                 keyboardType="email-address"
                                 autoCapitalize='none'
-                                style={styles.textInput}
+                                style={[
+                                    styles.textInput,
+                                    editMode && {
+                                        borderWidth: 2,
+                                        borderColor: colors.darkblue,
+                                        borderRadius: 15,
+                                        width: 175,
+                                        backgroundColor: colors.white
+                                    }
+                                ]}
                             />
                             {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
@@ -313,10 +332,10 @@ const UserScreen = ({ route, navigation }) => {
                             <View style={{ width: "80%", marginVertical: 20 }}>
                                 {editMode ? (
                                     <View style={{ flexDirection: "row", gap: 10, }}>
-                                        <Pressable style={styles.editButton} onPress={cancelEditUserData}>
+                                        <Pressable style={styles.editModeButton} onPress={cancelEditUserData}>
                                             <Text style={[textStyles.formButtonText, { color: colors.violet, paddingHorizontal: 10, fontWeight: 700 }]}>Cancel</Text>
                                         </Pressable>
-                                        <Pressable style={styles.editButton} onPress={editUserData}>
+                                        <Pressable style={styles.editModeButton} onPress={editUserData}>
                                             <Text style={[textStyles.formButtonText, { color: colors.violet, paddingHorizontal: 10, fontWeight: 700 }]}>Save</Text>
                                         </Pressable>
                                     </View>
@@ -358,7 +377,19 @@ const UserScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     editButton: {
+        width: 180,
+        alignSelf: 'center',
+        height: 40,
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: 5,
+        borderWidth: 2,
+        borderColor: colors.violet,
+        borderRadius: 50,
+    },
+    editModeButton: {
         flex: 1,
+        alignSelf: 'center',
         height: 40,
         justifyContent: "center",
         alignItems: "center",

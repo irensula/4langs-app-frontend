@@ -22,7 +22,7 @@ const ProgressScreen = ({ navigation }) => {
         );
 
         if (!Array.isArray(data)) return;
-        console.log("Data", data);
+
         setUserProgress(data);
 
       } catch (error) {
