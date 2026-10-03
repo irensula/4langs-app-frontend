@@ -128,7 +128,7 @@ const RegisterScreen = ({ navigation }) => {
 
         {/* message box */}
         {message ? (
-          <View style={{ minHeight: 50 }}>
+          <View style={{ minHeight: 50, width: '100%' }}>
             <MessageBox message={message} type={messageType} />
           </View>
         ) : null}
@@ -139,25 +139,25 @@ const RegisterScreen = ({ navigation }) => {
           <TextInput
             value={userdata.username}
             onChangeText={(text) => handleChange("username", text)}
-            style={[layout.input, {marginBottom: 5}, errors.username && styles.errorInput ]}
+            style={[layout.input, {marginBottom: 5}, errors.username && layout.errorInput ]}
           />
-          {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+          {errors.username && <Text style={layout.errorText}>{errors.username}</Text>}
 
           {/* email input */}
           <Text style={textStyles.label}>Email</Text>
           <TextInput
             value={userdata.email}
             onChangeText={(text) => handleChange("email", text)}
-            style={[layout.input, {marginBottom: 5}, errors.email && styles.errorInput]}
+            style={[layout.input, {marginBottom: 5}, errors.email && layout.errorInput]}
           />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+          {errors.email && <Text style={layout.errorText}>{errors.email}</Text>}
 
           {/* password input */}
           <Text style={textStyles.label}>Password</Text>
           <View style={[
               layout.input, 
               {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
-              errors.password && styles.errorInput
+              errors.password && layout.errorInput
             ]}>
             <TextInput
               value={userdata.password}
@@ -173,13 +173,13 @@ const RegisterScreen = ({ navigation }) => {
               />
             </Pressable>
           </View>
-          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+          {errors.password && <Text style={layout.errorText}>{errors.password}</Text>}
 
           {/* password confirm input */}
           <View style={[
               layout.input, 
               { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
-              errors.passwordConfirm && styles.errorInput
+              errors.passwordConfirm && layout.errorInput
             ]}>
             <TextInput
               value={userdata.passwordConfirm}
@@ -196,7 +196,7 @@ const RegisterScreen = ({ navigation }) => {
             </Pressable>
             
           </View>
-          {errors.passwordConfirm && <Text style={styles.errorText}>{errors.passwordConfirm}</Text>}
+          {errors.passwordConfirm && <Text style={layout.errorText}>{errors.passwordConfirm}</Text>}
 
           {/* choose avatar */}
           <View style={[layout.center, { paddingVertical: 20 }]}>
@@ -209,7 +209,7 @@ const RegisterScreen = ({ navigation }) => {
                 handleChange("avatar_id", avatarId);
               }}
             />
-            {errors.avatar_id && <Text style={styles.errorText}>{errors.avatar_id}</Text>}
+            {errors.avatar_id && <Text style={layout.errorText}>{errors.avatar_id}</Text>}
           </View>
 
           {/* privacy policy */}
@@ -235,7 +235,7 @@ const RegisterScreen = ({ navigation }) => {
               </Text>
             </Text>
           </View>
-          {errors.privacyPolicy && <Text style={styles.errorText}>{errors.privacyPolicy}</Text>}
+          {errors.privacyPolicy && <Text style={layout.errorText}>{errors.privacyPolicy}</Text>}
             
           {/* register button */}
           <Pressable onPress={handleRegister} style={layout.formButton}>
@@ -255,16 +255,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     gap: 8,
     marginTop: 15,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 11,
-    marginBottom: 5,
-    alignSelf: 'flex-start'
-  },
-  errorInput: {
-    borderColor: "red",
-    borderWidth: 2,
   }
 });
 

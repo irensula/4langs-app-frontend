@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from "react-native"; 
+import { colors } from "../constants/layout";
 
 const MessageBox = ({ message, type }) => {
     return (
@@ -13,9 +14,10 @@ const styles=StyleSheet.create({
         padding: 10,
         borderRadius: 20,
         borderWidth: 2,
-        borderColor: '#55962f',
+        borderColor: colors.darkblue,
         backgroundColor: '#f0f8eb',
         marginVertical: 10,
+        width: '100%'
     },
     errorMessageBox: {
         padding: 10,
@@ -24,6 +26,7 @@ const styles=StyleSheet.create({
         borderColor: 'red',
         backgroundColor: '#f0f8eb',
         marginVertical: 10,
+        width: '100%'
     },
     shadowStyle: {
         shadowColor: '#000',

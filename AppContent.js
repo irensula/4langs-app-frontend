@@ -19,6 +19,8 @@ import { usePushNotifications } from "./hooks/usePushNotifications";
 import StartScreen from './screens/StartScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import ChooseLanguageScreen from './screens/ChooseLanguageScreen';
 import HomeScreen from './screens/HomeScreen';
 import CourseScreen from './screens/CourseScreen';
@@ -58,6 +60,18 @@ export default function AppContent() {
   // push notifications
   const { registerPushToken } = usePushNotifications(token, user?.user_id);
   const [pushPermissionAsked, setPushPermissionAsked] = useState(null);
+
+  const linking = {
+    prefixes: [
+      "opetuspeli://",
+      "https://study-languages.up.railway.app",
+    ],
+    config: {
+        screens: {
+            ResetPassword: "reset-password",
+        },
+    },
+  };
 
   useEffect(() => {
     if (logout) setApiHandlers(logout);
@@ -135,7 +149,7 @@ export default function AppContent() {
 
   return (
     <>
-      <NavigationContainer ref={navigationRef}>
+      <NavigationContainer ref={navigationRef} linking={linking}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Start" component={StartScreen} />
           
@@ -143,6 +157,8 @@ export default function AppContent() {
             <>
               <Stack.Screen name="Register" component={RegisterScreen} />
               <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+              <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
             </>        
           ) : (
             <>

@@ -79,6 +79,11 @@ export const textStyles = StyleSheet.create({
     color: "#ffffff",
     fontFamily: "NunitoBold",
   },
+  forgotPasswordLink: {
+    color: colors.darkblue,
+    fontSize: 16,
+    fontFamily: "ABeeZee",
+  }
 });
 
 export const layout = StyleSheet.create({
@@ -126,7 +131,24 @@ export const layout = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 30,
     width: "100%",
-    minHeight: 350,
+  },
+  input: {
+    height: 50,
+    lineHeight: 30,
+    borderColor: colors.darkblue,
+    borderWidth: 2,
+    borderRadius: 15,
+    backgroundColor: colors.white,
+    marginBottom: 10,
+  },
+  formButton: {
+    width: "100%",
+    height: 50,
+    backgroundColor: colors.violet,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 25,
   },
   notification: {
     flexDirection: "row",
@@ -179,24 +201,6 @@ export const layout = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 15,
-  },
-  formButton: {
-    width: '100%',
-    height: 50,
-    backgroundColor: colors.violet,
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 15,
-  },
-  input: {
-    height: 50,
-    lineHeight: 30,
-    borderColor: colors.darkblue,
-    borderWidth: 2,
-    borderRadius: 15,
-    backgroundColor: colors.white,
-    marginBottom: 10,
   },
   center: {
     justifyContent: "center",
@@ -318,5 +322,18 @@ export const layout = StyleSheet.create({
     paddingHorizontal: 15,
     flexDirection: "row",
     columnGap: 5
+  },
+  forgotPasswordWrap: {
+    margin: 20
+  },
+  errorText: {
+    color: "red",
+    fontSize: 11,
+    marginBottom: 5,
+    alignSelf: 'flex-start'
+  },
+  errorInput: {
+    borderColor: "red",
+    borderWidth: 2,
   }
 });

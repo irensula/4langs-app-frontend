@@ -99,13 +99,15 @@ export const api = {
   // POST request
   post: (url, body, token) =>
     request(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token && {
+                Authorization: `Bearer ${token}`,
+            }),
+        },
+        body: JSON.stringify(body),
+  }),
 
   // PUT request
   put: (url, body, token) =>

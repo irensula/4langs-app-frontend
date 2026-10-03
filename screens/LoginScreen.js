@@ -73,7 +73,7 @@ const Login = ({ navigation }) => {
         <Text style={textStyles.title}>Login</Text>
 
         {message ? (
-            <View style={{ minHeight: 50 }}>
+            <View style={{ minHeight: 50, width: '100%' }}>
               <MessageBox message={message} type={messageType} />
             </View>
           ) : null}
@@ -126,12 +126,16 @@ const Login = ({ navigation }) => {
               />
             </Pressable>
           </View>
-          <View style={layout.center}>
-            <Pressable onPress={handleLogin} style={layout.formButton}>
-              <Text style={textStyles.formButtonText}>Login</Text>
-            </Pressable>
-          </View>
+          
+          <Pressable onPress={handleLogin} style={layout.formButton}>
+            <Text style={textStyles.formButtonText}>Login</Text>
+          </Pressable>
         </View>
+
+        <Pressable style={layout.forgotPasswordWrap} onPress={() => navigation.navigate("ForgotPassword")} >
+          <Text style={textStyles.forgotPasswordLink}>Forgot password?</Text>
+        </Pressable>
+
       </View>
     </View>
   );
