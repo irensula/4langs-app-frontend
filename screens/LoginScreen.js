@@ -84,7 +84,7 @@ const Login = ({ navigation }) => {
           <TextInput
             style={[
               layout.input,
-              { color: colors.text },
+              { color: colors.text, width: '100%' },
               hasError && styles.inputError,
               usernameFocused && styles.inputFocused,
             ]}
@@ -101,7 +101,7 @@ const Login = ({ navigation }) => {
           
           <View style={[
               layout.input, 
-              {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }
+              {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10, width: '100%' }
             ]}>
             <TextInput
               style={{

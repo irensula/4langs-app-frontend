@@ -41,6 +41,12 @@
         <data android:scheme="opetuspeli"/>
         <data android:scheme="exp+opetuspeli-app"/>
       </intent-filter>
+      <intent-filter android:autoVerify="true" data-generated="true">
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="https" android:host="study-languages.up.railway.app" android:pathPrefix="/reset-password"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
     </activity>
   </application>
 </manifest>

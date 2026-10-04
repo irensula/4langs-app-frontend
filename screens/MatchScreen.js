@@ -172,7 +172,6 @@ const MatchScreen = ({ navigation, route }) => {
 
   // GO TO NEXT SCREEN
   const handleNext = () => {
-    console.log("handleNext");
     navigation.navigate("GapsTask", {
       courseId,
       categoryId,

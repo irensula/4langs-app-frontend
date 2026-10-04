@@ -33,7 +33,6 @@ export function usePushNotifications(token, userId) {
         setPushEnabled(savedPushEnabled === "true");
         setExpoPushToken(savedExpoPushToken);
 
-        console.log("Saved push state:", savedPushEnabled);
         console.log("Saved Expo token:", savedExpoPushToken);
       } catch (err) {
         console.error("Failed to load push settings:", err);
@@ -51,8 +50,6 @@ export function usePushNotifications(token, userId) {
       const allowed = status === "granted";
 
       setSystemAllowed(allowed);
-
-      console.log( "System notification permission:", status );
 
       return allowed;
     } catch (error) {

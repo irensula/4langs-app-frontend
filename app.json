@@ -2,7 +2,7 @@
   "expo": {
     "name": "4langs",
     "slug": "opetuspeli-app",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "scheme": "opetuspeli",
     "orientation": "default",
     "userInterfaceStyle": "light",

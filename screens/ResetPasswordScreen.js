@@ -105,7 +105,7 @@ const ResetPasswordScreen = ({ navigation, route }) => {
                     <Text style={textStyles.label}>Password</Text>
                     <View style={[
                             layout.input, 
-                            {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
+                            {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10, width: '100%' }, 
                             errors.password && layout.errorInput
                         ]}>
                         <TextInput
@@ -128,7 +128,7 @@ const ResetPasswordScreen = ({ navigation, route }) => {
                     <Text style={textStyles.label}>Confirm password</Text>
                     <View style={[
                         layout.input, 
-                        { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
+                        { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10, width: '100%' }, 
                         errors.passwordConfirm && layout.errorInput
                         ]}>
                         <TextInput

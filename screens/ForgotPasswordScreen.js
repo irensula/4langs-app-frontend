@@ -69,17 +69,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
                     <TextInput
                         style={[
                             layout.input,
-                            { color: colors.text },
-                            // hasError && styles.inputError,
+                            { color: colors.text, width: '100%' },
                             emailFocused && styles.inputFocused,
                         ]}
                         value={email}
                         onChangeText={setEmail}
                         underlineColorAndroid="transparent"
-                        onFocus={() => {
-                        //     setHasError(false);
-                        setEmailFocused(true);
-                        }}
+                        onFocus={() => { setEmailFocused(true); }}
                         onBlur={() => setEmailFocused(false)}
                     />
                     <Pressable style={layout.formButton} onPress={handleForgotPassword}>

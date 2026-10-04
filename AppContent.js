@@ -88,7 +88,6 @@ export default function AppContent() {
 
         setPushPermissionAsked(value == "true");
 
-        console.log("Push permission state:", user.user_id, value);
       } catch (err) {
         console.error("Failed to load push permission state: ", err);
         

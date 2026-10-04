@@ -139,7 +139,7 @@ const RegisterScreen = ({ navigation }) => {
           <TextInput
             value={userdata.username}
             onChangeText={(text) => handleChange("username", text)}
-            style={[layout.input, {marginBottom: 5}, errors.username && layout.errorInput ]}
+            style={[layout.input, {marginBottom: 5, width: '100%'}, errors.username && layout.errorInput ]}
           />
           {errors.username && <Text style={layout.errorText}>{errors.username}</Text>}
 
@@ -148,7 +148,7 @@ const RegisterScreen = ({ navigation }) => {
           <TextInput
             value={userdata.email}
             onChangeText={(text) => handleChange("email", text)}
-            style={[layout.input, {marginBottom: 5}, errors.email && layout.errorInput]}
+            style={[layout.input, {marginBottom: 5, width: '100%'}, errors.email && layout.errorInput]}
           />
           {errors.email && <Text style={layout.errorText}>{errors.email}</Text>}
 
@@ -156,7 +156,7 @@ const RegisterScreen = ({ navigation }) => {
           <Text style={textStyles.label}>Password</Text>
           <View style={[
               layout.input, 
-              {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
+              {marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10, width: '100%' }, 
               errors.password && layout.errorInput
             ]}>
             <TextInput
@@ -178,7 +178,7 @@ const RegisterScreen = ({ navigation }) => {
           {/* password confirm input */}
           <View style={[
               layout.input, 
-              { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10 }, 
+              { marginBottom: 5, flexDirection: 'row', alignItems: 'center', paddingRight: 10, width: '100%' }, 
               errors.passwordConfirm && layout.errorInput
             ]}>
             <TextInput
